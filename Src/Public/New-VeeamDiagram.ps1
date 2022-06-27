@@ -21,9 +21,7 @@ function New-VeeamDiagram {
             ParameterSetName = 'Credential'
         )]
         [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
+        [PSCredential] $Credential,
 
         [Parameter(
             Position = 2,
