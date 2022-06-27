@@ -1,0 +1,11 @@
+$Images = @{
+    "VBR_Server" = "VBR_server.png"
+    "VBR_Repository" = "VBR_Repository.png"
+    "VBR_Linux_Repository" = "Linux_Repository.png"
+    "VBR_Cloud_Repository" = "Cloud_Repository.png"
+    "VBR_Server_DB" = "Microsoft_SQL_DB.png"
+    "VBR_Proxy_Server" = "Proxy_Server.png"
+    "VBR_Wan_Accel" = "WAN_accelerator.png"
+    "VBR_SOBR" = "Scale-out_Backup_Repository.png"
+    "VBR_LOGO" = "Veeam_logo.png"
+}
