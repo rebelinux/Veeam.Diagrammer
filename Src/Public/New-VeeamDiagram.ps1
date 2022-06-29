@@ -148,6 +148,7 @@ function New-VeeamDiagram {
                     fillColor = 'transparent'
                     fontsize = 14;
                     imagescale = $true
+                    group = 'main'
                 }
                 # Edge default theme
                 edge @{
@@ -160,9 +161,13 @@ function New-VeeamDiagram {
                 }
 
                 SubGraph BackupServer -Attributes @{Label='Backup Server'; style="rounded"; bgcolor="#ceedc4"; fontsize=18; penwidth=2} {
-                    node -Name $BackupServerInfo.Name -Attributes (Get-ImageIcon @BackupServerInfo)
+                    $BSHASHTABLE = @{}
+                    $BackupServerInfo.psobject.properties | Foreach { $BSHASHTABLE[$_.Name] = $_.Value }
+                    node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label}
                     if ($DatabaseServerInfo) {
-                        node $DatabaseServerInfo.Name (Get-ImageIcon @DatabaseServerInfo)
+                        $DBHASHTABLE = @{}
+                        $DatabaseServerInfo.psobject.properties | Foreach { $DBHASHTABLE[$_.Name] = $_.Value }
+                        node  $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label}
                         rank $BackupServerInfo.Name,$DatabaseServerInfo.Name
                         if ($Dir -eq 'LR') {
                             edge -from $DatabaseServerInfo.Name -to $BackupServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=5}
@@ -171,7 +176,7 @@ function New-VeeamDiagram {
                         }
                     }
                     else {
-                        edge $BackupServerInfo.Name
+                        edge $BackupServerInfo
                     }
                 }
 

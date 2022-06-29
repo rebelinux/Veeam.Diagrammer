@@ -39,26 +39,32 @@ function Get-VbrBackupRepoInfo {
                         $_
                     }
 
+                    $Role = Switch ($BackupRepo.Type) {
+                        'LinuxLocal' {'Linux Local'}
+                        'WinLocal' {'Windows Local'}
+                        'DDBoost' {'Dedup Appliances'}
+                        'HPStoreOnceIntegration' {'Dedup Appliances'}
+                        'Cloud' {'Cloud'}
+                        default {'Backup Repository'}
+                    }
+                    $Rows = @{
+                        Role = $Role
+                        IP = $BackupRepoIP
+                    }
+
                     $Name = Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\'
+                    $Type = Switch ($BackupRepo.Type) {
+                        'LinuxLocal' {'VBR_Linux_Repository'}
+                        'Cloud' {'VBR_Cloud_Repository'}
+                        default {'VBR_Repository'}
+                    }
 
                     $TempBackupRepoInfo = [PSCustomObject]@{
                         Name = "$($Name.toUpper())"
-                        Role = Switch ($BackupRepo.Type) {
-                            'LinuxLocal' {'Linux Local'}
-                            'WinLocal' {'Windows Local'}
-                            'DDBoost' {'Dedup Appliances'}
-                            'HPStoreOnceIntegration' {'Dedup Appliances'}
-                            'Cloud' {'Cloud'}
-                            default {'Backup Repository'}
-                        }
-                        IP = $BackupRepoIP;
-                        Align = "Center"
-                        Type = Switch ($BackupRepo.Type) {
-                            'LinuxLocal' {'VBR_Linux_Repository'}
-                            'Cloud' {'VBR_Cloud_Repository'}
-                            default {'VBR_Repository'}
-                        }
+                        Label = Get-ImageNode -Name "$($Name.toUpper())" -Type $Type -Align "Center" -Rows $Rows
+                        Role = $Role
                     }
+
                     $BackupRepoInfo += $TempBackupRepoInfo
                 }
             }

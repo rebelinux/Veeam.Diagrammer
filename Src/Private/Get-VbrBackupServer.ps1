@@ -36,12 +36,15 @@ function Get-VbrBackupServer {
                         $Null {'Unknown'}
                         default {(Resolve-DnsName veeam-vbr).IPAddress}
                     }
-                    $script:BackupServerInfo = @{
-                        Name = $VBRServer.Name.split(".")[0];
-                        Role = "Backup Server";
-                        IP= $VBRServerIP;
-                        Align= "Center";
-                        Type= "VBR_Server"
+
+                    $Rows = @{
+                        Role = 'Backup Server'
+                        IP = $VBRServerIP
+                    }
+
+                    $script:BackupServerInfo = [PSCustomObject]@{
+                        Name = $VBRServer.Name.split(".")[0]
+                        Label = Get-ImageNode -Name "$($VBRServer.Name.split(".")[0])" -Type "VBR_Server" -Align "Center" -Rows $Rows
                     }
                 }
             }
@@ -56,12 +59,15 @@ function Get-VbrBackupServer {
                         $Null {'Unknown'}
                         default {(Resolve-DnsName $DatabaseServer).IPAddress}
                     }
-                    $script:DatabaseServerInfo = @{
-                        Name = $DatabaseServer.split(".")[0];
-                        Role = "Database";
-                        IP = $DatabaseServerIP;
-                        Align = "Center";
-                        Type = "VBR_Server_DB"
+
+                    $Rows = @{
+                        Role = 'Database'
+                        IP = $DatabaseServerIP
+                    }
+
+                    $script:DatabaseServerInfo = [PSCustomObject]@{
+                        Name = $DatabaseServer.split(".")[0]
+                        Label = Get-ImageNode -Name "$($DatabaseServer.split(".")[0])" -Type "VBR_Server_DB" -Align "Center" -Rows $Rows
                     }
                 }
             }

@@ -31,7 +31,7 @@ function Get-DiagBackupToProxy {
                             foreach ($ProxyObj in $VMwareBackupProxy) {
                                 $PROXYHASHTABLE = @{}
                                 $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
-                                node $ProxyObj -NodeScript {$_.Name} (Get-ImageIcon @PROXYHASHTABLE)
+                                node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
                             }
                         }
                         edge -from $BackupServerInfo.Name -to $VMwareBackupProxy.Name @{minlen=3}
@@ -41,7 +41,7 @@ function Get-DiagBackupToProxy {
                             foreach ($ProxyObj in $HyperVBackupProxy) {
                                 $PROXYHASHTABLE = @{}
                                 $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
-                                node $ProxyObj -NodeScript {$_.Name} (Get-ImageIcon @PROXYHASHTABLE)
+                                node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
                             }
                         }
                         edge -from $BackupServerInfo.Name -to $HyperVBackupProxy.Name @{minlen=3}

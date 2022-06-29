@@ -35,9 +35,15 @@ function Get-VbrWanAccelInfo {
                         $_
                     }
 
+                    $Rows = @{
+                        Role = 'Wan Accelerator'
+                        IP = $WANACCELIP
+                    }
+
+
                     $TempWANACCELInfo = [PSCustomObject]@{
                         Name = "$($WANACCEL.Name.toUpper().split(".")[0]) (WAN)";
-                        Label = Get-ImageIconNew -Name "$($WANACCEL.Name.toUpper().split(".")[0]) (WAN)" -Role "Wan Accelerator" -Type "VBR_Wan_Accel" -Align "Center" -IP $WANACCELIP
+                        Label = Get-ImageNode -Name "$($WANACCEL.Name.toUpper().split(".")[0]) (WAN)" -Type "VBR_Wan_Accel" -Align "Center" -Rows $Rows
                     }
                     $WANACCELInfo += $TempWANACCELInfo
                 }

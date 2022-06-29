@@ -42,12 +42,18 @@ function Get-VbrBackupProxyInfo {
                         $_
                     }
 
+                    $Role = Switch ($Type) {
+                        "vmware" {'VMware Backup Proxy'}
+                        "hyperv" {'HyperV Backup Proxy'}
+                    }
+                    $Rows = @{
+                        Role = $Role
+                        IP = $BackupProxyIP
+                    }
+
                     $TempBackupProxyInfo = [PSCustomObject]@{
-                        Name = "$($BackupProxy.Host.Name.toUpper().split(".")[0]) (BP)";
-                        Role = "Backup Proxy";
-                        IP = $BackupProxyIP;
-                        Align = "Center";
-                        Type = "VBR_Proxy_Server"
+                        Name = "$($BackupProxy.Host.Name.toUpper().split(".")[0]) (BP)"
+                        Label = Get-ImageNode -Name "$($BackupProxy.Host.Name.toUpper().split(".")[0]) (BP))" -Type "VBR_Proxy_Server" -Align "Center" -Rows $Rows
                     }
                     $BackupProxyInfo += $TempBackupProxyInfo
                 }
