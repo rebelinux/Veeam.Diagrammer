@@ -162,11 +162,11 @@ function New-VeeamDiagram {
 
                 SubGraph BackupServer -Attributes @{Label='Backup Server'; style="rounded"; bgcolor="#ceedc4"; fontsize=18; penwidth=2} {
                     $BSHASHTABLE = @{}
-                    $BackupServerInfo.psobject.properties | Foreach { $BSHASHTABLE[$_.Name] = $_.Value }
+                    $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
                     node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label}
                     if ($DatabaseServerInfo) {
                         $DBHASHTABLE = @{}
-                        $DatabaseServerInfo.psobject.properties | Foreach { $DBHASHTABLE[$_.Name] = $_.Value }
+                        $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
                         node  $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label}
                         rank $BackupServerInfo.Name,$DatabaseServerInfo.Name
                         if ($Dir -eq 'LR') {

@@ -42,6 +42,7 @@ function Get-IconType {
         'AmazonS3' {'VBR_Cloud_Repository'}
         'AmazonS3Compatible' {'VBR_Cloud_Repository'}
         'AmazonS3Glacier' {'VBR_Cloud_Repository'}
+        'AzureArchive' {'VBR_Cloud_Repository'}
         default {'VBR_No_Icon'}
     }
 

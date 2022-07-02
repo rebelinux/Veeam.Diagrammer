@@ -32,7 +32,7 @@ function Get-DiagBackupToSobr {
                             $SubGraphName = Remove-SpecialChars -String $SOBROBJ.Name -SpecialChars '\- '
                             SubGraph $SubGraphName  -Attributes @{Label=$SOBROBJ.Name; fontsize=18; penwidth=1.5; labelloc='b'} {
                                 $SOBRHASHTABLE = @{}
-                                $SOBROBJ.psobject.properties | Foreach { $SOBRHASHTABLE[$_.Name] = $_.Value }
+                                $SOBROBJ.psobject.properties | ForEach-Object { $SOBRHASHTABLE[$_.Name] = $_.Value }
                                 node $SOBROBJ -NodeScript {$_.Name} @{Label=$SOBRHASHTABLE.Label}
                                 if ($SOBROBJ.Performance) {
                                     SubGraph "$($SubGraphName)Performance" -Attributes @{Label="Performance Extent"; fontsize=18; penwidth=1.5; labelloc='b'} {
