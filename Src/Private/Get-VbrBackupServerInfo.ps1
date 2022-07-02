@@ -1,4 +1,4 @@
-function Get-VbrBackupServer {
+function Get-VbrBackupServerInfo {
     <#
     .SYNOPSIS
         Function to extract veeam backup & replication server information.
@@ -32,14 +32,10 @@ function Get-VbrBackupServer {
 
             try {
                 if ($VBRServer) {
-                    $VBRServerIP = Switch ((Resolve-DnsName $VBRServer.Name).IPAddress) {
-                        $Null {'Unknown'}
-                        default {(Resolve-DnsName veeam-vbr).IPAddress}
-                    }
 
                     $Rows = @{
                         Role = 'Backup Server'
-                        IP = $VBRServerIP
+                        IP = Get-NodeIP -HostName $VBRServer.Name
                     }
 
                     $script:BackupServerInfo = [PSCustomObject]@{

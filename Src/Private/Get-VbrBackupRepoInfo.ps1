@@ -29,15 +29,6 @@ function Get-VbrBackupRepoInfo {
             $BackupRepoInfo = @()
             if ($BackupRepos) {
                 foreach ($BackupRepo in $BackupRepos) {
-                    try {
-                        $BackupRepoIP = Switch ((Resolve-DnsName $BackupRepo.Host.Name -ErrorAction SilentlyContinue).IPAddress) {
-                            $Null {'Unknown'}
-                            default {(Resolve-DnsName $BackupRepo.Host.Name -ErrorAction SilentlyContinue).IPAddress}
-                        }
-                    }
-                    catch {
-                        $_
-                    }
 
                     $Role = Switch ($BackupRepo.Type) {
                         'LinuxLocal' {'Linux Local'}
@@ -49,10 +40,11 @@ function Get-VbrBackupRepoInfo {
                     }
                     $Rows = @{
                         Role = $Role
-                        IP = $BackupRepoIP
+                        IP = Get-NodeIP -HostName $BackupRepo.Host.Name
                     }
 
                     $Name = Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\'
+
                     $Type = Switch ($BackupRepo.Type) {
                         'LinuxLocal' {'VBR_Linux_Repository'}
                         'Cloud' {'VBR_Cloud_Repository'}
@@ -60,8 +52,8 @@ function Get-VbrBackupRepoInfo {
                     }
 
                     $TempBackupRepoInfo = [PSCustomObject]@{
-                        Name = "$($Name.toUpper())"
-                        Label = Get-ImageNode -Name "$($Name.toUpper())" -Type $Type -Align "Center" -Rows $Rows
+                        Name = "$((Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\').toUpper()) "
+                        Label = Get-ImageNode -Name "$((Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\').toUpper())" -Type $Type -Align "Center" -Rows $Rows
                         Role = $Role
                     }
 

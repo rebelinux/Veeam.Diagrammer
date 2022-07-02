@@ -82,7 +82,7 @@ function New-VeeamDiagram {
         [string] $Orientation = 'landscape',
 
         # Type of generated diagram
-        [ValidateSet('Backup-to-Proxy', 'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-All')]
+        [ValidateSet('Backup-to-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-All')]
         [string] $DiagramType = 'Backup-to-All'
     )
 
@@ -120,7 +120,7 @@ function New-VeeamDiagram {
             fontsize  = 32
             style = "dashed"
             ratio = $Ratio
-            size = $Orient
+            #size = $Orient
             labelloc = 't'
             imagepath = $IconPath
             nodesep = $NodeSeparation
@@ -136,7 +136,7 @@ function New-VeeamDiagram {
 
             $VBRServer = Get-VBRServer -Type Local
 
-            Get-VbrBackupServer
+            Get-VbrBackupServerInfo
 
             $Graph = Graph -Name VeeamVBR -Attributes $MainGraphAttributes {
                 # Node default theme
@@ -148,7 +148,7 @@ function New-VeeamDiagram {
                     fillColor = 'transparent'
                     fontsize = 14;
                     imagescale = $true
-                    group = 'main'
+                    group = "main"
                 }
                 # Edge default theme
                 edge @{
@@ -189,10 +189,14 @@ function New-VeeamDiagram {
                 elseif ($DiagramType -eq 'Backup-to-Repository') {
                     Get-DiagBackupToRepo
                 }
+                elseif ($DiagramType -eq 'Backup-to-Sobr') {
+                    Get-DiagBackupToSobr
+                }
                 elseif ($DiagramType -eq 'Backup-to-All') {
                     Get-DiagBackupToProxy
                     Get-DiagBackupToWanAccel
                     Get-DiagBackupToRepo
+                    Get-DiagBackupToSobr
                 }
 
             }

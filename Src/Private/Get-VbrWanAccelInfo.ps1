@@ -25,25 +25,16 @@ function Get-VbrWanAccelInfo {
             $WANACCELInfo = @()
             if ($WANACCELS) {
                 foreach ($WANACCEL in $WANACCELS) {
-                    try {
-                        $WANACCELIP = Switch ((Resolve-DnsName $WANACCEL.Name -ErrorAction SilentlyContinue).IPAddress) {
-                            $Null {'Unknown'}
-                            default {(Resolve-DnsName $WANACCEL.Name -ErrorAction SilentlyContinue).IPAddress}
-                        }
-                    }
-                    catch {
-                        $_
-                    }
 
                     $Rows = @{
                         Role = 'Wan Accelerator'
-                        IP = $WANACCELIP
+                        IP = Get-NodeIP -HostName $WANACCEL.Name
                     }
 
 
                     $TempWANACCELInfo = [PSCustomObject]@{
-                        Name = "$($WANACCEL.Name.toUpper().split(".")[0]) (WAN)";
-                        Label = Get-ImageNode -Name "$($WANACCEL.Name.toUpper().split(".")[0]) (WAN)" -Type "VBR_Wan_Accel" -Align "Center" -Rows $Rows
+                        Name = "$($WANACCEL.Name.toUpper().split(".")[0])  ";
+                        Label = Get-ImageNode -Name "$($WANACCEL.Name.toUpper().split(".")[0])" -Type "VBR_Wan_Accel" -Align "Center" -Rows $Rows
                     }
                     $WANACCELInfo += $TempWANACCELInfo
                 }
