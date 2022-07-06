@@ -35,7 +35,7 @@ function Get-DiagBackupToWanAccel {
                     SubGraph WANACCEL -Attributes $WANAccelAttr -ScriptBlock {
                         foreach ($WANOBJ in $WanAccel) {
                             $WANHASHTABLE = @{}
-                            $WANOBJ.psobject.properties | Foreach { $WANHASHTABLE[$_.Name] = $_.Value }
+                            $WANOBJ.psobject.properties | ForEach-Object { $WANHASHTABLE[$_.Name] = $_.Value }
                             node $WANOBJ -NodeScript {$_.Name} @{Label=$WANHASHTABLE.Label}
                         }
                         # if ($WanAccel.count -le 1) {

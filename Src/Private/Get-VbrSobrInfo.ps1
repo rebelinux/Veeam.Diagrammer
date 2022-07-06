@@ -13,6 +13,7 @@ function Get-VbrSobrInfo {
         https://github.com/rebelinux/Veeam.Diagrammer
     #>
     [CmdletBinding()]
+    [OutputType([System.Object[]])]
 
     Param
     (
@@ -26,8 +27,12 @@ function Get-VbrSobrInfo {
             if ($Sobrs) {
                 foreach ($Sobr in $Sobrs) {
                     $SobrRows = @{
-                        Performance = Remove-SpecialChars -String $Sobr.Extent.Name -SpecialChars '\'
-                        Capacity = Remove-SpecialChars -String $Sobr.CapacityExtent.Repository.Name -SpecialChars '\'
+                        'Placement Policy' = $Sobr.PolicyType
+                        'Encryption Enabled' = ConvertTo-TextYN $Sobr.EncryptionEnabled
+                    }
+
+                    if ($Sobr.EncryptionEnabled) {
+                        $SobrRows.add('Encryption Key', $Sobr.EncryptionKey.Description)
                     }
 
                     if ($Sobr.CapacityExtent.Repository.AmazonS3Folder) {
@@ -35,6 +40,9 @@ function Get-VbrSobrInfo {
                     }
                     elseif ($Sobr.CapacityExtent.Repository.AzureBlobFolder) {
                         $Folder = $Sobr.CapacityExtent.Repository.AzureBlobFolder
+                    }
+                    elseif ($Sobr.ArchiveExtent.Repository.AzureBlobFolder) {
+                        $Folder = $Sobr.ArchiveExtent.Repository.AzureBlobFolder
                     } else {$Folder = 'Unknown'}
 
 
@@ -50,7 +58,7 @@ function Get-VbrSobrInfo {
                     }
 
                     $SOBRPERFHASHTABLE = @{}
-                    $PerformanceRows.psobject.properties | Foreach { $SOBRPERFHASHTABLE[$_.Name] = $_.Value }
+                    $PerformanceRows.psobject.properties | ForEach-Object { $SOBRPERFHASHTABLE[$_.Name] = $_.Value }
 
                     $CapacityRows = @{
                         Type = $Sobr.CapacityExtent.Repository.Type
@@ -62,13 +70,18 @@ function Get-VbrSobrInfo {
                         }
                     }
 
-                    $ArchiveRows = @{
+                    $ArchiveRows = [ordered]@{
                         Type = $Sobr.ArchiveExtent.Repository.ArchiveType
                         Gateway = Switch ($Sobr.ArchiveExtent.Repository.UseGatewayServer) {
                             $true {$Sobr.ArchiveExtent.Repository.GatewayServer.Name.Split('.')[0].toUpper()}
                             $false {'Disabled'}
                             default {'Unknown'}
                         }
+                    }
+
+                    if ($Sobr.ArchiveExtent.Repository.AzureBlobFolder) {
+                        $ArchiveRows.add('Folder', "/$($Folder.Name)")
+                        $ArchiveRows.add('Container', $($Folder.Container))
                     }
 
                     $TempSobrInfo = [PSCustomObject]@{

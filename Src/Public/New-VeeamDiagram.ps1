@@ -110,7 +110,7 @@ function New-VeeamDiagram {
 
         $MainGraphAttributes = @{
             pad = 1.0
-            label = 'Veeam Implementation Diagram \n\n '
+            label = 'Veeam Backup & Replication\n\n'
             rankdir   = $Dir
             overlap   = 'false'
             splines   = $EdgeType
@@ -160,43 +160,54 @@ function New-VeeamDiagram {
                     arrowsize = 2
                 }
 
-                SubGraph BackupServer -Attributes @{Label='Backup Server'; style="rounded"; bgcolor="#ceedc4"; fontsize=18; penwidth=2} {
-                    $BSHASHTABLE = @{}
-                    $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-                    node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label}
-                    if ($DatabaseServerInfo) {
-                        $DBHASHTABLE = @{}
-                        $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
-                        node  $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label}
-                        rank $BackupServerInfo.Name,$DatabaseServerInfo.Name
-                        if ($Dir -eq 'LR') {
-                            edge -from $DatabaseServerInfo.Name -to $BackupServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=5}
-                        } else {
-                            edge -from $BackupServerInfo.Name -to $DatabaseServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=5}
-                        }
-                    }
-                    else {
-                        edge $BackupServerInfo
-                    }
+                $MainGraphLabel = Switch ($DiagramType) {
+                    'Backup-to-Sobr' {'SOBR Configuration Diagram\n\n'}
+                    'Backup-to-Proxy' {'Backup Proxy Configuration Diagram\n\n'}
+                    'Backup-to-Repository' {'Backup Repository Configuration Diagram\n\n'}
+                    'Backup-to-WanAccelerator' {'Wan Accelerators Configuration Diagram\n\n'}
+                    'Backup-to-All' {'Infrastructure Configuration Diagram\n\n'}
                 }
 
-                if ($DiagramType -eq 'Backup-to-Proxy') {
-                    Get-DiagBackupToProxy
-                }
-                elseif ($DiagramType -eq 'Backup-to-WanAccelerator') {
-                    Get-DiagBackupToWanAccel
-                }
-                elseif ($DiagramType -eq 'Backup-to-Repository') {
-                    Get-DiagBackupToRepo
-                }
-                elseif ($DiagramType -eq 'Backup-to-Sobr') {
-                    Get-DiagBackupToSobr
-                }
-                elseif ($DiagramType -eq 'Backup-to-All') {
-                    Get-DiagBackupToProxy
-                    Get-DiagBackupToWanAccel
-                    Get-DiagBackupToRepo
-                    Get-DiagBackupToSobr
+                SubGraph MainGraph -Attributes @{Label=$MainGraphLabel; fontsize=24; penwidth=0} {
+
+                    SubGraph BackupServer -Attributes @{Label='Backup Server'; style="rounded"; bgcolor="#ceedc4"; fontsize=18; penwidth=2} {
+                        $BSHASHTABLE = @{}
+                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
+                        node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label}
+                        if ($DatabaseServerInfo) {
+                            $DBHASHTABLE = @{}
+                            $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
+                            node  $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label}
+                            rank $BackupServerInfo.Name,$DatabaseServerInfo.Name
+                            if ($Dir -eq 'LR') {
+                                edge -from $DatabaseServerInfo.Name -to $BackupServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=5}
+                            } else {
+                                edge -from $BackupServerInfo.Name -to $DatabaseServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=5}
+                            }
+                        }
+                        else {
+                            edge $BackupServerInfo
+                        }
+                    }
+
+                    if ($DiagramType -eq 'Backup-to-Proxy') {
+                        Get-DiagBackupToProxy
+                    }
+                    elseif ($DiagramType -eq 'Backup-to-WanAccelerator') {
+                        Get-DiagBackupToWanAccel
+                    }
+                    elseif ($DiagramType -eq 'Backup-to-Repository') {
+                        Get-DiagBackupToRepo
+                    }
+                    elseif ($DiagramType -eq 'Backup-to-Sobr') {
+                        Get-DiagBackupToSobr
+                    }
+                    elseif ($DiagramType -eq 'Backup-to-All') {
+                        Get-DiagBackupToProxy
+                        Get-DiagBackupToWanAccel
+                        Get-DiagBackupToRepo
+                        Get-DiagBackupToSobr
+                    }
                 }
 
             }

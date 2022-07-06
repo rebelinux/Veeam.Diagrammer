@@ -38,6 +38,10 @@ function Get-VbrBackupServerInfo {
                         IP = Get-NodeIP -HostName $VBRServer.Name
                     }
 
+                    if ($VeeamVersion) {
+                        $Rows.add('Version', $VeeamVersion.DisplayVersion)
+                    }
+
                     $script:BackupServerInfo = [PSCustomObject]@{
                         Name = $VBRServer.Name.split(".")[0]
                         Label = Get-ImageNode -Name "$($VBRServer.Name.split(".")[0])" -Type "VBR_Server" -Align "Center" -Rows $Rows
@@ -57,8 +61,15 @@ function Get-VbrBackupServerInfo {
                     }
 
                     $Rows = @{
-                        Role = 'Database'
+                        Role = 'Database Server'
                         IP = $DatabaseServerIP
+                    }
+
+                    if ($VeeamInfo.SqlInstanceName) {
+                        $Rows.add('Instance', $VeeamInfo.SqlInstanceName)
+                    }
+                    if ($VeeamInfo.SqlDatabaseName) {
+                        $Rows.add('Database', $VeeamInfo.SqlDatabaseName)
                     }
 
                     $script:DatabaseServerInfo = [PSCustomObject]@{

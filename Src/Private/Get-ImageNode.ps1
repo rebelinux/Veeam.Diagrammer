@@ -1,5 +1,8 @@
 Function Get-ImageNode {
+
     [CmdletBinding()]
+    [OutputType([System.String])]
+
     param(
         [hashtable[]]$Rows,
         [string]$Type,
@@ -13,7 +16,7 @@ Function Get-ImageNode {
 
     $TR = @()
     foreach ($r in $Rows) {
-        $TR += $r.getEnumerator() | ForEach-Object {"<TR><TD align='$Align' colspan='1'><FONT POINT-SIZE='14'>$($_.Key): $($_.Value)</FONT></TD></TR>"}
+        $TR += $r.getEnumerator() | Sort-Object -Property Name | ForEach-Object {"<TR><TD align='$Align' colspan='1'><FONT POINT-SIZE='14'>$($_.Key): $($_.Value)</FONT></TD></TR>"}
     }
 
     if ($ICON) {

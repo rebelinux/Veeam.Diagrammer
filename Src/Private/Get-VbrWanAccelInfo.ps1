@@ -13,6 +13,7 @@ function Get-VbrWanAccelInfo {
         https://github.com/rebelinux/Veeam.Diagrammer
     #>
     [CmdletBinding()]
+    [OutputType([System.Object[]])]
 
     Param
     (
@@ -27,10 +28,14 @@ function Get-VbrWanAccelInfo {
                 foreach ($WANACCEL in $WANACCELS) {
 
                     $Rows = @{
-                        Role = 'Wan Accelerator'
+                        # Role = 'Wan Accelerator'
                         IP = Get-NodeIP -HostName $WANACCEL.Name
                     }
 
+                    if ($WANAccel.FindWaHostComp().Options.CachePath) {
+                        $Rows.add('Cache Path', $WANAccel.FindWaHostComp().Options.CachePath)
+                        $Rows.add('Max Cache Size', "$($WANAccel.FindWaHostComp().Options.MaxCacheSize) $($WANAccel.FindWaHostComp().Options.SizeUnit)")
+                    }
 
                     $TempWANACCELInfo = [PSCustomObject]@{
                         Name = "$($WANACCEL.Name.toUpper().split(".")[0])  ";
