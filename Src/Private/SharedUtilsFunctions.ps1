@@ -2,7 +2,7 @@
 function Remove-SpecialChars {
     <#
     .SYNOPSIS
-        Used by Veeam.Diagrammer to remove bad characters.
+        Used by Veeam.Diagrammer to remove unsupported characters.
     .DESCRIPTION
     .NOTES
         Version:        0.1.0

@@ -45,7 +45,7 @@ function Get-VbrBackupObjectRepoInfo {
 
                     $TempObjStorageInfo = [PSCustomObject]@{
                         Name = "$($ObjStorage.Name) "
-                        Label = Get-ImageNode -Name $($ObjStorage.Name) -Type "VBR_Cloud_Repository" -Align "Center" -Rows $Rows
+                        Label = Get-NodeIcon -Name $($ObjStorage.Name) -Type "VBR_Cloud_Repository" -Align "Center" -Rows $Rows
                     }
                     $ObjStorageInfo += $TempObjStorageInfo
                 }

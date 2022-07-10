@@ -44,7 +44,7 @@ function Get-VbrBackupProxyInfo {
 
                     $TempBackupProxyInfo = [PSCustomObject]@{
                         Name = "$($BackupProxy.Host.Name.toUpper().split(".")[0]) "
-                        Label = Get-ImageNode -Name "$($BackupProxy.Host.Name.toUpper().split(".")[0])" -Type "VBR_Proxy_Server" -Align "Center" -Rows $Rows
+                        Label = Get-NodeIcon -Name "$($BackupProxy.Host.Name.toUpper().split(".")[0])" -Type "VBR_Proxy_Server" -Align "Center" -Rows $Rows
                     }
                     $BackupProxyInfo += $TempBackupProxyInfo
                 }

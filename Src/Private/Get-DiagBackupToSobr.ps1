@@ -37,20 +37,20 @@ function Get-DiagBackupToSobr {
                                 if ($SOBROBJ.Performance) {
                                     SubGraph "$($SubGraphName)Performance" -Attributes @{Label="Performance Extent"; fontsize=18; penwidth=1.5; labelloc='b'} {
 
-                                        $SOBROBJ.Performance | ForEach-Object {node $_.Name @{Label=Get-ImageNode -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows}}
+                                        $SOBROBJ.Performance | ForEach-Object {node $_.Name @{Label=Get-NodeIcon -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows}}
                                     }
                                 }
                                 if ($SOBROBJ.Capacity) {
                                     SubGraph "$($SubGraphName)Capacity" -Attributes @{Label="Capacity Extent"; fontsize=18; penwidth=1.5; labelloc='b'} {
 
-                                        $SOBROBJ.Capacity | ForEach-Object {node $_.Name @{Label=Get-ImageNode -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows}}
+                                        $SOBROBJ.Capacity | ForEach-Object {node $_.Name @{Label=Get-NodeIcon -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows}}
                                         $SobrEdgeMembers += $SOBROBJ.Capacity.Name
                                     }
                                 }
                                 if ($SOBROBJ.Archive) {
                                     SubGraph "$($SubGraphName)Archive" -Attributes @{Label="Archive Extent"; fontsize=18; penwidth=1.5; labelloc='b'} {
 
-                                        $SOBROBJ.Archive | ForEach-Object {node $_.Name @{Label=Get-ImageNode -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows}}
+                                        $SOBROBJ.Archive | ForEach-Object {node $_.Name @{Label=Get-NodeIcon -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows}}
                                         $SobrEdgeMembers += $SOBROBJ.Archive.Name
                                     }
                                 }

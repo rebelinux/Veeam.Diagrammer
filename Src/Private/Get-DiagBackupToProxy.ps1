@@ -25,29 +25,32 @@ function Get-DiagBackupToProxy {
 
             if ($BackupServerInfo) {
 
-                if ($VMwareBackupProxy -or $HyperVBackupProxy) {
-                    if ($VMwareBackupProxy) {
-                        SubGraph VMwareProxies -Attributes @{Label='VMware Backup Proxies'; style="dashed"; fontsize=18} {
-                            foreach ($ProxyObj in $VMwareBackupProxy) {
-                                $PROXYHASHTABLE = @{}
-                                $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
-                                node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
+                SubGraph VMwareProxies -Attributes @{Label='VMware Backup Proxies'; style="dashed"; fontsize=18; penwidth=1.5} {
+
+                    if ($VMwareBackupProxy -or $HyperVBackupProxy) {
+                        if ($VMwareBackupProxy) {
+                            SubGraph VMwareProxies -Attributes @{Label='VMware Backup Proxies'; style="dashed"; fontsize=18; penwidth=1.5} {
+                                foreach ($ProxyObj in $VMwareBackupProxy) {
+                                    $PROXYHASHTABLE = @{}
+                                    $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
+                                    node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
+                                }
                             }
+                            edge -from $BackupServerInfo.Name -to $VMwareBackupProxy.Name @{minlen=3}
                         }
-                        edge -from $BackupServerInfo.Name -to $VMwareBackupProxy.Name @{minlen=3}
-                    }
-                    if ($HyperVBackupProxy) {
-                        SubGraph HyperVProxies -Attributes @{Label='Hyper-V Backup Proxies'; fontsize=18; penwidth=1.5} {
-                            foreach ($ProxyObj in $HyperVBackupProxy) {
-                                $PROXYHASHTABLE = @{}
-                                $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
-                                node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
+                        if ($HyperVBackupProxy) {
+                            SubGraph HyperVProxies -Attributes @{Label='Hyper-V Backup Proxies'; style="dashed"; fontsize=18; penwidth=1.5} {
+                                foreach ($ProxyObj in $HyperVBackupProxy) {
+                                    $PROXYHASHTABLE = @{}
+                                    $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
+                                    node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
+                                }
                             }
+                            edge -from $BackupServerInfo.Name -to $HyperVBackupProxy.Name @{minlen=3}
                         }
-                        edge -from $BackupServerInfo.Name -to $HyperVBackupProxy.Name @{minlen=3}
+                        #Invisible Edge between internal Proxy member used to split content vertically
+                        edge -from VMwareProxies -to HyperVProxies @{style="invis"; minlen=0}
                     }
-                    #Invisible Edge between internal Proxy member used to split content vertically
-                    # edge -from VMwareProxies -to HyperVProxies @{style="invis"; minlen=0}
                 }
             }
         }

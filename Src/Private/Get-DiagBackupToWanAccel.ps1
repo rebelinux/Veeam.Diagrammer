@@ -46,7 +46,7 @@ function Get-DiagBackupToWanAccel {
                         #     edge -from BackupServer -to WANACCEL @{minlen=0}
                         # }
                     }
-                    edge $BackupServerInfo.Name -to $WanAccel.Name @{minlen=3}
+                    $WanAccel | ForEach-Object {edge $BackupServerInfo.Name -to $_.Name @{minlen=3; label=$_.TrafficPort}}
                 }
             }
         }

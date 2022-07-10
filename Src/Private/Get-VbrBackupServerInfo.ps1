@@ -44,7 +44,7 @@ function Get-VbrBackupServerInfo {
 
                     $script:BackupServerInfo = [PSCustomObject]@{
                         Name = $VBRServer.Name.split(".")[0]
-                        Label = Get-ImageNode -Name "$($VBRServer.Name.split(".")[0])" -Type "VBR_Server" -Align "Center" -Rows $Rows
+                        Label = Get-NodeIcon -Name "$($VBRServer.Name.split(".")[0])" -Type "VBR_Server" -Align "Center" -Rows $Rows
                     }
                 }
             }
@@ -74,7 +74,8 @@ function Get-VbrBackupServerInfo {
 
                     $script:DatabaseServerInfo = [PSCustomObject]@{
                         Name = $DatabaseServer.split(".")[0]
-                        Label = Get-ImageNode -Name "$($DatabaseServer.split(".")[0])" -Type "VBR_Server_DB" -Align "Center" -Rows $Rows
+                        Label = Get-NodeIcon -Name "$($DatabaseServer.split(".")[0])" -Type "VBR_Server_DB" -Align "Center" -Rows $Rows
+                        DBPort = "1433/TCP"
                     }
                 }
             }

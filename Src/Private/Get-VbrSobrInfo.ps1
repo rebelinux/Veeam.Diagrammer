@@ -86,7 +86,7 @@ function Get-VbrSobrInfo {
 
                     $TempSobrInfo = [PSCustomObject]@{
                         Name = "$($Sobr.Name.toUpper())"
-                        Label = Get-ImageNode -Name "$($Sobr.Name)" -Type "VBR_SOBR" -Align "Center" -Rows $SobrRows
+                        Label = Get-NodeIcon -Name "$($Sobr.Name)" -Type "VBR_SOBR" -Align "Center" -Rows $SobrRows
 
                         Capacity = $Sobr.CapacityExtent.Repository | Select-Object -Property @{Name= 'Name'; Expression={Remove-SpecialChars -String $_.Name -SpecialChars '\'}},@{Name = 'Rows'; Expression={$CapacityRows}}, @{Name = 'Icon'; Expression={Get-IconType -String $_.Type}}
 

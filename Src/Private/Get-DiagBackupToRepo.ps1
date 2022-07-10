@@ -34,7 +34,7 @@ function Get-DiagBackupToRepo {
                         SubGraph RemoteRepos -Attributes @{Label='Deduplicating Storage Appliances'; fontsize=18; penwidth=1.5; labelloc='b';nojustify=$true} {
                             foreach ($REPOOBJ in $RemoteBackupRepo) {
                                 $REPOHASHTABLE = @{}
-                                $REPOOBJ.psobject.properties | Foreach { $REPOHASHTABLE[$_.Name] = $_.Value }
+                                $REPOOBJ.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
                                 node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label;}
                             }
                             edge -from $RemoteBackupRepo.Name -to $BackupServerInfo.Name
@@ -45,7 +45,7 @@ function Get-DiagBackupToRepo {
                         SubGraph ObjectStorage -Attributes @{Label='Object Repository'; fontsize=18; penwidth=1.5; labelloc='b'} {
                             foreach ($STORAGEOBJ in $ObjStorage) {
                                 $OBJHASHTABLE = @{}
-                                $STORAGEOBJ.psobject.properties | Foreach { $OBJHASHTABLE[$_.Name] = $_.Value }
+                                $STORAGEOBJ.psobject.properties | ForEach-Object { $OBJHASHTABLE[$_.Name] = $_.Value }
                                 node $STORAGEOBJ -NodeScript {$_.Name} @{Label=$OBJHASHTABLE.Label}
                                 edge -from $BackupServerInfo.Name -to $STORAGEOBJ.Name
                             }
@@ -56,7 +56,7 @@ function Get-DiagBackupToRepo {
                         SubGraph LocalRepos -Attributes @{Label='Local Repository'; fontsize=18; penwidth=1.5; labelloc='b'} {
                             foreach ($REPOOBJ in $LocalBackupRepo) {
                                 $REPOHASHTABLE = @{}
-                                $REPOOBJ.psobject.properties | Foreach {$REPOHASHTABLE[$_.Name] = $_.Value }
+                                $REPOOBJ.psobject.properties | ForEach-Object {$REPOHASHTABLE[$_.Name] = $_.Value }
                                 node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label}
                                 edge -from $BackupServerInfo.Name -to $REPOOBJ.Name
                             }

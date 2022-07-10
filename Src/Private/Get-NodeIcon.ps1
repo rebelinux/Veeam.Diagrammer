@@ -1,4 +1,4 @@
-Function Get-ImageNode {
+Function Get-NodeIcon {
 
     [CmdletBinding()]
     [OutputType([System.String])]

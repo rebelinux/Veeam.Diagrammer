@@ -53,7 +53,7 @@ function Get-VbrBackupRepoInfo {
 
                     $TempBackupRepoInfo = [PSCustomObject]@{
                         Name = "$((Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\').toUpper()) "
-                        Label = Get-ImageNode -Name "$((Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\').toUpper())" -Type $Type -Align "Center" -Rows $Rows
+                        Label = Get-NodeIcon -Name "$((Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\').toUpper())" -Type $Type -Align "Center" -Rows $Rows
                         Role = $Role
                     }
 
