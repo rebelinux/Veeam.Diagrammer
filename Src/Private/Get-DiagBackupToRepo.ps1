@@ -37,7 +37,7 @@ function Get-DiagBackupToRepo {
                                 $REPOOBJ.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
                                 node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label;}
                             }
-                            edge -from $RemoteBackupRepo.Name -to $BackupServerInfo.Name
+                            edge -from $BackupServerInfo.Name -to $RemoteBackupRepo.Name
                         }
                         $Rank += 'RemoteRepos'
                     }

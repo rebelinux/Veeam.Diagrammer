@@ -1,5 +1,10 @@
 function New-VeeamDiagram {
 
+    [Diagnostics.CodeAnalysis.SuppressMessage(
+        'PSUseShouldProcessForStateChangingFunctions',
+        ''
+    )]
+
     [CmdletBinding()]
 
     param (
@@ -102,7 +107,6 @@ function New-VeeamDiagram {
 
         $MainGraphAttributes = @{
             pad = 1.0
-            label = 'Veeam Backup & Replication\n\n'
             rankdir   = $Dir
             overlap   = 'false'
             splines   = $EdgeType
@@ -152,14 +156,14 @@ function New-VeeamDiagram {
                 }
 
                 $MainGraphLabel = Switch ($DiagramType) {
-                    'Backup-to-Sobr' {'SOBR Configuration Diagram\n\n'}
-                    'Backup-to-Proxy' {'Backup Proxy Configuration Diagram\n\n'}
-                    'Backup-to-Repository' {'Backup Repository Configuration Diagram\n\n'}
-                    'Backup-to-WanAccelerator' {'Wan Accelerators Configuration Diagram\n\n'}
-                    'Backup-to-All' {'Infrastructure Configuration Diagram\n\n'}
+                    'Backup-to-Sobr' {'Scale-Out Backup Repository Diagram'}
+                    'Backup-to-Proxy' {'Backup Proxy Diagram'}
+                    'Backup-to-Repository' {'Backup Repository Diagram'}
+                    'Backup-to-WanAccelerator' {'Wan Accelerators Diagram'}
+                    'Backup-to-All' {'Backup Infrastructure Diagram'}
                 }
 
-                SubGraph MainGraph -Attributes @{Label=$MainGraphLabel; fontsize=24; penwidth=0} {
+                SubGraph MainGraph -Attributes @{Label=(Get-HTMLLabel -Label $MainGraphLabel -Type "VBR_LOGO" ); fontsize=24; penwidth=0} {
 
                     SubGraph BackupServer -Attributes @{Label='Backup Server'; style="rounded"; bgcolor="#ceedc4"; fontsize=18; penwidth=2} {
                         $BSHASHTABLE = @{}

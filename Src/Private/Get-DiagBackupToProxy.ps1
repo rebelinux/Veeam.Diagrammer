@@ -25,7 +25,7 @@ function Get-DiagBackupToProxy {
 
             if ($BackupServerInfo) {
 
-                SubGraph VMwareProxies -Attributes @{Label='VMware Backup Proxies'; style="dashed"; fontsize=18; penwidth=1.5} {
+                SubGraph Proxies -Attributes @{Label='Backup Proxies'; style="dashed"; fontsize=18; penwidth=0} {
 
                     if ($VMwareBackupProxy -or $HyperVBackupProxy) {
                         if ($VMwareBackupProxy) {
@@ -49,7 +49,7 @@ function Get-DiagBackupToProxy {
                             edge -from $BackupServerInfo.Name -to $HyperVBackupProxy.Name @{minlen=3}
                         }
                         #Invisible Edge between internal Proxy member used to split content vertically
-                        edge -from VMwareProxies -to HyperVProxies @{style="invis"; minlen=0}
+                        # edge -from VMwareProxies -to HyperVProxies @{style="invis"; minlen=0}
                     }
                 }
             }

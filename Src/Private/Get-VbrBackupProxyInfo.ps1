@@ -38,8 +38,12 @@ function Get-VbrBackupProxyInfo {
                         "hyperv" {'HyperV Backup Proxy'}
                     }
                     $Rows = @{
-                        Role = $Role
+                        # Role = $Role
                         IP = Get-NodeIP -HostName $BackupProxy.Host.Name
+                        Status = Switch ($BackupProxy.isDisabled) {
+                            $false {'Enabled'}
+                            $true {'Disabled'}
+                        }
                     }
 
                     $TempBackupProxyInfo = [PSCustomObject]@{

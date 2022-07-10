@@ -27,7 +27,7 @@ function Get-DiagBackupToWanAccel {
 
                 if ($WanAccel) {
                     $WANAccelAttr = @{
-                        Label = (Get-HtmlLabel -Label 'Wan Accelerators' -Port 'f1')
+                        Label = 'Wan Accelerators'
                         fontsize = 18
                         penwidth = 1.5
                         labelloc = 'b'
