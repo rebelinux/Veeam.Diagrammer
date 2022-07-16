@@ -28,7 +28,6 @@ function Get-DiagBackupToSobr {
                 if ($SobrRepo) {
                     SubGraph SOBR -Attributes @{Label='SOBR Repository'; fontsize=18; penwidth=1.5; labelloc='t'; style = "dashed"} {
                         foreach ($SOBROBJ in $SobrRepo) {
-                            $SobrEdgeMembers = @{}
                             $SubGraphName = Remove-SpecialChars -String $SOBROBJ.Name -SpecialChars '\- '
                             SubGraph $SubGraphName  -Attributes @{Label=$SOBROBJ.Name; fontsize=18; penwidth=1.5; labelloc='b'} {
                                 $SOBRHASHTABLE = @{}
@@ -44,14 +43,12 @@ function Get-DiagBackupToSobr {
                                     SubGraph "$($SubGraphName)Capacity" -Attributes @{Label="Capacity Extent"; fontsize=18; penwidth=1.5; labelloc='b'} {
 
                                         $SOBROBJ.Capacity | ForEach-Object {node $_.Name @{Label=Get-NodeIcon -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows}}
-                                        $SobrEdgeMembers += $SOBROBJ.Capacity.Name
                                     }
                                 }
                                 if ($SOBROBJ.Archive) {
                                     SubGraph "$($SubGraphName)Archive" -Attributes @{Label="Archive Extent"; fontsize=18; penwidth=1.5; labelloc='b'} {
 
                                         $SOBROBJ.Archive | ForEach-Object {node $_.Name @{Label=Get-NodeIcon -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows}}
-                                        $SobrEdgeMembers += $SOBROBJ.Archive.Name
                                     }
                                 }
 
