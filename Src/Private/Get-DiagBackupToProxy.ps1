@@ -25,31 +25,53 @@ function Get-DiagBackupToProxy {
 
             if ($BackupServerInfo) {
 
-                SubGraph Proxies -Attributes @{Label='Backup Proxies'; style="dashed"; fontsize=18; penwidth=0} {
+                SubGraph Proxies -Attributes @{Label='Backup Proxies'; style="dashed"; fontsize=18; penwidth=1} {
 
                     if ($VMwareBackupProxy -or $HyperVBackupProxy) {
                         if ($VMwareBackupProxy) {
-                            SubGraph VMwareProxies -Attributes @{Label='VMware Backup Proxies'; style="dashed"; fontsize=18; penwidth=1.5} {
-                                foreach ($ProxyObj in $VMwareBackupProxy) {
-                                    $PROXYHASHTABLE = @{}
-                                    $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
-                                    node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
+                            $VirtObjs = Get-VBRServer | Where-Object {$_.Type -eq 'VC'}
+                            SubGraph VMwareProxiesMain -Attributes @{Label='VMware Backup Proxies Main'; style="invis"} {
+                                SubGraph VMwareProxies -Attributes @{Label='VMware Backup Proxies'; style="dashed"; fontsize=18; penwidth=1.5} {
+                                    foreach ($ProxyObj in ($VMwareBackupProxy | Sort-Object)) {
+                                        $PROXYHASHTABLE = @{}
+                                        $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
+                                        node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
+                                    }
                                 }
+                                if ($VirtObjs) {
+                                    SubGraph VCENTERMAIN -Attributes @{Label='VMware vCenter Servers'; style="dashed"; fontsize=18; penwidth=1} {
+                                        foreach ($VirtManager in ($VirtObjs | Sort-Object)) {
+                                            node $VirtManager.Name @{Label=(Get-NodeIcon -Name $VirtManager.Name -Type 'NoIcon' -Align "Center")}
+                                            edge -from VMwareProxies -to $VirtManager.Name @{minlen=2}
+
+                                        }
+                                    }
+                                }
+                                # edge -from BackupServer -to VMwareProxies @{minlen=3}
                             }
-                            edge -from $BackupServerInfo.Name -to $VMwareBackupProxy.Name @{minlen=3}
                         }
                         if ($HyperVBackupProxy) {
+                            $VirtObjs = Get-VBRServer | Where-Object {$_.Type -eq 'HvCluster'}
                             SubGraph HyperVProxies -Attributes @{Label='Hyper-V Backup Proxies'; style="dashed"; fontsize=18; penwidth=1.5} {
-                                foreach ($ProxyObj in $HyperVBackupProxy) {
+                                foreach ($ProxyObj in ($HyperVBackupProxy | Sort-Object)) {
                                     $PROXYHASHTABLE = @{}
                                     $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
                                     node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
                                 }
                             }
-                            edge -from $BackupServerInfo.Name -to $HyperVBackupProxy.Name @{minlen=3}
+                            if ($VirtObjs) {
+                                SubGraph HVCLUSTERMAIN -Attributes @{Label='Hyper-V Cluster Servers'; style="dashed"; fontsize=18; penwidth=1} {
+                                    foreach ($HVCluster in ($VirtObjs | Sort-Object)) {
+                                        node $HVCluster.Name @{Label=(Get-NodeIcon -Name $HVCluster.Name -Type 'NoIcon' -Align "Center")}
+                                        edge -from ($HyperVBackupProxy.Name | Sort-Object) -to $HVCluster.Name @{minlen=2}
+
+                                    }
+                                }
+                            }
+                            # edge -from BackupServer -to HyperVProxies @{minlen=3}
                         }
                         #Invisible Edge between internal Proxy member used to split content vertically
-                        # edge -from VMwareProxies -to HyperVProxies @{style="invis"; minlen=0}
+                        edge -from BackupServer -to Proxies @{style="dashed"; minlen=3}
                     }
                 }
             }

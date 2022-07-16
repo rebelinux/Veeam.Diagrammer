@@ -13,6 +13,8 @@ function Get-VbrBackupProxyInfo {
         https://github.com/rebelinux/Veeam.Diagrammer
     #>
     [CmdletBinding()]
+    [OutputType([System.Object[]])]
+
 
     Param
     (
@@ -37,19 +39,28 @@ function Get-VbrBackupProxyInfo {
                         "vmware" {'VMware Backup Proxy'}
                         "hyperv" {'HyperV Backup Proxy'}
                     }
-                    $Rows = @{
+
+                    $BPRows = @{
                         # Role = $Role
+                        Type = Switch ($Type) {
+                            'vmware' {$BackupProxy.ChassisType}
+                            'hyperv' {$BackupProxy.Info.Type}
+                        }
                         IP = Get-NodeIP -HostName $BackupProxy.Host.Name
                         Status = Switch ($BackupProxy.isDisabled) {
                             $false {'Enabled'}
                             $true {'Disabled'}
                         }
                     }
+                    $VIManagerRows = @{
+                        Version = $VirtObjs.Info.ViVersion
+                    }
 
                     $TempBackupProxyInfo = [PSCustomObject]@{
                         Name = "$($BackupProxy.Host.Name.toUpper().split(".")[0]) "
-                        Label = Get-NodeIcon -Name "$($BackupProxy.Host.Name.toUpper().split(".")[0])" -Type "VBR_Proxy_Server" -Align "Center" -Rows $Rows
+                        Label = Get-NodeIcon -Name "$($BackupProxy.Host.Name.toUpper().split(".")[0])" -Type "VBR_Proxy_Server" -Align "Center" -Rows $BPRows
                     }
+
                     $BackupProxyInfo += $TempBackupProxyInfo
                 }
             }
