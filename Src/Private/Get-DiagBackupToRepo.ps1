@@ -29,41 +29,48 @@ function Get-DiagBackupToRepo {
             if ($BackupServerInfo) {
 
                 if ($BackupRepo) {
-                    $Rank = @()
-                    if ($RemoteBackupRepo) {
-                        SubGraph RemoteRepos -Attributes @{Label='Deduplicating Storage Appliances'; fontsize=18; penwidth=1.5; labelloc='b';nojustify=$true} {
-                            foreach ($REPOOBJ in $RemoteBackupRepo) {
-                                $REPOHASHTABLE = @{}
-                                $REPOOBJ.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
-                                node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label;}
+                    SubGraph MainRepos -Attributes @{Label=''; fontsize=18; penwidth=1; labelloc='b'} {
+                        # Node used for subgraph centering
+                        node BackupRepository @{Label='Backup Repositories'; fontsize=18; fontname="Comic Sans MS bold"; fontcolor='#005f4b'}
+                        $Rank = @()
+                        if ($LocalBackupRepo) {
+                            SubGraph LocalRepos -Attributes @{Label='Local Repository'; fontsize=18; penwidth=1.5; labelloc='t'} {
+                                foreach ($REPOOBJ in $LocalBackupRepo) {
+                                    $REPOHASHTABLE = @{}
+                                    $REPOOBJ.psobject.properties | ForEach-Object {$REPOHASHTABLE[$_.Name] = $_.Value }
+                                    node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label}
+                                }
                             }
-                            edge -from $BackupServerInfo.Name -to $RemoteBackupRepo.Name
+                            $Rank += 'LocalRepos'
+                            edge -from BackupRepository -to $LocalBackupRepo.Name @{minlen=1; style='invis'}
                         }
-                        $Rank += 'RemoteRepos'
-                    }
-                    if ($ObjStorage) {
-                        SubGraph ObjectStorage -Attributes @{Label='Object Repository'; fontsize=18; penwidth=1.5; labelloc='b'} {
-                            foreach ($STORAGEOBJ in $ObjStorage) {
-                                $OBJHASHTABLE = @{}
-                                $STORAGEOBJ.psobject.properties | ForEach-Object { $OBJHASHTABLE[$_.Name] = $_.Value }
-                                node $STORAGEOBJ -NodeScript {$_.Name} @{Label=$OBJHASHTABLE.Label}
-                                edge -from $BackupServerInfo.Name -to $STORAGEOBJ.Name
+                        if ($RemoteBackupRepo) {
+                            SubGraph RemoteRepos -Attributes @{Label='Deduplicating Storage Appliances'; fontsize=18; penwidth=1.5; labelloc='t'} {
+                                foreach ($REPOOBJ in $RemoteBackupRepo) {
+                                    $REPOHASHTABLE = @{}
+                                    $REPOOBJ.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
+                                    node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label;}
+                                }
                             }
+                            $Rank += 'RemoteRepos'
+                            edge -from BackupRepository -to $RemoteBackupRepo.Name @{minlen=1; style='invis'}
+
                         }
-                        $Rank += 'ObjectStorage'
-                    }
-                    if ($LocalBackupRepo) {
-                        SubGraph LocalRepos -Attributes @{Label='Local Repository'; fontsize=18; penwidth=1.5; labelloc='b'} {
-                            foreach ($REPOOBJ in $LocalBackupRepo) {
-                                $REPOHASHTABLE = @{}
-                                $REPOOBJ.psobject.properties | ForEach-Object {$REPOHASHTABLE[$_.Name] = $_.Value }
-                                node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label}
-                                edge -from $BackupServerInfo.Name -to $REPOOBJ.Name
+                        if ($ObjStorage) {
+                            SubGraph ObjectStorage -Attributes @{Label='Object Repository'; fontsize=18; penwidth=1.5; labelloc='t'} {
+                                foreach ($STORAGEOBJ in $ObjStorage) {
+                                    $OBJHASHTABLE = @{}
+                                    $STORAGEOBJ.psobject.properties | ForEach-Object { $OBJHASHTABLE[$_.Name] = $_.Value }
+                                    node $STORAGEOBJ -NodeScript {$_.Name} @{Label=$OBJHASHTABLE.Label}
+                                }
                             }
+                            $Rank += 'ObjectStorage'
+                            edge -from BackupRepository -to $ObjStorage.Name @{minlen=1; style='invis'}
+
                         }
-                        $Rank += 'LocalRepos'
+                        rank $Rank
                     }
-                    rank $Rank
+                    edge -from $BackupServerInfo.Name -to BackupRepository @{minlen=3}
                 }
             }
         }
