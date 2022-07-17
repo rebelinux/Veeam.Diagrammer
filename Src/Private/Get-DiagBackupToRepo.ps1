@@ -25,6 +25,7 @@ function Get-DiagBackupToRepo {
             $LocalBackupRepo = Get-VbrBackupRepoInfo | Where-Object {$_.Role -like '*Local'}
             $RemoteBackupRepo = Get-VbrBackupRepoInfo | Where-Object {$_.Role -like 'Dedup*'}
             $ObjStorage = Get-VbrBackupObjectRepoInfo
+            $ArchiveObjStorage = Get-VbrBackupArchObjRepoInfo
 
             if ($BackupServerInfo) {
 
@@ -66,6 +67,18 @@ function Get-DiagBackupToRepo {
                             }
                             $Rank += 'ObjectStorage'
                             edge -from BackupRepository -to $ObjStorage.Name @{minlen=1; style='invis'}
+
+                        }
+                        if ($ArchiveObjStorage) {
+                            SubGraph ArchiveObjectStorage -Attributes @{Label='Archive Object Repository'; fontsize=18; penwidth=1.5; labelloc='t'} {
+                                foreach ($STORAGEArchiveOBJ in $ArchiveObjStorage) {
+                                    $ARCHOBJHASHTABLE = @{}
+                                    $STORAGEArchiveOBJ.psobject.properties | ForEach-Object { $ARCHOBJHASHTABLE[$_.Name] = $_.Value }
+                                    node $STORAGEArchiveOBJ -NodeScript {$_.Name} @{Label=$ARCHOBJHASHTABLE.Label}
+                                }
+                            }
+                            $Rank += 'ObjectStorage'
+                            edge -from BackupRepository -to $ArchiveObjStorage.Name @{minlen=1; style='invis'}
 
                         }
                         rank $Rank
