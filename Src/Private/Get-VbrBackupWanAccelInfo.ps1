@@ -1,4 +1,4 @@
-function Get-VbrWanAccelInfo {
+function Get-VbrBackupWanAccelInfo {
     <#
     .SYNOPSIS
         Function to extract veeam backup & replication wan accelerator information.

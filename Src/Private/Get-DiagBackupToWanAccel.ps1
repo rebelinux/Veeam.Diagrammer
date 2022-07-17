@@ -21,32 +21,29 @@ function Get-DiagBackupToWanAccel {
     process {
         try {
 
-            $WanAccel = Get-VbrWanAccelInfo
+            $WanAccel = Get-VbrBackupWanAccelInfo
 
             if ($BackupServerInfo) {
 
                 if ($WanAccel) {
                     $WANAccelAttr = @{
-                        Label = 'Wan Accelerators'
+                        Label = ' '
                         fontsize = 18
                         penwidth = 1.5
                         labelloc = 'b'
                     }
                     SubGraph WANACCEL -Attributes $WANAccelAttr -ScriptBlock {
+                        # Node used for subgraph centering
+                        node WANACCELSERVER @{Label='Wan Accelerators'; fontsize=18; fontname="Comic Sans MS bold"; fontcolor='#005f4b'}
                         foreach ($WANOBJ in $WanAccel) {
                             $WANHASHTABLE = @{}
                             $WANOBJ.psobject.properties | ForEach-Object { $WANHASHTABLE[$_.Name] = $_.Value }
                             node $WANOBJ -NodeScript {$_.Name} @{Label=$WANHASHTABLE.Label}
+                            edge -From WANACCELSERVER -To $WANOBJ.Name @{minlen=1; style='invis'}
                         }
-                        # if ($WanAccel.count -le 1) {
-                        #     rank $WanAccel -NodeScript {$_.Name}
-                        #     $WanAccel | ForEach-Object { edge -From $_.Name -To BackupServer @{minlen=0}}
-                        # } else {
-                        #     rank $WanAccel -NodeScript {$_.Name}
-                        #     edge -from BackupServer -to WANACCEL @{minlen=0}
-                        # }
+                        Rank $WanAccel.Name
                     }
-                    $WanAccel | ForEach-Object {edge $BackupServerInfo.Name -to $_.Name @{minlen=3; label=$_.TrafficPort}}
+                    edge $BackupServerInfo.Name -to WANACCELSERVER @{minlen=3; xlabel=($WanAccel.TrafficPort[0])}
                 }
             }
         }
