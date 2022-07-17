@@ -1,6 +1,7 @@
 $Images = @{
     "VBR_Server" = "VBR_server.png"
     "VBR_Repository" = "VBR_Repository.png"
+    "VBR_Deduplicating_Storage" = "Deduplicating_Storage.png"
     "VBR_Linux_Repository" = "Linux_Repository.png"
     "VBR_Windows_Repository" = "Windows_Repository.png"
     "VBR_Cloud_Repository" = "Cloud_Repository.png"

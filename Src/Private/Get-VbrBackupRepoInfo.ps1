@@ -22,6 +22,10 @@ function Get-VbrBackupRepoInfo {
         try {
             [Array]$BackupRepos = Get-VBRBackupRepository
             [Array]$ScaleOuts = Get-VBRBackupRepository -ScaleOut
+            $ViBackupProxy = Get-VBRViProxy
+            $HvBackupProxy = Get-VBRHvProxy
+            $BackupProxies = $ViBackupProxy + $HvBackupProxy
+
             if ($ScaleOuts) {
                 $Extents = Get-VBRRepositoryExtent -Repository $ScaleOuts
                 $BackupRepos += $Extents.Repository
@@ -38,23 +42,31 @@ function Get-VbrBackupRepoInfo {
                         'Cloud' {'Cloud'}
                         default {'Backup Repository'}
                     }
-                    $Rows = @{
-                        Role = $Role
-                    }
+                    $Rows = @{}
 
                     if ($Role -like '*Local') {
+                        $Rows.add('Server', $BackupRepo.Host.Name.Split('.')[0])
                         $Rows.add('Path', $BackupRepo.FriendlyPath)
                         $Rows.add('Total Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
                         $Rows.add('Used Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
                     } elseif ($Role -like 'Dedup*') {
-                        $Rows.add('Type', $BackupRepo.Type)
+                        $Rows.add('Dedup Type', $BackupRepo.TypeDisplay)
+                        $Rows.add('Total Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
+                        $Rows.add('Used Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
                     }
 
                     $Name = Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\'
 
-                    $Type = Switch ($BackupRepo.Type) {
+                    if ($Role -ne 'Dedup Appliances' -and ($BackupRepo.Host.Name -in $BackupProxies.Host.Name)) {
+                        $BackupType = 'Proxy'
+                    } else {$BackupType = $BackupRepo.Type}
+
+                    $Type = Switch ($BackupType) {
+                        'WinLocal' {'VBR_Windows_Repository'}
                         'LinuxLocal' {'VBR_Linux_Repository'}
                         'Cloud' {'VBR_Cloud_Repository'}
+                        'DDBoost' {'VBR_Deduplicating_Storage'}
+                        'HPStoreOnceIntegration' {'VBR_Deduplicating_Storage'}
                         default {'VBR_Repository'}
                     }
 
