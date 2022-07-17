@@ -175,9 +175,9 @@ function New-VeeamDiagram {
                             node  $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label}
                             rank $BackupServerInfo.Name,$DatabaseServerInfo.Name
                             if ($Dir -eq 'LR') {
-                                edge -from $DatabaseServerInfo.Name -to $BackupServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; label=$DatabaseServerInfo.DBPort}
+                                edge -from $DatabaseServerInfo.Name -to $BackupServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; xlabel=$DatabaseServerInfo.DBPort}
                             } else {
-                                edge -from $BackupServerInfo.Name -to $DatabaseServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; label=$DatabaseServerInfo.DBPort}
+                                edge -from $BackupServerInfo.Name -to $DatabaseServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; xlabel=$DatabaseServerInfo.DBPort}
                             }
                         }
                         else {
