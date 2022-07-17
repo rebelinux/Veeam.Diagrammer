@@ -1,4 +1,4 @@
-function Get-VbrSobrInfo {
+function Get-VbrBackupSobrInfo {
     <#
     .SYNOPSIS
         Function to extract veeam backup & replication scale-out backup repository information.

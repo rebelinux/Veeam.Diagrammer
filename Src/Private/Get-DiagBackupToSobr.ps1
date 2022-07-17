@@ -21,7 +21,7 @@ function Get-DiagBackupToSobr {
     process {
         try {
 
-            $SobrRepo = Get-VbrSobrInfo
+            $SobrRepo = Get-VbrBackupSobrInfo
 
             if ($SobrRepo) {
                 $Rank = @()
