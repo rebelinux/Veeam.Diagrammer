@@ -36,7 +36,7 @@ function Get-DiagBackupToRepo {
                         $Rank = @()
                         if ($LocalBackupRepo) {
                             SubGraph LocalRepos -Attributes @{Label='Local Repository'; fontsize=18; penwidth=1.5; labelloc='t'} {
-                                foreach ($REPOOBJ in $LocalBackupRepo) {
+                                foreach ($REPOOBJ in ($LocalBackupRepo | Sort-Object)) {
                                     $REPOHASHTABLE = @{}
                                     $REPOOBJ.psobject.properties | ForEach-Object {$REPOHASHTABLE[$_.Name] = $_.Value }
                                     node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label}
@@ -47,7 +47,7 @@ function Get-DiagBackupToRepo {
                         }
                         if ($RemoteBackupRepo) {
                             SubGraph RemoteRepos -Attributes @{Label='Deduplicating Storage Appliances'; fontsize=18; penwidth=1.5; labelloc='t'} {
-                                foreach ($REPOOBJ in $RemoteBackupRepo) {
+                                foreach ($REPOOBJ in ($RemoteBackupRepo | Sort-Object)) {
                                     $REPOHASHTABLE = @{}
                                     $REPOOBJ.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
                                     node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label;}
@@ -59,7 +59,7 @@ function Get-DiagBackupToRepo {
                         }
                         if ($ObjStorage) {
                             SubGraph ObjectStorage -Attributes @{Label='Object Repository'; fontsize=18; penwidth=1.5; labelloc='t'} {
-                                foreach ($STORAGEOBJ in $ObjStorage) {
+                                foreach ($STORAGEOBJ in ($ObjStorage | Sort-Object)) {
                                     $OBJHASHTABLE = @{}
                                     $STORAGEOBJ.psobject.properties | ForEach-Object { $OBJHASHTABLE[$_.Name] = $_.Value }
                                     node $STORAGEOBJ -NodeScript {$_.Name} @{Label=$OBJHASHTABLE.Label}
@@ -71,13 +71,13 @@ function Get-DiagBackupToRepo {
                         }
                         if ($ArchiveObjStorage) {
                             SubGraph ArchiveObjectStorage -Attributes @{Label='Archive Object Repository'; fontsize=18; penwidth=1.5; labelloc='t'} {
-                                foreach ($STORAGEArchiveOBJ in $ArchiveObjStorage) {
+                                foreach ($STORAGEArchiveOBJ in ($ArchiveObjStorage | Sort-Object)) {
                                     $ARCHOBJHASHTABLE = @{}
                                     $STORAGEArchiveOBJ.psobject.properties | ForEach-Object { $ARCHOBJHASHTABLE[$_.Name] = $_.Value }
                                     node $STORAGEArchiveOBJ -NodeScript {$_.Name} @{Label=$ARCHOBJHASHTABLE.Label}
                                 }
                             }
-                            $Rank += 'ObjectStorage'
+                            $Rank += 'ArchiveObjectStorage'
                             edge -from BackupRepository -to $ArchiveObjStorage.Name @{minlen=1; style='invis'}
 
                         }
