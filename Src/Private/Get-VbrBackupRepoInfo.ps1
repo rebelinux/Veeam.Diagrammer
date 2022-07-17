@@ -40,6 +40,7 @@ function Get-VbrBackupRepoInfo {
                         'DDBoost' {'Dedup Appliances'}
                         'HPStoreOnceIntegration' {'Dedup Appliances'}
                         'Cloud' {'Cloud'}
+                        'SanSnapshotOnly' {'SAN'}
                         default {'Backup Repository'}
                     }
                     $Rows = @{}
@@ -57,7 +58,7 @@ function Get-VbrBackupRepoInfo {
 
                     $Name = Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\'
 
-                    if ($Role -ne 'Dedup Appliances' -and ($BackupRepo.Host.Name -in $BackupProxies.Host.Name)) {
+                    if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($BackupRepo.Host.Name -in $BackupProxies.Host.Name)) {
                         $BackupType = 'Proxy'
                     } else {$BackupType = $BackupRepo.Type}
 
@@ -67,6 +68,7 @@ function Get-VbrBackupRepoInfo {
                         'Cloud' {'VBR_Cloud_Repository'}
                         'DDBoost' {'VBR_Deduplicating_Storage'}
                         'HPStoreOnceIntegration' {'VBR_Deduplicating_Storage'}
+                        'SanSnapshotOnly' {'VBR_Storage_NetApp'}
                         default {'VBR_Repository'}
                     }
 

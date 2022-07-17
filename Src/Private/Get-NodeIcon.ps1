@@ -24,14 +24,14 @@ Function Get-NodeIcon {
 
     if ($ICON -ne 'NoIcon') {
         if ($Align -eq "Center") {
-            "<TABLE border='0' cellborder='0' cellspacing='5' cellpadding='0'><TR><TD ALIGN='$Align' colspan='3'><img src='$($ICON)'/></TD></TR><TR><TD align='$Align'><B>$Name</B></TD></TR>$TR</TABLE>"
+            "<TABLE border='0' cellborder='0' cellspacing='5' cellpadding='0'><TR><TD ALIGN='$Align' colspan='1'><img src='$($ICON)'/></TD></TR><TR><TD align='$Align'><B>$Name</B></TD></TR>$TR</TABLE>"
         }
         else {
             "<TABLE border='0' cellborder='0' cellspacing='5' cellpadding='0'><TR><TD ALIGN='$Align' rowspan='4' valign='Bottom'><img src='$($ICON)'/></TD></TR><TR><TD align='$Align'><B> $Name</B></TD></TR> $TR</TABLE>"
         }
     } else {
         if ($Align -eq "Center") {
-            "<TABLE border='0' cellborder='0' cellspacing='5' cellpadding='0'><TR><TD ALIGN='$Align' colspan='3'></TD></TR><TR><TD align='$Align'><B>$Name</B></TD></TR>$TR</TABLE>"
+            "<TABLE border='0' cellborder='0' cellspacing='5' cellpadding='0'><TR><TD ALIGN='$Align' colspan='1'></TD></TR><TR><TD align='$Align'><B>$Name</B></TD></TR>$TR</TABLE>"
         }
         else {
             "<TABLE border='0' cellborder='0' cellspacing='5' cellpadding='0'><TR><TD ALIGN='$Align' rowspan='4' valign='Bottom'></TD></TR><TR><TD align='$Align'><B> $Name</B></TD></TR> $TR</TABLE>"
