@@ -50,10 +50,8 @@ function Get-VbrBackupSobrInfo {
 
                         $PerformanceRows = [pscustomobject]@{
                             'Path' = $Extent.Repository.FriendlyPath
-                            # 'IP' = Get-NodeIP -HostName $Extent.Repository.Host.Name
                             'Total Space' = "$((($Extent).Repository).GetContainer().CachedTotalSpace.InGigabytes) GB"
                             'Used Space' = "$((($Extent).Repository).GetContainer().CachedFreeSpace.InGigabytes) GB"
-                            # 'Role' = (Get-RoleType -String $Extent.Repository.Type)
                         }
                     }
 

@@ -40,7 +40,14 @@ function Get-VbrBackupRepoInfo {
                     }
                     $Rows = @{
                         Role = $Role
-                        IP = Get-NodeIP -HostName $BackupRepo.Host.Name
+                    }
+
+                    if ($Role -like '*Local') {
+                        $Rows.add('Path', $BackupRepo.FriendlyPath)
+                        $Rows.add('Total Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
+                        $Rows.add('Used Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
+                    } elseif ($Role -like 'Dedup*') {
+                        $Rows.add('Type', $BackupRepo.Type)
                     }
 
                     $Name = Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\'
