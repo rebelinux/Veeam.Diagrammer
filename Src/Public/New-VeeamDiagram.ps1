@@ -140,7 +140,7 @@ function New-VeeamDiagram {
                     shape = 'none'
                     labelloc = 't'
                     style = 'filled'
-                    fillColor = 'transparent'
+                    fillColor = 'white'
                     fontsize = 14;
                     imagescale = $true
                     group = "main"
@@ -168,11 +168,11 @@ function New-VeeamDiagram {
                     SubGraph BackupServer -Attributes @{Label='Backup Server'; style="rounded"; bgcolor="#ceedc4"; fontsize=18; penwidth=2} {
                         $BSHASHTABLE = @{}
                         $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-                        node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label}
+                        node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'}
                         if ($DatabaseServerInfo) {
                             $DBHASHTABLE = @{}
                             $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
-                            node  $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label}
+                            node  $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label; fillColor='#ceedc4'}
                             rank $BackupServerInfo.Name,$DatabaseServerInfo.Name
                             if ($Dir -eq 'LR') {
                                 edge -from $DatabaseServerInfo.Name -to $BackupServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; xlabel=$DatabaseServerInfo.DBPort}
