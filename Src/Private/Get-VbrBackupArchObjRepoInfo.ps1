@@ -13,6 +13,7 @@ function Get-VbrBackupArchObjRepoInfo {
         https://github.com/rebelinux/Veeam.Diagrammer
     #>
     [CmdletBinding()]
+    [OutputType([System.Object[]])]
 
     Param
     (
