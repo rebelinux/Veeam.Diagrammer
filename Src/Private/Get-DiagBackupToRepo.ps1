@@ -24,7 +24,6 @@ function Get-DiagBackupToRepo {
             $BackupRepo = Get-VbrBackupRepoInfo
             $LocalBackupRepo = Get-VbrBackupRepoInfo | Where-Object {$_.Role -like '*Local'}
             $RemoteBackupRepo = Get-VbrBackupRepoInfo | Where-Object {$_.Role -like 'Dedup*'}
-            $SANBackupRepo = Get-VbrBackupRepoInfo | Where-Object {$_.Role -like 'SAN'}
             $ObjStorage = Get-VbrBackupObjectRepoInfo
             $ArchiveObjStorage = Get-VbrBackupArchObjRepoInfo
 
@@ -33,7 +32,7 @@ function Get-DiagBackupToRepo {
                 if ($BackupRepo) {
                     SubGraph MainRepos -Attributes @{Label=''; fontsize=18; penwidth=1; labelloc='b'} {
                         # Node used for subgraph centering
-                        node BackupRepository @{Label='Backup Repositories'; fontsize=18; fontname="Comic Sans MS bold"; fontcolor='#005f4b'}
+                        node BackupRepository @{Label='Backup Repositories'; fontsize=18; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
                         $Rank = @()
                         if ($LocalBackupRepo) {
                             SubGraph LocalRepos -Attributes @{Label='Local Repository'; fontsize=18; penwidth=1.5; labelloc='t'} {
@@ -57,17 +56,6 @@ function Get-DiagBackupToRepo {
                             $Rank += 'RemoteRepos'
                             edge -from BackupRepository -to $RemoteBackupRepo.Name @{minlen=1; style='invis'}
 
-                        }
-                        if ($SANBackupRepo) {
-                            SubGraph SANRepos -Attributes @{Label='SAN Repository'; fontsize=18; penwidth=1.5; labelloc='t'} {
-                                foreach ($REPOOBJ in ($SANBackupRepo | Sort-Object)) {
-                                    $REPOHASHTABLE = @{}
-                                    $REPOOBJ.psobject.properties | ForEach-Object {$REPOHASHTABLE[$_.Name] = $_.Value }
-                                    node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label}
-                                }
-                            }
-                            $Rank += 'SANRepos'
-                            edge -from BackupRepository -to $SANBackupRepo.Name @{minlen=1; style='invis'}
                         }
                         if ($ObjStorage) {
                             SubGraph ObjectStorage -Attributes @{Label='Object Repository'; fontsize=18; penwidth=1.5; labelloc='t'} {
