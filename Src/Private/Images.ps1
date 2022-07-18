@@ -12,4 +12,5 @@ $Images = @{
     "VBR_LOGO" = "Veeam_logo.png"
     "VBR_No_Icon" = "no_icon.png"
     'VBR_Storage_NetApp' = "Storage_NetApp.png"
+    'VBR_vCenter_Server' = 'vCenter_server.png'
 }
