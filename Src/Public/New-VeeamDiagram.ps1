@@ -180,9 +180,6 @@ function New-VeeamDiagram {
                                 edge -from $BackupServerInfo.Name -to $DatabaseServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; xlabel=$DatabaseServerInfo.DBPort}
                             }
                         }
-                        else {
-                            edge $BackupServerInfo
-                        }
                     }
 
                     if ($DiagramType -eq 'Backup-to-Proxy') {

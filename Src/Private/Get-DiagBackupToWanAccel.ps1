@@ -34,7 +34,7 @@ function Get-DiagBackupToWanAccel {
                     }
                     SubGraph WANACCEL -Attributes $WANAccelAttr -ScriptBlock {
                         # Node used for subgraph centering
-                        node WANACCELSERVER @{Label='Wan Accelerators'; fontsize=18; fontname="Comic Sans MS bold"; fontcolor='#005f4b'}
+                        node WANACCELSERVER @{Label='Wan Accelerators'; fontsize=18; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
                         foreach ($WANOBJ in $WanAccel) {
                             $WANHASHTABLE = @{}
                             $WANOBJ.psobject.properties | ForEach-Object { $WANHASHTABLE[$_.Name] = $_.Value }
