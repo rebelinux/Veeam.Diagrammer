@@ -13,6 +13,7 @@ function Get-VbrBackupRepoInfo {
         https://github.com/rebelinux/Veeam.Diagrammer
     #>
     [CmdletBinding()]
+    [OutputType([System.Object[]])]
 
     Param (
     )
@@ -34,15 +35,8 @@ function Get-VbrBackupRepoInfo {
             if ($BackupRepos) {
                 foreach ($BackupRepo in $BackupRepos) {
 
-                    $Role = Switch ($BackupRepo.Type) {
-                        'LinuxLocal' {'Linux Local'}
-                        'WinLocal' {'Windows Local'}
-                        'DDBoost' {'Dedup Appliances'}
-                        'HPStoreOnceIntegration' {'Dedup Appliances'}
-                        'Cloud' {'Cloud'}
-                        'SanSnapshotOnly' {'SAN'}
-                        default {'Backup Repository'}
-                    }
+                    $Role = Get-RoleType -String $BackupRepo.Type
+
                     $Rows = @{}
 
                     if ($Role -like '*Local') {
@@ -62,15 +56,7 @@ function Get-VbrBackupRepoInfo {
                         $BackupType = 'Proxy'
                     } else {$BackupType = $BackupRepo.Type}
 
-                    $Type = Switch ($BackupType) {
-                        'WinLocal' {'VBR_Windows_Repository'}
-                        'LinuxLocal' {'VBR_Linux_Repository'}
-                        'Cloud' {'VBR_Cloud_Repository'}
-                        'DDBoost' {'VBR_Deduplicating_Storage'}
-                        'HPStoreOnceIntegration' {'VBR_Deduplicating_Storage'}
-                        'SanSnapshotOnly' {'VBR_Storage_NetApp'}
-                        default {'VBR_Repository'}
-                    }
+                    $Type = Get-IconType -String $BackupType
 
                     $TempBackupRepoInfo = [PSCustomObject]@{
                         Name = "$((Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\').toUpper()) "

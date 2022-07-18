@@ -35,10 +35,7 @@ function Get-VbrBackupProxyInfo {
             if ($BackupProxies) {
                 foreach ($BackupProxy in $BackupProxies) {
 
-                    $Role = Switch ($Type) {
-                        "vmware" {'VMware Backup Proxy'}
-                        "hyperv" {'HyperV Backup Proxy'}
-                    }
+                    $Role = Get-RoleType -String $Type
 
                     $BPRows = @{
                         # Role = $Role

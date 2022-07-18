@@ -43,6 +43,10 @@ function Get-IconType {
         'AmazonS3Compatible' {'VBR_Cloud_Repository'}
         'AmazonS3Glacier' {'VBR_Cloud_Repository'}
         'AzureArchive' {'VBR_Cloud_Repository'}
+        'DDBoost' {'VBR_Deduplicating_Storage'}
+        'HPStoreOnceIntegration' {'VBR_Deduplicating_Storage'}
+        'SanSnapshotOnly' {'VBR_Storage_NetApp'}
+        'Proxy' {'VBR_Repository'}
         default {'VBR_No_Icon'}
     }
 
@@ -70,6 +74,9 @@ function Get-RoleType {
         'DDBoost' {'Dedup Appliances'}
         'HPStoreOnceIntegration' {'Dedup Appliances'}
         'Cloud' {'Cloud'}
+        'SanSnapshotOnly' {'SAN'}
+        "vmware" {'VMware Backup Proxy'}
+        "hyperv" {'HyperV Backup Proxy'}
         default {'Backup Repository'}
     }
 
