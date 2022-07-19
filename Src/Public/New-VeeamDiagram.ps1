@@ -1,4 +1,55 @@
 function New-VeeamDiagram {
+        <#
+    .SYNOPSIS
+        Diagram the configuration of Veeam Backup & Replication infrastructure in PDF/SVG/DOT/PNG formats using PSGraph and Graphviz.
+    .DESCRIPTION
+        Diagram the configuration of Veeam Backup & Replication infrastructure in PDF/SVG/DOT/PNG formats using PSGraph and Graphviz.
+    .PARAMETER DiagramType
+        Specifies the type of veeam vbr diagram that will be generated.
+    .PARAMETER Target
+        Specifies the IP/FQDN of the system to connect.
+        Multiple targets may be specified, separated by a comma.
+    .PARAMETER Port
+        Specifies a optional port to connect to Veeam VBR Service.
+        By default, port will be set to 9392
+    .PARAMETER Credential
+        Specifies the stored credential of the target system.
+    .PARAMETER Username
+        Specifies the username for the target system.
+    .PARAMETER Password
+        Specifies the password for the target system.
+    .PARAMETER Format
+        Specifies the output format of the diagram.
+        The supported output formats are PDF, PNG, DOT & SVG.
+        Multiple output formats may be specified, separated by a comma.
+    .PARAMETER Direction
+        Set the direction in which resource are plotted on the visualization
+        By default, direction will be set to top-to-bottom.
+    .PARAMETER NodeSeparation
+        Controls Node separation ratio in visualization
+        By default, NodeSeparation will be set to .60.
+    .PARAMETER SectionSeparation
+        Controls Section (Subgraph) separation ratio in visualization
+        By default, NodeSeparation will be set to .75.
+    .PARAMETER EdgeType
+        Controls how edges lines appear in visualization
+        By default, EdgeType will be set to spline.
+    .PARAMETER OutputFolderPath
+        Specifies the folder path to save the diagram.
+    .PARAMETER Filename
+        Specifies a filename for the diagram.
+    .NOTES
+        Version:        0.2.0
+        Author(s):      Jonathan Colon
+        Twitter:        @jcolonfzenpr
+        Github:         rebelinux
+        Credits:        Kevin Marquette (@KevinMarquette) -  PSGraph module
+        Credits:        Prateek Singh (@PrateekKumarSingh) - AzViz module
+    .LINK
+        https://github.com/rebelinux/Veeam.Diagrammer
+        https://github.com/KevinMarquette/PSGraph
+        https://github.com/PrateekKumarSingh/AzViz
+    #>
 
     [Diagnostics.CodeAnalysis.SuppressMessage(
         'PSUseShouldProcessForStateChangingFunctions',
@@ -9,7 +60,6 @@ function New-VeeamDiagram {
 
     param (
 
-        # Names of target Veeam Backup Server
         [Parameter(
             Position = 0,
             Mandatory = $true,
@@ -55,11 +105,17 @@ function New-VeeamDiagram {
         [ValidateSet('pdf', 'svg', 'png', 'dot')]
         [Array] $Format = 'pdf',
 
-        # TCP Port of target Veeam Backup Server
-        [Parameter(Mandatory = $false)]
+        [Parameter(
+            Position = 5,
+            Mandatory = $false,
+            HelpMessage = 'TCP Port of target Veeam Backup Server'
+        )]
         [string] $Port = '9392',
 
-        # Direction in which resource groups are plotted on the visualization
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Direction in which resource are plotted on the visualization'
+        )]
         [ValidateSet('left-to-right', 'top-to-bottom')]
         [string] $Direction = 'top-to-bottom',
 
@@ -76,7 +132,7 @@ function New-VeeamDiagram {
         )]
         [ValidateNotNullOrEmpty()]
         [ValidateScript({
-            if ($Format -gt 1) {
+            if ($Format.count -lt 2) {
                 $true
             } else {
                 throw "Format value must be unique if Filename is especified."
@@ -84,27 +140,40 @@ function New-VeeamDiagram {
         })]
         [String] $Filename,
 
-        # Controls how edges appear in visualization
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Controls how edges lines appear in visualization'
+        )]
         [ValidateSet('polyline', 'curved', 'ortho', 'line', 'spline')]
-        [string] $EdgeType = 'ortho',
+        [string] $EdgeType = 'spline',
 
-        # Direction in which resource groups are plotted on the visualization
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Controls Node separation ratio in visualization'
+        )]
         [ValidateSet(0, 1, 2, 3)]
         [string] $NodeSeparation = .60,
 
-        # Direction in which resource groups are plotted on the visualization
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Controls Section (Subgraph) separation ratio in visualization'
+        )]
         [ValidateSet(0, 1, 2, 3)]
         [string] $SectionSeparation = .75,
 
-        # Type of generated diagram
+        [Parameter(
+            Mandatory = $true,
+            HelpMessage = 'Controls type of Veeam VBR generated diagram'
+        )]
         [ValidateSet('Backup-to-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-All')]
-        [string] $DiagramType = 'Backup-to-All'
+        [string] $DiagramType
     )
 
 
     begin {
 
         # If Username and Password parameters used, convert specified Password to secure string and store in $Credential
+        #@tpcarman
         if (($Username -and $Password)) {
             $SecurePassword = ConvertTo-SecureString $Password -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ($Username, $SecurePassword)
@@ -222,7 +291,7 @@ function New-VeeamDiagram {
 
             }
 
-            # If Filename parameter is not specified, set filename to the report name
+            # If Filename parameter is not specified, set filename to the Output.$OutputFormat
             foreach ($OutputFormat in $Format) {
                 if ($Filename) {
                     Try {
