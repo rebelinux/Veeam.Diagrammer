@@ -46,29 +46,47 @@ function New-VeeamDiagram {
         [ValidateNotNullOrEmpty()]
         [String] $Password,
 
+        [Parameter(
+            Position = 4,
+            Mandatory = $false,
+            HelpMessage = 'Please provide the diagram output format'
+        )]
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('pdf', 'svg', 'png', 'dot')]
+        [Array] $Format = 'pdf',
+
         # TCP Port of target Veeam Backup Server
         [Parameter(Mandatory = $false)]
         [string] $Port = '9392',
-
-        # Output format of the vizualization
-        [ValidateSet('pdf', 'svg', 'png', 'dot')]
-        [string] $OutputFormat = 'pdf',
 
         # Direction in which resource groups are plotted on the visualization
         [ValidateSet('left-to-right', 'top-to-bottom')]
         [string] $Direction = 'top-to-bottom',
 
-        # Output file path
+        [Parameter(
+            Mandatory = $true,
+            HelpMessage = 'Please provide the path to the diagram output file'
+        )]
         [ValidateScript( { Test-Path -Path $_ -IsValid })]
-        [string] $OutputFilePath = (Join-Path ([System.IO.Path]::GetTempPath()) "output.$OutputFormat"),
+        [string] $OutputFolderPath = (Join-Path ([System.IO.Path]::GetTempPath()) "$Filename.$OutputFormat"),
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Specify the Diagram filename'
+        )]
+        [ValidateNotNullOrEmpty()]
+        [ValidateScript({
+            if ($Format -gt 1) {
+                $true
+            } else {
+                throw "Format value must be unique if Filename is especified."
+            }
+        })]
+        [String] $Filename,
 
         # Controls how edges appear in visualization
         [ValidateSet('polyline', 'curved', 'ortho', 'line', 'spline')]
         [string] $EdgeType = 'ortho',
-
-        # type of resources to be excluded in the visualization
-        [ValidateNotNullOrEmpty()]
-        [string[]] $ExcludeTypes,
 
         # Direction in which resource groups are plotted on the visualization
         [ValidateSet(0, 1, 2, 3)]
@@ -77,10 +95,6 @@ function New-VeeamDiagram {
         # Direction in which resource groups are plotted on the visualization
         [ValidateSet(0, 1, 2, 3)]
         [string] $SectionSeparation = .75,
-
-        # Direction in which resource groups are plotted on the visualization
-        [ValidateSet('fill', 'compress')]
-        [string] $Ratio = 'fill',
 
         # Type of generated diagram
         [ValidateSet('Backup-to-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-All')]
@@ -94,6 +108,19 @@ function New-VeeamDiagram {
         if (($Username -and $Password)) {
             $SecurePassword = ConvertTo-SecureString $Password -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ($Username, $SecurePassword)
+        }
+
+        if (!(Test-Path $OutputFolderPath)) {
+            Write-Error "OutputFolderPath '$OutputFolderPath' is not a valid folder path."
+            break
+        }
+
+        $MainGraphLabel = Switch ($DiagramType) {
+            'Backup-to-Sobr' {'Scale-Out Backup Repository Diagram'}
+            'Backup-to-Proxy' {'Backup Proxy Diagram'}
+            'Backup-to-Repository' {'Backup Repository Diagram'}
+            'Backup-to-WanAccelerator' {'Wan Accelerators Diagram'}
+            'Backup-to-All' {'Backup Infrastructure Diagram'}
         }
 
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
@@ -115,7 +142,6 @@ function New-VeeamDiagram {
             fontcolor = '#005f4b'
             fontsize  = 32
             style = "dashed"
-            ratio = $Ratio
             labelloc = 't'
             imagepath = $IconPath
             nodesep = $NodeSeparation
@@ -153,14 +179,6 @@ function New-VeeamDiagram {
                     color = '#71797E'
                     penwidth = 1.5
                     arrowsize = 2
-                }
-
-                $MainGraphLabel = Switch ($DiagramType) {
-                    'Backup-to-Sobr' {'Scale-Out Backup Repository Diagram'}
-                    'Backup-to-Proxy' {'Backup Proxy Diagram'}
-                    'Backup-to-Repository' {'Backup Repository Diagram'}
-                    'Backup-to-WanAccelerator' {'Wan Accelerators Diagram'}
-                    'Backup-to-All' {'Backup Infrastructure Diagram'}
                 }
 
                 SubGraph MainGraph -Attributes @{Label=(Get-HTMLLabel -Label $MainGraphLabel -Type "VBR_LOGO" ); fontsize=24; penwidth=0} {
@@ -204,9 +222,28 @@ function New-VeeamDiagram {
 
             }
 
-
-            $Graph | Export-PSGraph -DestinationPath $OutputFilePath -OutputFormat $OutputFormat
-
+            # If Filename parameter is not specified, set filename to the report name
+            foreach ($OutputFormat in $Format) {
+                if ($Filename) {
+                    Try {
+                        $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat $OutputFormat
+                        Write-ColorOutput -Color green  "Diagram '$FileName' has been saved to '$OutputFolderPath'."
+                    } catch {
+                        $Err = $_
+                        Write-Error $Err
+                    }
+                }
+                elseif (!$Filename) {
+                    $File = "Output.$OutputFormat"
+                    Try {
+                        $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat $OutputFormat
+                        Write-ColorOutput -Color green  "Diagram '$File' has been saved to '$OutputFolderPath'."
+                    } catch {
+                        $Err = $_
+                        Write-Error $Err
+                    }
+                }
+            }
         }
 
     }
