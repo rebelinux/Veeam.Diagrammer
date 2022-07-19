@@ -27,7 +27,7 @@ function Get-DiagBackupToSobr {
                 $Rank = @()
                 if ($SobrRepo) {
                     SubGraph SOBR -Attributes @{Label=''; fontsize=18; penwidth=1.5; labelloc='t'; style = "dashed"} {
-                        # Node used for subgraph centering
+                        # Dummy Node used for subgraph centering
                         node SOBREPO @{Label='SOBR Repository'; fontsize=18; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
                         foreach ($SOBROBJ in $SobrRepo) {
                             $SubGraphName = Remove-SpecialChars -String $SOBROBJ.Name -SpecialChars '\- '

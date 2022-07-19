@@ -26,7 +26,7 @@ function Get-DiagBackupToProxy {
             if ($BackupServerInfo) {
 
                 SubGraph Proxies -Attributes @{Label=' '; style="dashed"; fontsize=18; penwidth=1} {
-                    # Node used for subgraph centering
+                    # Dummy Node used for subgraph centering
                     node BackupProxy @{Label='Backup Proxies'; fontsize=18; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
                     if ($VMwareBackupProxy -or $HyperVBackupProxy) {
                         if ($VMwareBackupProxy) {
@@ -38,7 +38,7 @@ function Get-DiagBackupToProxy {
                                     node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
                                 }
                                 if ($VirtObjs) {
-                                    # Node used for subgraph centering
+                                    # Dummy Node used for subgraph centering
                                     node VMWAREBackupProxyMain @{Label='VMWAREBackupProxyMain';shape='plain'; style='invis'}
                                 }
                             }
@@ -65,7 +65,7 @@ function Get-DiagBackupToProxy {
                                     node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
                                 }
                                 if ($VirtObjs) {
-                                    # Node used for subgraph centering
+                                    # Dummy Node used for subgraph centering
                                     node HyperVBackupProxyMain @{Label='HyperVBackupProxyMain';shape='plain'; style='invis'}
                                 }
                             }
