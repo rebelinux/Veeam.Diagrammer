@@ -47,6 +47,8 @@ function Get-IconType {
         'HPStoreOnceIntegration' {'VBR_Deduplicating_Storage'}
         'SanSnapshotOnly' {'VBR_Storage_NetApp'}
         'Proxy' {'VBR_Repository'}
+        'ESXi' {'VBR_ESXi_Server'}
+        'HyperVHost' {'Hyper-V_host'}
         default {'VBR_No_Icon'}
     }
 

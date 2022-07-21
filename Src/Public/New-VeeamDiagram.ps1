@@ -56,7 +56,10 @@ function New-VeeamDiagram {
         ''
     )]
 
-    [CmdletBinding()]
+    [CmdletBinding(
+        PositionalBinding = $false,
+        DefaultParameterSetName = 'Credential'
+    )]
 
     param (
 
@@ -166,7 +169,19 @@ function New-VeeamDiagram {
             HelpMessage = 'Controls type of Veeam VBR generated diagram'
         )]
         [ValidateSet('Backup-to-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-All')]
-        [string] $DiagramType
+        [string] $DiagramType,
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Allow to enable edge debugging ( Dummy Edge and Node lines)'
+        )]
+        [Switch] $EnableEdgeDebug = $false,
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Allow to enable subgraph debugging ( Subgraph Lines )'
+        )]
+        [Switch] $EnableSubGraphDebug = $false
     )
 
 
@@ -191,6 +206,14 @@ function New-VeeamDiagram {
             'Backup-to-WanAccelerator' {'Wan Accelerators Diagram'}
             'Backup-to-All' {'Backup Infrastructure Diagram'}
         }
+
+        if ($EnableEdgeDebug) {
+            $EdgeDebug = @{style='filled'; color='red'}
+        } else {$EdgeDebug = @{style='invis'; color='red'}}
+
+        if ($EnableSubGraphDebug) {
+            $SubGraphDebug = @{style='dashed'; color='red'}
+        } else {$SubGraphDebug = @{style='invis'; color='black'}}
 
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
         $IconPath = Join-Path $RootPath 'icons'

@@ -13,4 +13,6 @@ $Images = @{
     "VBR_No_Icon" = "no_icon.png"
     'VBR_Storage_NetApp' = "Storage_NetApp.png"
     'VBR_vCenter_Server' = 'vCenter_server.png'
+    'VBR_ESXi_Server' = 'ESXi_host.png'
+    'VBR_HyperV_Server' = 'Hyper-V_host.png'
 }
