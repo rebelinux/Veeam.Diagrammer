@@ -73,6 +73,22 @@ This project is compatible with the following PowerShell versions;
 PowerShell 5.1, and the following PowerShell modules are required for generating a Veeam.Diagrammer diagram.
 
 - [Veeam.Backup.PowerShell Module](https://helpcenter.veeam.com/docs/backup/powershell/getting_started.html?ver=110)
+- [PSGraph Module](https://helpcenter.veeam.com/docs/backup/powershell/getting_started.html?ver=110)
+
+## What is GraphViz?
+
+[Graphviz](http://graphviz.org/) is open source graph visualization software. Graph visualization is a way of representing structural information as diagrams of abstract graphs and networks. It has important applications in networking, bioinformatics,  software engineering, database and web design, machine learning, and in visual interfaces for other technical domains. 
+
+
+We need to install GraphViz on our system before we can proceed with using the 'Veeam.Diagrammer' PowerShell module.
+### Installing GraphViz
+Make sure you are running Powershell 5.0 (WMF 5.0). I don't know that it is a hard requirement at the moment but I plan on using 5.0 features.
+
+```powershell
+# Install GraphViz from the Chocolatey repo
+Register-PackageSource -Name Chocolatey -ProviderName Chocolatey -Location http://chocolatey.org/api/v2/
+Find-Package graphviz | Install-Package -ForceBootstrap
+```
 
 ### :closed_lock_with_key: Required Privileges
 
@@ -83,7 +99,12 @@ Only users with Veeam Backup Administrator role assigned can generate a Diagram
 ### PowerShell
 
 ```powershell
+# Install PSGraph from the Powershell Gallery
+Install-Module -Name PSGraph
+
+# Install Veeam.Diagrammer from the Powershell Gallery
 install-module -Name Veeam.Diagrammer
+
 ```
 
 ### GitHub
