@@ -39,7 +39,7 @@ function New-VeeamDiagram {
     .PARAMETER Filename
         Specifies a filename for the diagram.
     .NOTES
-        Version:        0.2.0
+        Version:        0.1.0
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
