@@ -5,7 +5,7 @@ function Get-VbrBackupRepoInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.0.2
+        Version:        0.1.0
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -13,6 +13,7 @@ function Get-VbrBackupRepoInfo {
         https://github.com/rebelinux/Veeam.Diagrammer
     #>
     [CmdletBinding()]
+    [OutputType([System.Object[]])]
 
     Param (
     )
@@ -22,6 +23,10 @@ function Get-VbrBackupRepoInfo {
         try {
             [Array]$BackupRepos = Get-VBRBackupRepository
             [Array]$ScaleOuts = Get-VBRBackupRepository -ScaleOut
+            $ViBackupProxy = Get-VBRViProxy
+            $HvBackupProxy = Get-VBRHvProxy
+            $BackupProxies = $ViBackupProxy + $HvBackupProxy
+
             if ($ScaleOuts) {
                 $Extents = Get-VBRRepositoryExtent -Repository $ScaleOuts
                 $BackupRepos += $Extents.Repository
@@ -29,36 +34,36 @@ function Get-VbrBackupRepoInfo {
             $BackupRepoInfo = @()
             if ($BackupRepos) {
                 foreach ($BackupRepo in $BackupRepos) {
-                    try {
-                        $BackupRepoIP = Switch ((Resolve-DnsName $BackupRepo.Host.Name -ErrorAction SilentlyContinue).IPAddress) {
-                            $Null {'Unknown'}
-                            default {(Resolve-DnsName $BackupRepo.Host.Name -ErrorAction SilentlyContinue).IPAddress}
-                        }
-                    }
-                    catch {
-                        $_
+
+                    $Role = Get-RoleType -String $BackupRepo.Type
+
+                    $Rows = @{}
+
+                    if ($Role -like '*Local') {
+                        $Rows.add('Server', $BackupRepo.Host.Name.Split('.')[0])
+                        $Rows.add('Path', $BackupRepo.FriendlyPath)
+                        $Rows.add('Total Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
+                        $Rows.add('Used Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
+                    } elseif ($Role -like 'Dedup*') {
+                        $Rows.add('Dedup Type', $BackupRepo.TypeDisplay)
+                        $Rows.add('Total Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
+                        $Rows.add('Used Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
                     }
 
                     $Name = Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\'
 
+                    if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($BackupRepo.Host.Name -in $BackupProxies.Host.Name)) {
+                        $BackupType = 'Proxy'
+                    } else {$BackupType = $BackupRepo.Type}
+
+                    $Type = Get-IconType -String $BackupType
+
                     $TempBackupRepoInfo = [PSCustomObject]@{
-                        Name = "$($Name.toUpper())"
-                        Role = Switch ($BackupRepo.Type) {
-                            'LinuxLocal' {'Linux Local'}
-                            'WinLocal' {'Windows Local'}
-                            'DDBoost' {'Dedup Appliances'}
-                            'HPStoreOnceIntegration' {'Dedup Appliances'}
-                            'Cloud' {'Cloud'}
-                            default {'Backup Repository'}
-                        }
-                        IP = $BackupRepoIP;
-                        Align = "Center"
-                        Type = Switch ($BackupRepo.Type) {
-                            'LinuxLocal' {'VBR_Linux_Repository'}
-                            'Cloud' {'VBR_Cloud_Repository'}
-                            default {'VBR_Repository'}
-                        }
+                        Name = "$((Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\').toUpper()) "
+                        Label = Get-NodeIcon -Name "$((Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\').toUpper())" -Type $Type -Align "Center" -Rows $Rows
+                        Role = $Role
                     }
+
                     $BackupRepoInfo += $TempBackupRepoInfo
                 }
             }

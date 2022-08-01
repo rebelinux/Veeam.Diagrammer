@@ -5,7 +5,7 @@ function Get-VbrBackupProxyInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.0.2
+        Version:        0.1.0
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -13,6 +13,8 @@ function Get-VbrBackupProxyInfo {
         https://github.com/rebelinux/Veeam.Diagrammer
     #>
     [CmdletBinding()]
+    [OutputType([System.Object[]])]
+
 
     Param
     (
@@ -32,23 +34,30 @@ function Get-VbrBackupProxyInfo {
             $BackupProxyInfo = @()
             if ($BackupProxies) {
                 foreach ($BackupProxy in $BackupProxies) {
-                    try {
-                        $BackupProxyIP = Switch ((Resolve-DnsName $BackupProxy.Host.Name -ErrorAction SilentlyContinue).IPAddress) {
-                            $Null {'Unknown'}
-                            default {(Resolve-DnsName $BackupProxy.Host.Name -ErrorAction SilentlyContinue).IPAddress}
+
+                    $Role = Get-RoleType -String $Type
+
+                    $BPRows = @{
+                        # Role = $Role
+                        Type = Switch ($Type) {
+                            'vmware' {$BackupProxy.ChassisType}
+                            'hyperv' {$BackupProxy.Info.Type}
+                        }
+                        IP = Get-NodeIP -HostName $BackupProxy.Host.Name
+                        Status = Switch ($BackupProxy.isDisabled) {
+                            $false {'Enabled'}
+                            $true {'Disabled'}
                         }
                     }
-                    catch {
-                        $_
+                    $VIManagerRows = @{
+                        Version = $VirtObjs.Info.ViVersion
                     }
 
                     $TempBackupProxyInfo = [PSCustomObject]@{
-                        Name = "$($BackupProxy.Host.Name.toUpper().split(".")[0]) (BP)";
-                        Role = "Backup Proxy";
-                        IP = $BackupProxyIP;
-                        Align = "Center";
-                        Type = "VBR_Proxy_Server"
+                        Name = "$($BackupProxy.Host.Name.toUpper().split(".")[0]) "
+                        Label = Get-NodeIcon -Name "$($BackupProxy.Host.Name.toUpper().split(".")[0])" -Type "VBR_Proxy_Server" -Align "Center" -Rows $BPRows
                     }
+
                     $BackupProxyInfo += $TempBackupProxyInfo
                 }
             }

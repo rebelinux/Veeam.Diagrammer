@@ -5,7 +5,7 @@ function Get-VbrBackupObjectRepoInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.0.2
+        Version:        0.1.0
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -13,6 +13,7 @@ function Get-VbrBackupObjectRepoInfo {
         https://github.com/rebelinux/Veeam.Diagrammer
     #>
     [CmdletBinding()]
+    [OutputType([System.Object[]])]
 
     Param
     (
@@ -44,8 +45,8 @@ function Get-VbrBackupObjectRepoInfo {
                     }
 
                     $TempObjStorageInfo = [PSCustomObject]@{
-                        Name = $ObjStorage.Name
-                        Label = Get-ImageNode -Name $ObjStorage.Name -Type "VBR_SOBR" -Align "Center" -Rows $Rows
+                        Name = "$($ObjStorage.Name) "
+                        Label = Get-NodeIcon -Name $($ObjStorage.Name) -Type "VBR_Cloud_Repository" -Align "Center" -Rows $Rows
                     }
                     $ObjStorageInfo += $TempObjStorageInfo
                 }
