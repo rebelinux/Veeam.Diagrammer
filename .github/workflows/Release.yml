@@ -13,6 +13,10 @@ jobs:
         shell: pwsh
         run: |
           Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+      - name: Install PSGraph module
+        shell: pwsh
+        run: |
+          Install-Module -Name PSGraph -Repository PSGallery -Force
       - name: Test Module Manifest
         shell: pwsh
         run: |
