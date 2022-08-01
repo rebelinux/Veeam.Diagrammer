@@ -26,12 +26,12 @@ function Get-DiagBackupToSobr {
             if ($SobrRepo) {
                 $Rank = @()
                 if ($SobrRepo) {
-                    SubGraph SOBR -Attributes @{Label=''; fontsize=18; penwidth=1.5; labelloc='t'; style = "dashed"} {
+                    SubGraph SOBR -Attributes @{Label=''; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'; color=$SubGraphDebug.color} {
                         # Dummy Node used for subgraph centering
-                        node SOBREPO @{Label='SOBR Repository'; fontsize=18; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
+                        node SOBREPO @{Label='SOBR Repository'; fontsize=22; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
                         foreach ($SOBROBJ in $SobrRepo) {
                             $SubGraphName = Remove-SpecialChars -String $SOBROBJ.Name -SpecialChars '\- '
-                            SubGraph $SubGraphName  -Attributes @{Label=$SOBROBJ.Name; fontsize=18; penwidth=1.5; labelloc='t'} {
+                            SubGraph $SubGraphName  -Attributes @{Label=$SOBROBJ.Name; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
                                 $SOBRHASHTABLE = @{}
                                 $SOBROBJ.psobject.properties | ForEach-Object { $SOBRHASHTABLE[$_.Name] = $_.Value }
                                 node $SOBROBJ -NodeScript {$_.Name} @{Label=$SOBRHASHTABLE.Label}
@@ -59,7 +59,7 @@ function Get-DiagBackupToSobr {
 
                                 } else {$SOBROBJ.Performance | ForEach-Object {edge -from $SOBROBJ.Name -to $SOBROBJ.Capacity.Name,$_.Name @{minlen=2}} | Select-Object -Unique}
                             }
-                            edge -From SOBREPO -To $SOBROBJ.Name @{minlen=1; style='invis'}
+                            edge -From SOBREPO -To $SOBROBJ.Name @{minlen=2; style=$EdgeDebug.style; color=$EdgeDebug.color}
                         }
                     }
                     edge -from $BackupServerInfo.Name -to SOBREPO @{minlen=2}
