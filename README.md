@@ -104,6 +104,56 @@ If you are unable to use the PowerShell Gallery, you can still install the modul
 
 _Note: You are not limited to installing the module to those example paths, you can add a new entry to the environment variable PSModulePath if you want to use another path._
 
+
+## :pencil2: Commands
+
+### **New-VeeamDiagram**
+
+The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication diagram. The type of as built report to generate is specified by using the `Report` parameter. The report parameter relies on additional report modules being installed alongside the `AsBuiltReport.Core` module. The `Target` parameter specifies one or more systems on which to connect and run the report. User credentials to the system are specifed using the `Credential`, or the `Username` and `Password` parameters. One or more document formats, such as `HTML`, `Word` or `Text` can be specified using the `Format` parameter. Additional parameters are outlined below.
+
+```powershell
+.PARAMETER DiagramType
+    Specifies the type of veeam vbr diagram that will be generated.
+.PARAMETER Target
+    Specifies the IP/FQDN of the system to connect.
+    Multiple targets may be specified, separated by a comma.
+.PARAMETER Port
+    Specifies a optional port to connect to Veeam VBR Service.
+    By default, port will be set to 9392
+.PARAMETER Credential
+    Specifies the stored credential of the target system.
+.PARAMETER Username
+    Specifies the username for the target system.
+.PARAMETER Password
+    Specifies the password for the target system.
+.PARAMETER Format
+    Specifies the output format of the diagram.
+    The supported output formats are PDF, PNG, DOT & SVG.
+    Multiple output formats may be specified, separated by a comma.
+.PARAMETER Direction
+    Set the direction in which resource are plotted on the visualization
+    By default, direction will be set to top-to-bottom.
+.PARAMETER NodeSeparation
+    Controls Node separation ratio in visualization
+    By default, NodeSeparation will be set to .60.
+.PARAMETER SectionSeparation
+    Controls Section (Subgraph) separation ratio in visualization
+    By default, NodeSeparation will be set to .75.
+.PARAMETER EdgeType
+    Controls how edges lines appear in visualization
+    By default, EdgeType will be set to spline.
+.PARAMETER OutputFolderPath
+    Specifies the folder path to save the diagram.
+.PARAMETER Filename
+    Specifies a filename for the diagram.
+```
+
+For a full list of common parameters and examples you can view the `New-AsBuiltReport` cmdlet help with the following command;
+
+```powershell
+Get-Help New-VeeamDiagram -Full
+```
+
 ## :computer: Examples
 
 There are a few examples listed below on running the AsBuiltReport script against a Veeam Backup Server. Refer to the `README.md` file in the main AsBuiltReport project repository for more examples.
