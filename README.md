@@ -41,10 +41,6 @@ Veeam Diagrammer is a PowerShell module to automatically generate Veeam Backup &
 
 ![Backup Repository Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/Backup_Repository.png "Backup Repository Diagram")
 
-### Wan Accelerators Diagram
-
-![Wan Accelerators Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/Backup_WanAccel.png "Wan Accelerators Diagram")
-
 ### Backup Proxy Diagram
 
 ![Backup Proxy Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/VBR_Backup_Proxy_with_Debug.png "Backup Proxy Diagram")
