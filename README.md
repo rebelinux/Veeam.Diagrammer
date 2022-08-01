@@ -31,21 +31,21 @@
 Veeam VBR As Built Report is a PowerShell module to automatically generate Veeam Backup & Replication topology diagrams by just typing a PowerShell cmdlet and passing the name of the Backup Server.
 
 
-# :books: Sample Diagram
+## :books: Sample Diagram
 
-## Scale-Out Backup Repository Diagram
+### Scale-Out Backup Repository Diagram
 
 ![Scale-Out Backup Repository Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/Backup_SOBR.png "Scale-Out Backup Repository Diagram")
 
-## Backup Repository Diagram
+### Backup Repository Diagram
 
 ![Backup Repository Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/Backup_Repository.png "Backup Repository Diagram")
 
-## Wan Accelerators Diagram
+### Wan Accelerators Diagram
 
 ![Wan Accelerators Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/Backup_WanAccel.png "Wan Accelerators Diagram")
 
-## Backup Proxy Diagram
+### Backup Proxy Diagram
 
 ![Backup Proxy Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/VBR_Backup_Proxy_with_Debug.png "Backup Proxy Diagram")
 
