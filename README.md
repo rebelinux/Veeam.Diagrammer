@@ -109,7 +109,7 @@ _Note: You are not limited to installing the module to those example paths, you 
 
 ### **New-VeeamDiagram**
 
-The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication diagram. The type of as built report to generate is specified by using the `Report` parameter. The report parameter relies on additional report modules being installed alongside the `AsBuiltReport.Core` module. The `Target` parameter specifies one or more systems on which to connect and run the report. User credentials to the system are specifed using the `Credential`, or the `Username` and `Password` parameters. One or more document formats, such as `HTML`, `Word` or `Text` can be specified using the `Format` parameter. Additional parameters are outlined below.
+The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication diagram. The type of as built report to generate is specified by using the `DiagramType` parameter. The DiagramType parameter relies on additional diagram modules being created alongside the defaults module. The `Target` parameter specifies one or more Veeam VBR servers on which to connect and run the diagram. User credentials to the system are specifed using the `Credential`, or the `Username` and `Password` parameters. One or more document formats, such as `PNG`, `PDF`, `SVG` or `DOT` can be specified using the `Format` parameter. Additional parameters are outlined below.
 
 ```powershell
 .PARAMETER DiagramType
@@ -148,7 +148,7 @@ The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication d
     Specifies a filename for the diagram.
 ```
 
-For a full list of common parameters and examples you can view the `New-AsBuiltReport` cmdlet help with the following command;
+For a full list of common parameters and examples you can view the `New-VeeamDiagram` cmdlet help with the following command;
 
 ```powershell
 Get-Help New-VeeamDiagram -Full
@@ -156,21 +156,15 @@ Get-Help New-VeeamDiagram -Full
 
 ## :computer: Examples
 
-There are a few examples listed below on running the AsBuiltReport script against a Veeam Backup Server. Refer to the `README.md` file in the main AsBuiltReport project repository for more examples.
+There are a few examples listed below on running the Veeam.Diagrammer script against a Veeam Backup Server. Refer to the `README.md` file in the main Veeam.Diagrammer project repository for more examples.
 
 ```powershell
-# Generate a Veeam VBR As Built Report for Backup Server 'veeam-vbr.pharmax.local' using specified credentials. Export report to HTML & DOCX formats. Use default report style. Append timestamp to report filename. Save reports to 'C:\Users\Jon\Documents'
-PS C:\> New-AsBuiltReport -Report Veeam.VBR -Target veeam-vbr.pharmax.local -Username 'Domain\veeam_admin' -Password 'P@ssw0rd' -Format Html,Word -OutputFolderPath 'C:\Users\Jon\Documents' -Timestamp
+# Generate a Veeam.Diagrammer diagram for Backup Server 'veeam-vbr.pharmax.local' using specified credentials. Export report to PDF & PNG formats. Use default report style. Save reports to 'C:\Users\Jon\Documents'
+PS C:\> New-VeeamDiagram -DiagramType Backup-to-Proxy -Target veeam-vbr.pharmax.local -Username 'Domain\veeam_admin' -Password 'P@ssw0rd' -Format pdf,png -OutputFolderPath 'C:\Users\Jon\Documents'
 
-# Generate a Veeam VBR As Built Report for Backup Server veeam-vbr.pharmax.local using specified credentials and report configuration file. Export report to Text, HTML & DOCX formats. Use default report style. Save reports to 'C:\Users\Jon\Documents'. Display verbose messages to the console.
-PS C:\> New-AsBuiltReport -Report Veeam.VBR -Target veeam-vbr.pharmax.local -Username 'Domain\veeam_admin' -Password 'P@ssw0rd' -Format Text,Html,Word -OutputFolderPath 'C:\Users\Jon\Documents' -ReportConfigFilePath 'C:\Users\Jon\AsBuiltReport\AsBuiltReport.Veeam.VBR.json' -Verbose
-
-# Generate a Veeam VBR As Built Report for Backup Server veeam-vbr.pharmax.local using stored credentials. Export report to HTML & Text formats. Use default report style. Highlight environment issues within the report. Save reports to 'C:\Users\Jon\Documents'.
+# Generate a Veeam.Diagrammer diagram for Backup Server veeam-vbr.pharmax.local using stored credentials. Export report to DOT & SVG formats. Save reports to 'C:\Users\Jon\Documents'.
 PS C:\> $Creds = Get-Credential
-PS C:\> New-AsBuiltReport -Report Veeam.VBR -Target veeam-vbr.pharmax.local -Credential $Creds -Format Html,Text -OutputFolderPath 'C:\Users\Jon\Documents' -EnableHealthCheck
-
-# Generate a Veeam VBR As Built Report for Backup Server veeam-vbr.pharmax.local using stored credentials. Export report to HTML & DOCX formats. Use default report style. Reports are saved to the user profile folder by default. Attach and send reports via e-mail.
-PS C:\> New-AsBuiltReport -Report Veeam.VBR -Target veeam-vbr.pharmax.local -Username 'Domain\veeam_admin' -Password 'P@ssw0rd' -Format Html,Word -OutputFolderPath 'C:\Users\Jon\Documents' -SendEmail
+PS C:\> New-VeeamDiagram -DiagramType Backup-to-Proxy -Target veeam-vbr.pharmax.local -Credential $Creds -Format DOT,SVG -OutputFolderPath 'C:\Users\Jon\Documents'
 
 ```
 
