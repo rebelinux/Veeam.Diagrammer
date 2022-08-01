@@ -28,7 +28,7 @@
 
 # Veeam VBR Diagrammer
 
-Veeam VBR As Built Report is a PowerShell module to automatically generate Veeam Backup & Replication topology diagrams by just typing a PowerShell cmdlet and passing the name of the Backup Server.
+Veeam VBR Diagrammer is a PowerShell module to automatically generate Veeam Backup & Replication topology diagrams by just typing a PowerShell cmdlet and passing the name of the Backup Server.
 
 
 ## :books: Sample Diagram
@@ -84,7 +84,7 @@ Only users with Veeam Backup Administrator role assigned can generate a Diagram
 ### PowerShell
 
 ```powershell
-install-module Veeam.Diagrammer
+install-module -Name Veeam.Diagrammer
 ```
 
 ### GitHub
