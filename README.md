@@ -28,7 +28,7 @@
 
 # Veeam VBR Diagrammer
 
-Veeam VBR Diagrammer is a PowerShell module to automatically generate Veeam Backup & Replication topology diagrams by just typing a PowerShell cmdlet and passing the name of the Backup Server.
+Veeam Diagrammer is a PowerShell module to automatically generate Veeam Backup & Replication topology diagrams by just typing a PowerShell cmdlet and passing the name of the Backup Server.
 
 
 ## :books: Sample Diagram
@@ -52,7 +52,7 @@ Veeam VBR Diagrammer is a PowerShell module to automatically generate Veeam Back
 
 # :beginner: Getting Started
 
-Below are the instructions on how to install, configure and generate a Veeam VBR As Built report.
+Below are the instructions on how to install, configure and generate a Veeam.Diagrammer diagram.
 
 ## :floppy_disk: Supported Versions
 <!-- ********** Update supported Veeam versions ********** -->
@@ -71,7 +71,7 @@ This project is compatible with the following PowerShell versions;
 
 ## :wrench: System Requirements
 
-PowerShell 5.1, and the following PowerShell modules are required for generating a Veeam VBR As Built report.
+PowerShell 5.1, and the following PowerShell modules are required for generating a Veeam.Diagrammer diagram.
 
 - [Veeam.Backup.PowerShell Module](https://helpcenter.veeam.com/docs/backup/powershell/getting_started.html?ver=110)
 
@@ -109,7 +109,7 @@ _Note: You are not limited to installing the module to those example paths, you 
 
 ### **New-VeeamDiagram**
 
-The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication diagram. The type of as built report to generate is specified by using the `DiagramType` parameter. The DiagramType parameter relies on additional diagram modules being created alongside the defaults module. The `Target` parameter specifies one or more Veeam VBR servers on which to connect and run the diagram. User credentials to the system are specifed using the `Credential`, or the `Username` and `Password` parameters. One or more document formats, such as `PNG`, `PDF`, `SVG` or `DOT` can be specified using the `Format` parameter. Additional parameters are outlined below.
+The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication diagram. The type of diagram to generate is specified by using the `DiagramType` parameter. The DiagramType parameter relies on additional diagram modules being created alongside the defaults module. The `Target` parameter specifies one or more Veeam VBR servers on which to connect and run the diagram. User credentials to the system are specifed using the `Credential`, or the `Username` and `Password` parameters. One or more document formats, such as `PNG`, `PDF`, `SVG` or `DOT` can be specified using the `Format` parameter. Additional parameters are outlined below.
 
 ```powershell
 .PARAMETER DiagramType
