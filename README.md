@@ -33,9 +33,9 @@
 
 Veeam Diagrammer is a PowerShell module to automatically generate Veeam Backup & Replication topology diagrams by just typing a PowerShell cmdlet and passing the name of the Backup Server.
 
-## This project is extensively based on the [`AzViz`](https://www.powershellgallery.com/packages/AzViz/1.2.1) module.
+## This project is extensively based on the [`AzViz`](https://github.com/PrateekKumarSingh/AzViz) module.
 
-> Special thanks & shoutout to [`Kevin Marquette`](https://twitter.com/KevinMarquette) and his [`PSGraph`](https://www.powershellgallery.com/packages/PSGraph/2.1.38.27) module and to [`Prateek Singh`](https://twitter.com/singhprateik) and his [`AzViz`](https://www.powershellgallery.com/packages/AzViz/1.2.1) project without it work the Veeam.Diagrammer won't be possible!
+> Special thanks & shoutout to [`Kevin Marquette`](https://twitter.com/KevinMarquette) and his [`PSGraph`](https://github.com/KevinMarquette/PSGraph) module and to [`Prateek Singh`](https://twitter.com/singhprateik) and his [`AzViz`](https://github.com/PrateekKumarSingh/AzViz) project without it work the Veeam.Diagrammer won't be possible!
 
 
 
