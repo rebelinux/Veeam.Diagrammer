@@ -1,6 +1,6 @@
 # :arrows_clockwise: Microsoft Intune As Built Report Changelog
 
-## [0.2.0] - 2022-10.XX
+## [0.2.0] - 2022-10.15
 
 ### Added
 
@@ -9,7 +9,7 @@
 ### Fixed
 
 - Fix svg output format not displaying nodes icons properly
-- Fix svg output format not scaling diagram propertly
+- Fix svg output format not scaling diagram properly
 
 ## [0.1.0] - 2022-08-01
 
