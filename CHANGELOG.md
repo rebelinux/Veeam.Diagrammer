@@ -1,6 +1,6 @@
 # :arrows_clockwise: Microsoft Intune As Built Report Changelog
 
-## [0.2.0] - 2022-10.XX
+## [0.2.0] - 2022-10.15
 
 ### Added
 
