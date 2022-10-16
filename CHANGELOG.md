@@ -9,7 +9,7 @@
 ### Fixed
 
 - Fix svg output format not displaying nodes icons properly
-- Fix svg output format not scaling diagram propertly
+- Fix svg output format not scaling diagram properly
 
 ## [0.1.0] - 2022-08-01
 
