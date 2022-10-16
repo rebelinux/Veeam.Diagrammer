@@ -133,7 +133,7 @@ _Note: You are not limited to installing the module to those example paths, you 
 
 ### **New-VeeamDiagram**
 
-The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication diagram. The type of diagram to generate is specified by using the `DiagramType` parameter. The DiagramType parameter relies on additional diagram modules being created alongside the defaults module. The `Target` parameter specifies one or more Veeam VBR servers on which to connect and run the diagram. User credentials to the system are specifed using the `Credential`, or the `Username` and `Password` parameters. One or more document formats, such as `PNG`, `PDF`, `SVG` or `DOT` can be specified using the `Format` parameter. Additional parameters are outlined below.
+The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication diagram. The type of diagram to generate is specified by using the `DiagramType` parameter. The DiagramType parameter relies on additional diagram modules being created alongside the defaults module. The `Target` parameter specifies one or more Veeam VBR servers on which to connect and run the diagram. User credentials to the system are specifed using the `Credential`, or the `Username` and `Password` parameters. One or more document formats, such as `PNG`, `PDF`, `SVG`, `BASE64` or `DOT` can be specified using the `Format` parameter. Additional parameters are outlined below.
 
 ```powershell
 .PARAMETER DiagramType
@@ -152,7 +152,7 @@ The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication d
     Specifies the password for the target system.
 .PARAMETER Format
     Specifies the output format of the diagram.
-    The supported output formats are PDF, PNG, DOT & SVG.
+    The supported output formats are BASE64, PDF, PNG, DOT & SVG.
     Multiple output formats may be specified, separated by a comma.
 .PARAMETER Direction
     Set the direction in which resource are plotted on the visualization
