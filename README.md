@@ -170,6 +170,10 @@ The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication d
     Specifies the folder path to save the diagram.
 .PARAMETER Filename
     Specifies a filename for the diagram.
+.PARAMETER EnableEdgeDebug
+    Control to enable edge debugging ( Dummy Edge and Node lines).
+.PARAMETER EnableSubGraphDebug
+    Control to enable subgraph debugging ( Subgraph Lines ).
 ```
 
 For a full list of common parameters and examples you can view the `New-VeeamDiagram` cmdlet help with the following command;
