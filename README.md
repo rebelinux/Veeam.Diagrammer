@@ -19,7 +19,7 @@
         <img src="https://img.shields.io/github/contributors/rebelinux/Veeam.Diagrammer.svg"/></a>
 </p>
 <p align="center">
-    <a href="https://twitter.com/jcolonfzenr" alt="Twitter">
+    <a href="https://twitter.com/jcolonfzenpr" alt="Twitter">
             <img src="https://img.shields.io/twitter/follow/jcolonfzenpr.svg?style=social"/></a>
 </p>
 <p align="center">
@@ -81,7 +81,7 @@ This project is compatible with the following PowerShell versions;
 PowerShell 5.1, and the following PowerShell modules are required for generating a Veeam.Diagrammer diagram.
 
 - [Veeam.Backup.PowerShell Module](https://helpcenter.veeam.com/docs/backup/powershell/getting_started.html?ver=110)
-- [PSGraph Module](https://helpcenter.veeam.com/docs/backup/powershell/getting_started.html?ver=110)
+- [PSGraph Module](https://github.com/KevinMarquette/PSGraph)
 
 ## What is GraphViz?
 
