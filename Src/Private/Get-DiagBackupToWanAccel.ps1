@@ -5,7 +5,7 @@ function Get-DiagBackupToWanAccel {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.1.0
+        Version:        0.3.0
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -31,6 +31,8 @@ function Get-DiagBackupToWanAccel {
                         fontsize = 18
                         penwidth = 1.5
                         labelloc = 'b'
+                        color=$SubGraphDebug.color
+                        style='dashed'
                     }
                     SubGraph WANACCEL -Attributes $WANAccelAttr -ScriptBlock {
                         # Dummy Node used for subgraph centering
@@ -39,7 +41,7 @@ function Get-DiagBackupToWanAccel {
                             $WANHASHTABLE = @{}
                             $WANOBJ.psobject.properties | ForEach-Object { $WANHASHTABLE[$_.Name] = $_.Value }
                             node $WANOBJ -NodeScript {$_.Name} @{Label=$WANHASHTABLE.Label}
-                            edge -From WANACCELSERVER -To $WANOBJ.Name @{minlen=1; style='invis'}
+                            edge -From WANACCELSERVER -To $WANOBJ.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                         }
                         Rank $WanAccel.Name
                     }

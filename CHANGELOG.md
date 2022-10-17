@@ -1,4 +1,11 @@
-# :arrows_clockwise: Veeam.Diagrammer Changelog
+# :arrows_clockwise: Microsoft Intune As Built Report Changelog
+
+## [0.3.0] - 2022-10.17
+
+### Added
+
+- Added node support for Enterprise Manager server
+- Added debug mode to WAN Accelerator diagram
 
 ## [0.2.0] - 2022-10.15
 

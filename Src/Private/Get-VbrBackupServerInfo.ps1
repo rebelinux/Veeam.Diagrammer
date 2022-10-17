@@ -5,7 +5,7 @@ function Get-VbrBackupServerInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.1.0
+        Version:        0.3.0
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -76,6 +76,33 @@ function Get-VbrBackupServerInfo {
                         Name = $DatabaseServer.split(".")[0]
                         Label = Get-NodeIcon -Name "$($DatabaseServer.split(".")[0])" -Type "VBR_Server_DB" -Align "Center" -Rows $Rows
                         DBPort = "1433/TCP"
+                    }
+                }
+            }
+            catch {
+                $_
+            }
+
+            try {
+                $EMServer = [Veeam.Backup.Core.SBackupOptions]::GetEnterpriseServerInfo()
+                if ($EMServer) {
+                    $EMServerIP = Switch ((Resolve-DnsName $EMServer.ServerName).IPAddress) {
+                        $Null {'Unknown'}
+                        default {(Resolve-DnsName $EMServer.ServerName).IPAddress}
+                    }
+
+                    $Rows = @{
+                        Role = 'Enterprise Manager Server'
+                        IP = $EMServerIP
+                    }
+
+                    # if ($EMServer.URL) {
+                    #     $Rows.add('Server URL', $EMServer.URL)
+                    # }
+
+                    $script:EMServerInfo = [PSCustomObject]@{
+                        Name = $EMServer.ServerName.split(".")[0]
+                        Label = Get-NodeIcon -Name "$($EMServer.ServerName.split(".")[0])" -Type "VBR_Server_EM" -Align "Center" -Rows $Rows
                     }
                 }
             }
