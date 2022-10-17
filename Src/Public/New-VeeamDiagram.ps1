@@ -39,7 +39,7 @@ function New-VeeamDiagram {
 .PARAMETER Filename
     Specifies a filename for the diagram.
 .NOTES
-    Version:        0.1.0
+    Version:        0.3.0
     Author(s):      Jonathan Colon
     Twitter:        @jcolonfzenpr
     Github:         rebelinux
@@ -52,9 +52,7 @@ function New-VeeamDiagram {
 #>
 
 [Diagnostics.CodeAnalysis.SuppressMessage(
-    'PSUseShouldProcessForStateChangingFunctions',
-    ''
-)]
+    'PSUseShouldProcessForStateChangingFunctions')]
 
 [CmdletBinding(
     PositionalBinding = $false,
@@ -276,19 +274,68 @@ process {
             SubGraph MainGraph -Attributes @{Label=(Get-HTMLLabel -Label $MainGraphLabel -Type "VBR_LOGO" ); fontsize=24; penwidth=0} {
 
                 SubGraph BackupServer -Attributes @{Label='Backup Server'; style="rounded"; bgcolor="#ceedc4"; fontsize=18; penwidth=2} {
-                    $BSHASHTABLE = @{}
-                    $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-                    node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'}
-                    if ($DatabaseServerInfo) {
+                    if ($DatabaseServerInfo -and $EMServerInfo) {
+                        $BSHASHTABLE = @{}
                         $DBHASHTABLE = @{}
+                        $EMHASHTABLE = @{}
+
+                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
                         $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
-                        node  $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label; fillColor='#ceedc4'}
-                        rank $BackupServerInfo.Name,$DatabaseServerInfo.Name
+                        $EMServerInfo.psobject.properties | ForEach-Object { $EMHASHTABLE[$_.Name] = $_.Value }
+
+                        node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'}
+                        node $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label; fillColor='#ceedc4'}
+                        node $EMServerInfo.Name -Attributes @{Label=$EMHASHTABLE.Label; fillColor='#ceedc4'}
+
                         if ($Dir -eq 'LR') {
-                            edge -from $DatabaseServerInfo.Name -to $BackupServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; xlabel=$DatabaseServerInfo.DBPort}
+                            rank $EMServerInfo.Name,$BackupServerInfo.Name
+                            edge -from $BackupServerInfo.Name -to $EMServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3;}
+                            edge -from $BackupServerInfo.Name -to $DatabaseServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; xlabel=$DatabaseServerInfo.DBPort}
                         } else {
+                            rank $EMServerInfo.Name,$BackupServerInfo.Name,$DatabaseServerInfo.Name
+                            edge -from $EMServerInfo.Name -to $BackupServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3;}
                             edge -from $BackupServerInfo.Name -to $DatabaseServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; xlabel=$DatabaseServerInfo.DBPort}
                         }
+                    }
+                    elseif ($DatabaseServerInfo -and (-Not $EMServerInfo)) {
+                        $BSHASHTABLE = @{}
+                        $DBHASHTABLE = @{}
+
+                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
+                        $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
+
+                        node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'}
+                        node $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label; fillColor='#ceedc4'}
+
+                        if ($Dir -eq 'LR') {
+                            rank $BackupServerInfo.Name,$DatabaseServerInfo.Name
+                            edge -from $BackupServerInfo.Name -to $DatabaseServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; xlabel=$DatabaseServerInfo.DBPort}
+                        } else {
+                            rank $BackupServerInfo.Name,$DatabaseServerInfo.Name
+                            edge -from $BackupServerInfo.Name -to $DatabaseServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; xlabel=$DatabaseServerInfo.DBPort}
+                        }
+                    }
+                    elseif ($EMServerInfo -and (-Not $DatabaseServerInfo)) {
+                        $BSHASHTABLE = @{}
+                        $EMHASHTABLE = @{}
+
+                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
+                        $EMServerInfo.psobject.properties | ForEach-Object { $EMHASHTABLE[$_.Name] = $_.Value }
+
+                        node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'}
+                        node $EMServerInfo.Name -Attributes @{Label=$EMHASHTABLE.Label; fillColor='#ceedc4'}
+
+                        if ($Dir -eq 'LR') {
+                            rank $EMServerInfo.Name,$BackupServerInfo.Name
+                            edge -from $BackupServerInfo.Name -to $EMServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3;}
+                        } else {
+                            rank $EMServerInfo.Name,$BackupServerInfo.Name
+                            edge -from $EMServerInfo.Name -to $BackupServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3;}
+                        }
+                    } else {
+                        $BSHASHTABLE = @{}
+                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
+                        node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'}
                     }
                 }
 
