@@ -52,7 +52,9 @@ function New-VeeamDiagram {
 #>
 
 [Diagnostics.CodeAnalysis.SuppressMessage(
-    'PSUseShouldProcessForStateChangingFunctions')]
+    'PSUseShouldProcessForStateChangingFunctions',
+    ''
+)]
 
 [CmdletBinding(
     PositionalBinding = $false,

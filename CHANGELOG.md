@@ -5,6 +5,7 @@
 ### Added
 
 - Added node support for Enterprise Manager server
+- Added debug mode to WAN Accelerator diagram
 
 ## [0.2.0] - 2022-10.15
 
