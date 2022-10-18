@@ -1,4 +1,4 @@
-# :arrows_clockwise: Microsoft Intune As Built Report Changelog
+# :arrows_clockwise: Veeam.Diagrammer Changelog
 
 ## [0.3.0] - 2022-10.17
 
