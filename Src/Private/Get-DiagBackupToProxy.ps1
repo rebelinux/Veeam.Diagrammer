@@ -23,8 +23,9 @@ function Get-DiagBackupToProxy {
             $VMwareBackupProxy = Get-VbrBackupProxyInfo -Type 'vmware'
             $HyperVBackupProxy = Get-VbrBackupProxyInfo -Type 'hyperv'
             if ($BackupServerInfo) {
+                node DummyBackupProxy @{Label='Backup Proxies';fontsize=22; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
                 if ($VMwareBackupProxy -or $HyperVBackupProxy) {
-                    SubGraph Proxies -Attributes @{Label='Backup Proxies'; style='dashed'; color=$SubGraphDebug.color; fontsize=22; penwidth=1} {
+                    SubGraph Proxies -Attributes @{Label=' '; style='dashed'; color=$SubGraphDebug.color; fontsize=22; penwidth=1} {
                         if ($VMwareBackupProxy) {
                             SubGraph VMware -Attributes @{Label=' '; style='dashed'; color=$SubGraphDebug.color; fontsize=18; penwidth=1.5} {
                                 $VirtObjs = Get-VBRServer | Where-Object {$_.Type -eq 'VC'}
@@ -46,7 +47,7 @@ function Get-DiagBackupToProxy {
                                 }
 
                                 if ($VirtObjs -or $EsxiObjs) {
-                                    SubGraph vSphereMAIN -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
+                                    SubGraph vSphereMAIN -Attributes @{Label=' '; fontsize=18; penwidth=1} {
                                         node vSphereVirtualInfrastructure @{Label='vSphere Virtual Infrastructure'; fontsize=22; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
                                         # Edge Lines from Dummy Node VMWAREBackupProxyMain to Dummy Node vSphere Virtual Infrastructure
                                         edge -From VMWAREBackupProxyMain -To vSphereVirtualInfrastructure @{minlen=2; style="dashed"; fontsize=18; penwidth=1}
@@ -165,7 +166,7 @@ function Get-DiagBackupToProxy {
                                 # Dummy Edge used for subgraph centering (Always hidden)
                                 # edge -from BackupProxy -to HyperVProxyMain @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                 if ($VirtObjs -or $HyperVObjs) {
-                                    SubGraph HyperVMAIN -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
+                                    SubGraph HyperVMAIN -Attributes @{Label=' '; fontsize=18; penwidth=1} {
                                         node HyperVVirtualInfrastructure @{Label='HyperV Virtual Infrastructure'; fontsize=22; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
                                         if ($HyperVObjs) {
                                             SubGraph HyperVHostMAIN -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
@@ -215,9 +216,12 @@ function Get-DiagBackupToProxy {
                                 }
                             }
                         }
-                        edge -from $BackupServerInfo.Name -to Proxies @{minlen=3}
                     }
+
                 }
+                edge -from $BackupServerInfo.Name -to DummyBackupProxy @{minlen=3}
+                edge -from DummyBackupProxy -to VMware,HyperV @{minlen=2; style=$EdgeDebug.style; color=$EdgeDebug.color}
+
             }
         }
         catch {
