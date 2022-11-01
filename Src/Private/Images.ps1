@@ -16,4 +16,7 @@ $Images = @{
     'VBR_ESXi_Server' = 'ESXi_host.png'
     'VBR_HyperV_Server' = 'Hyper-V_host.png'
     'VBR_Server_EM' = 'Veeam_Backup_Enterprise_Manager.png'
+    'VBR_Tape_Server' = 'Tape_Server.png'
+    'VBR_Tape_Library' = 'Tape_Library.png'
+    'VBR_Tape_Drive' = 'Tape_Drive.png'
 }

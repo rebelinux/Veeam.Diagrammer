@@ -5,7 +5,7 @@ function Get-DiagBackupToProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.1.0
+        Version:        0.4.0
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -23,8 +23,9 @@ function Get-DiagBackupToProxy {
             $VMwareBackupProxy = Get-VbrBackupProxyInfo -Type 'vmware'
             $HyperVBackupProxy = Get-VbrBackupProxyInfo -Type 'hyperv'
             if ($BackupServerInfo) {
+                node DummyBackupProxy @{Label='Backup Proxies';fontsize=22; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
                 if ($VMwareBackupProxy -or $HyperVBackupProxy) {
-                    SubGraph Proxies -Attributes @{Label='Backup Proxies'; style='dashed'; color=$SubGraphDebug.color; fontsize=22; penwidth=1} {
+                    SubGraph Proxies -Attributes @{Label=' '; style='dashed'; color=$SubGraphDebug.color; fontsize=22; penwidth=1} {
                         if ($VMwareBackupProxy) {
                             SubGraph VMware -Attributes @{Label=' '; style='dashed'; color=$SubGraphDebug.color; fontsize=18; penwidth=1.5} {
                                 $VirtObjs = Get-VBRServer | Where-Object {$_.Type -eq 'VC'}
@@ -35,21 +36,21 @@ function Get-DiagBackupToProxy {
                                         $PROXYHASHTABLE = @{}
                                         $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
                                         node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
-                                        edge -From VMwareProxyMain -To $ProxyObj.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                        edge -From VMwareProxyMain -To $ProxyObj.Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                     }
                                     if ($VirtObjs -or $EsxiObjs) {
                                         # Dummy Node used for subgraph centering (Always hidden)
                                         node VMWAREBackupProxyMain @{Label='VMWAREBackupProxyMain';shape='plain'; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                         # Edge Lines from VMware Backup Proxies to Dummy Node VMWAREBackupProxyMain
-                                        edge -from ($VMwareBackupProxy | Sort-Object).Name -to VMWAREBackupProxyMain @{style=$EdgeDebug.style; color=$EdgeDebug.color; minlen=1}
+                                        edge -from ($VMwareBackupProxy | Sort-Object).Name -to VMWAREBackupProxyMain @{style=$EdgeDebug.style; color=$EdgeDebug.color;}
                                     }
                                 }
 
                                 if ($VirtObjs -or $EsxiObjs) {
-                                    SubGraph vSphereMAIN -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
+                                    SubGraph vSphereMAIN -Attributes @{Label=' '; fontsize=18; penwidth=1} {
                                         node vSphereVirtualInfrastructure @{Label='vSphere Virtual Infrastructure'; fontsize=22; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
                                         # Edge Lines from Dummy Node VMWAREBackupProxyMain to Dummy Node vSphere Virtual Infrastructure
-                                        edge -From VMWAREBackupProxyMain -To vSphereVirtualInfrastructure @{minlen=2; style="dashed"; fontsize=18; penwidth=1}
+                                        edge -From VMWAREBackupProxyMain -To vSphereVirtualInfrastructure @{style="dashed"; fontsize=18; penwidth=1}
                                         if ($EsxiObjs) {
                                             if ($EsxiObjs.count -le 4) {
                                                 SubGraph ESXiMAIN -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
@@ -61,10 +62,10 @@ function Get-DiagBackupToProxy {
                                                             IP = $ESxiHost.getManagmentAddresses().IPAddressToString
                                                         }
                                                         node $ESxiHost.Name @{Label=(Get-NodeIcon -Name $ESxiHost.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows $ESXiInfo)}
-                                                        edge -From ESXiBackupProxy -To $ESxiHost.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                                        edge -From ESXiBackupProxy -To $ESxiHost.Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                                     }
                                                 }
-                                                edge -from vSphereVirtualInfrastructure -to ESXiBackupProxy @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                                edge -from vSphereVirtualInfrastructure -to ESXiBackupProxy @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                             }
                                             else {
                                                 SubGraph ESXiMAIN -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
@@ -78,16 +79,16 @@ function Get-DiagBackupToProxy {
                                                         }
                                                         $Number++
                                                     }
-                                                    edge -From ESXiBackupProxy -To $Group[0].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                                    edge -From ESXiBackupProxy -To $Group[0].Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                                     $Start = 0
                                                     $ESXiNum = 1
                                                     while ($ESXiNum -ne $Group.Length) {
-                                                        edge -From $Group[$Start].Name -To $Group[$ESXiNum].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                                        edge -From $Group[$Start].Name -To $Group[$ESXiNum].Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                                         $Start++
                                                         $ESXiNum++
                                                     }
                                                 }
-                                                edge -from vSphereVirtualInfrastructure -to ESXiBackupProxy @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                                edge -from vSphereVirtualInfrastructure -to ESXiBackupProxy @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                             }
                                         }
                                         if ($VirtObjs) {
@@ -111,7 +112,7 @@ function Get-DiagBackupToProxy {
                                                                     IP = $ESxi.getManagmentAddresses().IPAddressToString
                                                                 }
                                                                 node $ESXi.Name @{Label=(Get-NodeIcon -Name $ESXi.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows $ESXiInfo)}
-                                                                edge -From $VirtManager.Name -To $ESXi.Name @{minlen=2; style='dashed'}
+                                                                edge -From $VirtManager.Name -To $ESXi.Name @{style='dashed'}
                                                             }
                                                         }
                                                         else {
@@ -124,11 +125,11 @@ function Get-DiagBackupToProxy {
                                                                 }
                                                                 $Number++
                                                             }
-                                                            edge -From $VirtManager.Name -To $Group[0].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                                            edge -From $VirtManager.Name -To $Group[0].Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                                             $Start = 0
                                                             $ESXiNum = 1
                                                             while ($ESXiNum -ne $Group.Length) {
-                                                                edge -From $Group[$Start].Name -To $Group[$ESXiNum].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                                                edge -From $Group[$Start].Name -To $Group[$ESXiNum].Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                                                 $Start++
                                                                 $ESXiNum++
                                                             }
@@ -137,9 +138,9 @@ function Get-DiagBackupToProxy {
                                                 }
                                             }
                                             # Edge Lines from Dummy Node vCenter Servers to Dummy Node vSphere Virtual Infrastructure
-                                            edge -from vCenterServers -to $VirtObjs.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                            edge -from vCenterServers -to $VirtObjs.Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                             # Edge Lines from Dummy Node vSphere Virtual Infrastructure to Dummy Node vCenter Servers
-                                            edge -from vSphereVirtualInfrastructure -to vCenterServers @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                            edge -from vSphereVirtualInfrastructure -to vCenterServers @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                         }
                                     }
                                 }
@@ -155,17 +156,16 @@ function Get-DiagBackupToProxy {
                                         $PROXYHASHTABLE = @{}
                                         $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
                                         node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
-                                        edge -From HyperVProxyMain -To $ProxyObj.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                        edge -From HyperVProxyMain -To $ProxyObj.Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                     }
-                                    if ($VirtObjs) {
+                                    if ($VirtObjs -or $HyperVObjs) {
                                         # Dummy Node used for subgraph centering (Always hidden)
                                         node HyperVBackupProxyMain @{Label='HyperVBackupProxyMain';shape='plain'; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                     }
                                 }
-                                # Dummy Edge used for subgraph centering (Always hidden)
-                                # edge -from BackupProxy -to HyperVProxyMain @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+
                                 if ($VirtObjs -or $HyperVObjs) {
-                                    SubGraph HyperVMAIN -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
+                                    SubGraph HyperVMAIN -Attributes @{Label=' '; fontsize=18; penwidth=1} {
                                         node HyperVVirtualInfrastructure @{Label='HyperV Virtual Infrastructure'; fontsize=22; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
                                         if ($HyperVObjs) {
                                             SubGraph HyperVHostMAIN -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
@@ -176,10 +176,10 @@ function Get-DiagBackupToProxy {
                                                         IP = Get-NodeIP -Hostname $HyperVHost.Name
                                                     }
                                                     node $HyperVHost.Name @{Label=(Get-NodeIcon -Name $HyperVHost.Name -Type 'VBR_HyperV_Server' -Align "Center" -Rows $HyperVInfo)}
-                                                    edge -From HyperVHostBackupProxy -To $HyperVHost.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                                    edge -From HyperVHostBackupProxy -To $HyperVHost.Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                                 }
                                             }
-                                            edge -from HyperVVirtualInfrastructure -to HyperVHostBackupProxy @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                            edge -from HyperVVirtualInfrastructure -to HyperVHostBackupProxy @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                         }
                                         if ($VirtObjs) {
                                             SubGraph HyperVClusterMAIN -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
@@ -197,27 +197,35 @@ function Get-DiagBackupToProxy {
                                                                 IP = Get-NodeIP -Hostname $HyperV.Name
                                                             }
                                                             node $HyperV.Name @{Label=(Get-NodeIcon -Name $HyperV.Name -Type 'VBR_HyperV_Server' -Align "Center" -Rows $HyperVInfo)}
-                                                            edge -From $VirtManager.Name -To $HyperV.Name @{minlen=2; style='dashed'}
+                                                            edge -From $VirtManager.Name -To $HyperV.Name @{style='dashed'}
                                                         }
                                                     }
                                                 }
                                             }
                                             # Edge Lines from HyperV Backup Proxies to Dummy Node HyperVBackupProxyMain
-                                            edge -from ($HyperVBackupProxy | Sort-Object).Name -to HyperVBackupProxyMain @{style=$EdgeDebug.style; color=$EdgeDebug.color; minlen=1}
+                                            edge -from ($HyperVBackupProxy | Sort-Object).Name -to HyperVBackupProxyMain @{style=$EdgeDebug.style; color=$EdgeDebug.color;}
                                             # Edge Lines from Dummy Node HyperVBackupProxyMain to Dummy Node HyperV Virtual Infrastructure
-                                            edge -From HyperVBackupProxyMain -To HyperVVirtualInfrastructure @{minlen=2; style="dashed"; fontsize=18; penwidth=1}
+                                            edge -From HyperVBackupProxyMain -To HyperVVirtualInfrastructure @{style="dashed"; fontsize=18; penwidth=1}
                                             # Edge Lines from Dummy Node HyperV Cluster Servers to Dummy Node HyperV Virtual Infrastructure
-                                            edge -from HyperVClusterServers -to $VirtObjs.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                            edge -from HyperVClusterServers -to $VirtObjs.Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                             # Edge Lines from Dummy Node HyperV Virtual Infrastructure to Dummy Node HyperV Cluster Servers
-                                            edge -from HyperVVirtualInfrastructure -to HyperVClusterServers @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                            edge -from HyperVVirtualInfrastructure -to HyperVClusterServers @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                         }
                                     }
                                 }
                             }
                         }
-                        edge -from $BackupServerInfo.Name -to Proxies @{minlen=3}
                     }
+
                 }
+                edge -from $BackupServerInfo.Name -to DummyBackupProxy @{minlen=2}
+                if ($VMwareBackupProxy) {
+                    edge -from DummyBackupProxy -to VMware @{style=$EdgeDebug.style; color=$EdgeDebug.color}
+                }
+                if ($HyperVBackupProxy) {
+                    edge -from DummyBackupProxy -to HyperV @{style=$EdgeDebug.style; color=$EdgeDebug.color}
+                }
+
             }
         }
         catch {

@@ -43,7 +43,7 @@ function New-VeeamDiagram {
 .PARAMETER EnableSubGraphDebug
     Control to enable subgraph debugging ( Subgraph Lines ).
 .NOTES
-    Version:        0.3.0
+    Version:        0.4.0
     Author(s):      Jonathan Colon
     Twitter:        @jcolonfzenpr
     Github:         rebelinux
@@ -172,7 +172,7 @@ param (
         Mandatory = $true,
         HelpMessage = 'Controls type of Veeam VBR generated diagram'
     )]
-    [ValidateSet('Backup-to-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-All')]
+    [ValidateSet('Backup-to-Tape', 'Backup-to-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-All')]
     [string] $DiagramType,
 
     [Parameter(
@@ -208,6 +208,7 @@ begin {
         'Backup-to-Proxy' {'Backup Proxy Diagram'}
         'Backup-to-Repository' {'Backup Repository Diagram'}
         'Backup-to-WanAccelerator' {'Wan Accelerators Diagram'}
+        'Backup-to-Tape' {'Tape Infrastructure Diagram'}
         'Backup-to-All' {'Backup Infrastructure Diagram'}
     }
 
@@ -274,7 +275,7 @@ process {
                 arrowtail = 'dot'
                 color = '#71797E'
                 penwidth = 1.5
-                arrowsize = 2
+                arrowsize = 1
             }
 
             SubGraph MainGraph -Attributes @{Label=(Get-HTMLLabel -Label $MainGraphLabel -Type "VBR_LOGO" ); fontsize=24; penwidth=0} {
@@ -354,6 +355,9 @@ process {
                 elseif ($DiagramType -eq 'Backup-to-Repository') {
                     Get-DiagBackupToRepo
                 }
+                elseif ($DiagramType -eq 'Backup-to-Tape') {
+                    Get-DiagBackupToTape
+                }
                 elseif ($DiagramType -eq 'Backup-to-Sobr') {
                     Get-DiagBackupToSobr
                 }
@@ -362,10 +366,13 @@ process {
                     Get-DiagBackupToWanAccel
                     Get-DiagBackupToRepo
                     Get-DiagBackupToSobr
+                    # Get-DiagBackupToTape
                 }
             }
 
         }
+
+        # $Graph
 
         # If Filename parameter is not specified, set filename to the Output.$OutputFormat
         foreach ($OutputFormat in $Format) {
