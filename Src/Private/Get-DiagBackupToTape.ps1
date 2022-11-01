@@ -57,7 +57,7 @@ function Get-DiagBackupToTape {
                                                                 $TSDHASHTABLE = @{}
                                                                 $TSDriveOBJ.psobject.properties | ForEach-Object {$TSDHASHTABLE[$_.Name] = $_.Value }
                                                                 node $TSDriveOBJ -NodeScript {$_.Id} @{Label=$TSDHASHTABLE.Label}
-                                                                edge -from $TSLibraryOBJ.id -to $TSDriveOBJ.id @{minlen=1;}
+                                                                edge -from $TSLibraryOBJ.id -to $TSDriveOBJ.id
                                                             }
                                                         }
                                                         else {
@@ -73,11 +73,11 @@ function Get-DiagBackupToTape {
                                                                 }
                                                                 $Number++
                                                             }
-                                                            edge -From $TSLibraryOBJ.id -To $Group[0].Id @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                                            edge -From $TSLibraryOBJ.id -To $Group[0].Id @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                                             $Start = 0
                                                             $TSNum = 1
                                                             while ($TSNum -ne $Group.Length) {
-                                                                edge -From $Group[$Start].Id -To $Group[$TSNum].Id @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                                                edge -From $Group[$Start].Id -To $Group[$TSNum].Id @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                                                 $Start++
                                                                 $TSNum++
                                                             }
@@ -85,16 +85,16 @@ function Get-DiagBackupToTape {
                                                     }
                                                 }
                                             }
-                                            edge -from $TSOBJ.Name -to $BKPTLOBJ.id @{minlen=1;}
+                                            edge -from $TSOBJ.Name -to $BKPTLOBJ.id
                                         }
                                     }
                                 }
-                                edge -from TapeServerDummy -to $BackupTapeServers.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                edge -from TapeServerDummy -to $BackupTapeServers.Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                             }
-                            edge -from TapeServersLabel -to TapeServerDummy @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                            edge -from TapeServersLabel -to TapeServerDummy @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                         }
                     }
-                    edge -from $BackupServerInfo.Name -to TapeServersLabel @{minlen=3}
+                    edge -from $BackupServerInfo.Name -to TapeServersLabel @{minlen=2}
                 }
             }
         }
