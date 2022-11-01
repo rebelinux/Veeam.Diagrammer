@@ -1,5 +1,11 @@
 # :arrows_clockwise: Veeam.Diagrammer Changelog
 
+## [0.4.0] - 2022-10.31
+
+### Added
+
+- Added support for Tape Backup Infrastructure diagramming
+
 ## [0.3.0] - 2022-10.17
 
 ### Added

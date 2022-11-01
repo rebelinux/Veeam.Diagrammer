@@ -43,7 +43,7 @@ function New-VeeamDiagram {
 .PARAMETER EnableSubGraphDebug
     Control to enable subgraph debugging ( Subgraph Lines ).
 .NOTES
-    Version:        0.3.0
+    Version:        0.4.0
     Author(s):      Jonathan Colon
     Twitter:        @jcolonfzenpr
     Github:         rebelinux

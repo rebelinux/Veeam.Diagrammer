@@ -12,7 +12,7 @@
 RootModule = 'Veeam.Diagrammer.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.3.0'
+ModuleVersion = '0.4.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -95,28 +95,19 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        # Tags = @()
+        Tags = @('Graphviz', 'Veeam', 'Diagram', 'Documentation', 'Windows', 'PSEdition_Desktop', 'PSEdition_Core')
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/LICENSE'
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://github.com/rebelinux/Veeam.Diagrammer'
 
         # A URL to an icon representing this module.
-        # IconUri = ''
+        IconUri = 'https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/icons/verified_recoverability.png'
 
         # ReleaseNotes of this module
-        # ReleaseNotes = ''
-
-        # Prerelease string of this module
-        # Prerelease = ''
-
-        # Flag to indicate whether the module requires explicit user acceptance for install/update/save
-        # RequireLicenseAcceptance = $false
-
-        # External dependent modules of this module
-        # ExternalModuleDependencies = @()
+        ReleaseNotes = 'https://github.com/rebelinux/Veeam.Diagrammer/blob/master/CHANGELOG.md'
 
     } # End of PSData hashtable
 
