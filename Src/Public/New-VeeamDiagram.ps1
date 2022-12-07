@@ -43,7 +43,7 @@ function New-VeeamDiagram {
 .PARAMETER EnableSubGraphDebug
     Control to enable subgraph debugging ( Subgraph Lines ).
 .NOTES
-    Version:        0.4.0
+    Version:        0.5.0
     Author(s):      Jonathan Colon
     Twitter:        @jcolonfzenpr
     Github:         rebelinux
@@ -252,7 +252,11 @@ process {
 
         Get-VbrServerConnection
 
-        $VBRServer = Get-VBRServer -Type Local
+        try {
+
+            $VBRServer = Get-VBRServer -Type Local
+
+        } Catch {throw "Unable to get Veeam B&R Server"}
 
         Get-VbrBackupServerInfo
 
@@ -281,7 +285,7 @@ process {
             SubGraph MainGraph -Attributes @{Label=(Get-HTMLLabel -Label $MainGraphLabel -Type "VBR_LOGO" ); fontsize=24; penwidth=0} {
 
                 SubGraph BackupServer -Attributes @{Label='Backup Server'; style="rounded"; bgcolor="#ceedc4"; fontsize=18; penwidth=2} {
-                    if ($DatabaseServerInfo -and $EMServerInfo) {
+                    if (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and $EMServerInfo) {
                         $BSHASHTABLE = @{}
                         $DBHASHTABLE = @{}
                         $EMHASHTABLE = @{}
@@ -304,7 +308,7 @@ process {
                             edge -from $BackupServerInfo.Name -to $DatabaseServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; xlabel=$DatabaseServerInfo.DBPort}
                         }
                     }
-                    elseif ($DatabaseServerInfo -and (-Not $EMServerInfo)) {
+                    elseif (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and (-Not $EMServerInfo)) {
                         $BSHASHTABLE = @{}
                         $DBHASHTABLE = @{}
 
@@ -347,19 +351,29 @@ process {
                 }
 
                 if ($DiagramType -eq 'Backup-to-Proxy') {
-                    Get-DiagBackupToProxy
+                    if (Get-DiagBackupToProxy) {
+                        Get-DiagBackupToProxy
+                    } else {Write-Warning "No Proxy Infrastructure available to diagram"}
                 }
                 elseif ($DiagramType -eq 'Backup-to-WanAccelerator') {
-                    Get-DiagBackupToWanAccel
+                    if (Get-DiagBackupToWanAccel) {
+                        Get-DiagBackupToWanAccel
+                    } else {Write-Warning "No Wan Accelerators available to diagram"}
                 }
                 elseif ($DiagramType -eq 'Backup-to-Repository') {
-                    Get-DiagBackupToRepo
+                    if (Get-DiagBackupToRepo) {
+                        Get-DiagBackupToRepo
+                    } else {Write-Warning "No Backup Repository available to diagram"}
                 }
                 elseif ($DiagramType -eq 'Backup-to-Tape') {
-                    Get-DiagBackupToTape
+                    if (Get-DiagBackupToTape) {
+                        Get-DiagBackupToTape
+                    } else {Write-Warning "No Tape Infrastructure available to diagram"}
                 }
                 elseif ($DiagramType -eq 'Backup-to-Sobr') {
-                    Get-DiagBackupToSobr
+                    if (Get-DiagBackupToSobr) {
+                        Get-DiagBackupToSobr
+                    } else {Write-Warning "No Scale-Out Backup Repository available to diagram"}
                 }
                 elseif ($DiagramType -eq 'Backup-to-All') {
                     Get-DiagBackupToProxy

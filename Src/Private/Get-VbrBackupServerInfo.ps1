@@ -5,7 +5,7 @@ function Get-VbrBackupServerInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.4.0
+        Version:        0.5.0
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -55,10 +55,7 @@ function Get-VbrBackupServerInfo {
             try {
                 $DatabaseServer = $VeeamInfo.SqlServerName
                 if ($DatabaseServer) {
-                    $DatabaseServerIP = Switch ((Resolve-DnsName $DatabaseServer).IPAddress) {
-                        $Null {'Unknown'}
-                        default {(Resolve-DnsName $DatabaseServer).IPAddress}
-                    }
+                    $DatabaseServerIP = Get-NodeIP -HostName $DatabaseServer
 
                     $Rows = @{
                         Role = 'Database Server'
@@ -85,11 +82,8 @@ function Get-VbrBackupServerInfo {
 
             try {
                 $EMServer = [Veeam.Backup.Core.SBackupOptions]::GetEnterpriseServerInfo()
-                if ($EMServer) {
-                    $EMServerIP = Switch ((Resolve-DnsName $EMServer.ServerName).IPAddress) {
-                        $Null {'Unknown'}
-                        default {(Resolve-DnsName $EMServer.ServerName).IPAddress}
-                    }
+                if ($EMServer.ServerName) {
+                    $EMServerIP = Get-NodeIP -HostName $EMServer.ServerName
 
                     $Rows = @{
                         Role = 'Enterprise Manager Server'
