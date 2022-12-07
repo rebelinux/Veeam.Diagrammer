@@ -1,10 +1,12 @@
 # :arrows_clockwise: Veeam.Diagrammer Changelog
 
 ## [0.5.0] - 2022-12.07
+
 ### Fixed
 
 - Fixed diagram with no detected Database or Enterprise Manager server.
 - Implemented an logic to detect if the infrastructure is available before creating a diagram.
+
 ## [0.4.0] - 2022-10.31
 
 ### Added
