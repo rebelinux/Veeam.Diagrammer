@@ -42,8 +42,10 @@ function New-VeeamDiagram {
     Control to enable edge debugging ( Dummy Edge and Node lines ).
 .PARAMETER EnableSubGraphDebug
     Control to enable subgraph debugging ( Subgraph Lines ).
+.PARAMETER EnableErrorDebug
+    Control to enable error debugging.
 .NOTES
-    Version:        0.5.0
+    Version:        0.5.1
     Author(s):      Jonathan Colon
     Twitter:        @jcolonfzenpr
     Github:         rebelinux
@@ -131,7 +133,7 @@ param (
         HelpMessage = 'Please provide the path to the diagram output file'
     )]
     [ValidateScript( { Test-Path -Path $_ -IsValid })]
-    [string] $OutputFolderPath = (Join-Path ([System.IO.Path]::GetTempPath()) "$Filename.$OutputFormat"),
+    [string] $OutputFolderPath = (Join-Path ([System.IO.Path]::GetTempPath()) "$Filename.$Format"),
 
     [Parameter(
         Mandatory = $false,
@@ -185,7 +187,12 @@ param (
         Mandatory = $false,
         HelpMessage = 'Allow to enable subgraph debugging ( Subgraph Lines )'
     )]
-    [Switch] $EnableSubGraphDebug = $false
+    [Switch] $EnableSubGraphDebug = $false,
+    [Parameter(
+        Mandatory = $false,
+        HelpMessage = 'Allow to enable error debugging'
+    )]
+    [Switch] $EnableErrorDebug = $false
 )
 
 
@@ -386,90 +393,92 @@ process {
 
         }
 
-        # $Graph
-
-        # If Filename parameter is not specified, set filename to the Output.$OutputFormat
-        foreach ($OutputFormat in $Format) {
-            if ($Filename) {
-                Try {
+        if ($EnableErrorDebug) {
+            $Graph
+        } else {
+            # If Filename parameter is not specified, set filename to the Output.$OutputFormat
+            foreach ($OutputFormat in $Format) {
+                if ($Filename) {
+                    Try {
                     if ($OutputFormat -ne "base64") {
-                        if($OutputFormat -ne "svg") {
-                            $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat $OutputFormat
-                            Write-ColorOutput -Color green  "Diagram '$FileName' has been saved to '$OutputFolderPath'."
-                        } else {
-                            $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat $OutputFormat
-                            $images = Select-String -Path $($Document.fullname) -Pattern '<image xlink:href=".*png".*>' -AllMatches
-                            foreach($match in $images) {
-                                $matchFound = $match -Match '"(.*png)"'
-                                if ($matchFound -eq $false) {
-                                    continue
-                                }
-                                $iconName = $Matches.Item(1)
-                                $iconNamePath = "$IconPath\$($Matches.Item(1))"
-                                $iconContents = Get-Content $iconNamePath -Encoding byte
-                                $iconEncoded = [convert]::ToBase64String($iconContents)
-                                ((Get-Content -Path $($Document.fullname) -Raw) -Replace $iconName, "data:image/png;base64,$($iconEncoded)") | Set-Content -Path $($Document.fullname)
-                            }
-                            if ($Document) {
+                            if($OutputFormat -ne "svg") {
+                                $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat $OutputFormat
                                 Write-ColorOutput -Color green  "Diagram '$FileName' has been saved to '$OutputFolderPath'."
-                            }
-
-                        }
-                    } else {
-                        $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat 'png'
-                        if ($Document) {
-                            $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
-                            if ($Base64) {
-                                Remove-Item -Path $Document.FullName
-                                $Base64
-                            } else {Remove-Item -Path $Document.FullName}
-                        }
-                    }
-                } catch {
-                    $Err = $_
-                    Write-Error $Err
-                }
-            }
-            elseif (!$Filename) {
-                if ($OutputFormat -ne "base64") {
-                    $File = "Output.$OutputFormat"
-                } else {$File = "Output.png"}
-                Try {
-                    if ($OutputFormat -ne "base64") {
-                        if($OutputFormat -ne "svg") {
-                            $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat $OutputFormat
-                            Write-ColorOutput -Color green  "Diagram '$File' has been saved to '$OutputFolderPath'."
-                        } else {
-                            $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat $OutputFormat
-                            $images = Select-String -Path $($Document.fullname) -Pattern '<image xlink:href=".*png".*>' -AllMatches
-                            foreach($match in $images) {
-                                $matchFound = $match -Match '"(.*png)"'
-                                if ($matchFound -eq $false) {
-                                    continue
+                            } else {
+                                $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat $OutputFormat
+                                $images = Select-String -Path $($Document.fullname) -Pattern '<image xlink:href=".*png".*>' -AllMatches
+                                foreach($match in $images) {
+                                    $matchFound = $match -Match '"(.*png)"'
+                                    if ($matchFound -eq $false) {
+                                        continue
+                                    }
+                                    $iconName = $Matches.Item(1)
+                                    $iconNamePath = "$IconPath\$($Matches.Item(1))"
+                                    $iconContents = Get-Content $iconNamePath -Encoding byte
+                                    $iconEncoded = [convert]::ToBase64String($iconContents)
+                                    ((Get-Content -Path $($Document.fullname) -Raw) -Replace $iconName, "data:image/png;base64,$($iconEncoded)") | Set-Content -Path $($Document.fullname)
                                 }
-                                $iconName = $Matches.Item(1)
-                                $iconNamePath = "$IconPath\$($Matches.Item(1))"
-                                $iconContents = Get-Content $iconNamePath -Encoding byte
-                                $iconEncoded = [convert]::ToBase64String($iconContents)
-                                ((Get-Content -Path $($Document.fullname) -Raw) -Replace $iconName, "data:image/png;base64,$($iconEncoded)") | Set-Content -Path $($Document.fullname)
+                                if ($Document) {
+                                    Write-ColorOutput -Color green "Diagram '$FileName' has been saved to '$OutputFolderPath'."
+                                }
+
                             }
+                        } else {
+                            $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat 'png'
                             if ($Document) {
-                                Write-ColorOutput -Color green  "Diagram '$File' has been saved to '$OutputFolderPath'."
+                                $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
+                                if ($Base64) {
+                                    Remove-Item -Path $Document.FullName
+                                    $Base64
+                                } else {Remove-Item -Path $Document.FullName}
                             }
                         }
-                    } else {
-                        $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat 'png'
-                        if ($Document) {
-                            $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
-                            if ($Base64) {
-                                Remove-Item -Path $Document.FullName
-                                $Base64
-                            } else {Remove-Item -Path $Document.FullName}
-                        }
+                    } catch {
+                        $Err = $_
+                        Write-Error $Err
                     }
-                } catch {
-                    $Err = $_
-                    Write-Error $Err
+                }
+                elseif (!$Filename) {
+                    if ($OutputFormat -ne "base64") {
+                        $File = "Output.$OutputFormat"
+                    } else {$File = "Output.png"}
+                    Try {
+                        if ($OutputFormat -ne "base64") {
+                            if($OutputFormat -ne "svg") {
+                                $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat $OutputFormat
+                                Write-ColorOutput -Color green  "Diagram '$File' has been saved to '$OutputFolderPath'."
+                            } else {
+                                $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat $OutputFormat
+                                $images = Select-String -Path $($Document.fullname) -Pattern '<image xlink:href=".*png".*>' -AllMatches
+                                foreach($match in $images) {
+                                    $matchFound = $match -Match '"(.*png)"'
+                                    if ($matchFound -eq $false) {
+                                        continue
+                                    }
+                                    $iconName = $Matches.Item(1)
+                                    $iconNamePath = "$IconPath\$($Matches.Item(1))"
+                                    $iconContents = Get-Content $iconNamePath -Encoding byte
+                                    $iconEncoded = [convert]::ToBase64String($iconContents)
+                                    ((Get-Content -Path $($Document.fullname) -Raw) -Replace $iconName, "data:image/png;base64,$($iconEncoded)") | Set-Content -Path $($Document.fullname)
+                                }
+                                if ($Document) {
+                                    Write-ColorOutput -Color green  "Diagram '$File' has been saved to '$OutputFolderPath'."
+                                }
+                            }
+                        } else {
+                            $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat 'png'
+                            if ($Document) {
+                                $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
+                                if ($Base64) {
+                                    Remove-Item -Path $Document.FullName
+                                    $Base64
+                                } else {Remove-Item -Path $Document.FullName}
+                            }
+                        }
+                    } catch {
+                        $Err = $_
+                        Write-Error $Err
+                    }
                 }
             }
         }

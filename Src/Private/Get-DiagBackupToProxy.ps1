@@ -5,7 +5,7 @@ function Get-DiagBackupToProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.4.0
+        Version:        0.5.1
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -59,7 +59,7 @@ function Get-DiagBackupToProxy {
                                                     foreach ($ESxiHost in $EsxiObjs) {
                                                         $ESXiInfo = @{
                                                             Version = $ESxiHost.Info.ViVersion.ToString()
-                                                            IP = $ESxiHost.getManagmentAddresses().IPAddressToString
+                                                            IP = try {$ESxiHost.getManagmentAddresses().IPAddressToString} catch {}
                                                         }
                                                         node $ESxiHost.Name @{Label=(Get-NodeIcon -Name $ESxiHost.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows $ESXiInfo)}
                                                         edge -From ESXiBackupProxy -To $ESxiHost.Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
@@ -75,7 +75,7 @@ function Get-DiagBackupToProxy {
                                                     $Number = 0
                                                     while ($Number -ne $Group.Length) {
                                                         SubGraph "SAESXiGroup$($Number)" -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
-                                                            $Group[$Number] | ForEach-Object { node $_.Name @{Label=(Get-NodeIcon -Name $_.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows ($ESXiInfo = @{Version = $_.Info.ViVersion.ToString(); IP = $_.getManagmentAddresses().IPAddressToString})) }}
+                                                            $Group[$Number] | ForEach-Object { node $_.Name @{Label=(Get-NodeIcon -Name $_.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows ($ESXiInfo = @{Version = $_.Info.ViVersion.ToString(); IP = try {$_.getManagmentAddresses().IPAddressToString} catch {}})) }}
                                                         }
                                                         $Number++
                                                     }
@@ -98,7 +98,7 @@ function Get-DiagBackupToProxy {
                                                 foreach ($VirtManager in ($VirtObjs | Sort-Object)) {
                                                     $VCInfo = @{
                                                         Version = $VirtManager.Info.ViVersion.ToString()
-                                                        IP = $VirtManager.getManagmentAddresses().IPAddressToString
+                                                        IP = try {$VirtManager.getManagmentAddresses().IPAddressToString} catch {}
                                                     }
                                                     $vCenterSubGraphName = Remove-SpecialChars -String $VirtManager.Name -SpecialChars '\-. '
                                                     SubGraph $vCenterSubGraphName -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
@@ -109,7 +109,7 @@ function Get-DiagBackupToProxy {
                                                             foreach ($ESXi in $VirtManager.getchilds()) {
                                                                 $ESXiInfo = @{
                                                                     Version = $ESxi.Info.ViVersion.ToString()
-                                                                    IP = $ESxi.getManagmentAddresses().IPAddressToString
+                                                                    IP = try {$ESxi.getManagmentAddresses().IPAddressToString} catch {}
                                                                 }
                                                                 node $ESXi.Name @{Label=(Get-NodeIcon -Name $ESXi.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows $ESXiInfo)}
                                                                 edge -From $VirtManager.Name -To $ESXi.Name @{style='dashed'}
@@ -121,7 +121,7 @@ function Get-DiagBackupToProxy {
                                                             $Number = 0
                                                             while ($Number -ne $Group.Length) {
                                                                 SubGraph "ESXiGroup$($Number)" -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
-                                                                    $Group[$Number] | ForEach-Object { node $_.Name @{Label=(Get-NodeIcon -Name $_.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows ($ESXiInfo = @{Version = $_.Info.ViVersion.ToString(); IP = $_.getManagmentAddresses().IPAddressToString}))}}
+                                                                    $Group[$Number] | ForEach-Object { node $_.Name @{Label=(Get-NodeIcon -Name $_.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows ($ESXiInfo = @{Version = $_.Info.ViVersion.ToString(); IP = try {$_.getManagmentAddresses().IPAddressToString} catch {}}))}}
                                                                 }
                                                                 $Number++
                                                             }
