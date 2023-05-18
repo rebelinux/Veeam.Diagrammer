@@ -7,6 +7,7 @@
 - Fixed error with VBR v12
 - Implemented  EnableErrorDebug option to allow error logging
 - Fix error with ESXi getManagmentAddresses() when hosts are unavailable
+
 ## [0.5.0] - 2022-12.07
 
 ### Fixed
