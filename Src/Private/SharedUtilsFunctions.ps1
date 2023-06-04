@@ -101,9 +101,11 @@ function Get-NodeIP {
     )
 
     try {
-        $NodeIP = Switch ((Resolve-DnsName $Hostname -ErrorAction SilentlyContinue).IPAddress) {
-            $Null {'Unknown'}
-            default {(Resolve-DnsName $Hostname -ErrorAction SilentlyContinue).IPAddress}
+        $IP = try {[System.Net.Dns]::GetHostAddresses($Hostname).IPAddressToString} catch { $null}
+        $NodeIP = Switch ([string]::IsNullOrEmpty($IP)) {
+            $true {'Unknown'}
+            $false {$IP}
+            default {$Hostname}
         }
     }
     catch {

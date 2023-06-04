@@ -1,5 +1,12 @@
 # :arrows_clockwise: Veeam.Diagrammer Changelog
 
+## [0.5.2] - 2023-06.04
+
+### Changed
+
+- Updated README
+- Improved the Get-NodeIP function
+
 ## [0.5.1] - 2023-05.17
 
 ### Fixed
