@@ -174,6 +174,8 @@ The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication d
     Control to enable edge debugging ( Dummy Edge and Node lines).
 .PARAMETER EnableSubGraphDebug
     Control to enable subgraph debugging ( Subgraph Lines ).
+.PARAMETER EnableErrorDebug
+    Control to enable error debugging.
 ```
 
 For a full list of common parameters and examples you can view the `New-VeeamDiagram` cmdlet help with the following command;
