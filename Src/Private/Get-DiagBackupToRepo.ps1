@@ -5,7 +5,7 @@ function Get-DiagBackupToRepo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.4.0
+        Version:        0.5.3
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -30,20 +30,20 @@ function Get-DiagBackupToRepo {
             if ($BackupServerInfo) {
 
                 if ($BackupRepo) {
-                    SubGraph MainRepos -Attributes @{Label=''; fontsize=18; penwidth=1; labelloc='b'; style=$SubGraphDebug.style; color=$SubGraphDebug.color} {
+                    SubGraph MainRepos -Attributes @{Label=' '; fontsize=18; penwidth=1; labelloc='b'; style=$SubGraphDebug.style; color=$SubGraphDebug.color} {
                         # Node used for subgraph centering
-                        node BackupRepository @{Label='Backup Repositories'; fontsize=22; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
+                        node BackupRepository @{Label='Backup Repositories'; fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
                         $Rank = @()
                         if ($LocalBackupRepo) {
-                            SubGraph LocalRepos -Attributes @{Label=' '; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
+                            SubGraph LocalRepos -Attributes @{Label='Local Repository'; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
                                 # Node used for subgraph centering
-                                node LocalReposDummy @{Label='Local Repository'; fontsize=18; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
+                                node LocalReposDummy @{Label='LocalReposDummy'; style=$SubGraphDebug.style; color=$SubGraphDebug.color; shape='plain'}
                                 $Rank = @()
                                 if ($LocalBackupRepo.count -le 4) {
                                     foreach ($REPOOBJ in ($LocalBackupRepo | Sort-Object -Property Name)) {
                                         $REPOHASHTABLE = @{}
                                         $REPOOBJ.psobject.properties | ForEach-Object {$REPOHASHTABLE[$_.Name] = $_.Value }
-                                        node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label}
+                                        node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label; fontname="Segoe Ui"}
                                     }
                                     edge -from LocalReposDummy -to $LocalBackupRepo.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                 }
@@ -55,7 +55,7 @@ function Get-DiagBackupToRepo {
                                             $Group[$Number] | ForEach-Object {
                                                 $REPOHASHTABLE = @{}
                                                 $_.psobject.properties | ForEach-Object {$REPOHASHTABLE[$_.Name] = $_.Value }
-                                                node $_.Name @{Label=$REPOHASHTABLE.Label}
+                                                node $_.Name @{Label=$REPOHASHTABLE.Label; fontname="Segoe Ui"}
                                             }
                                         }
                                         $Number++
@@ -70,17 +70,17 @@ function Get-DiagBackupToRepo {
                                     }
                                 }
                             }
-                            $Rank += 'LocalRepos'
+                            $Rank += 'clusterLocalRepos'
                             edge -from BackupRepository -to LocalReposDummy @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                         }
                         if ($RemoteBackupRepo) {
-                            SubGraph RemoteRepos -Attributes @{Label=' '; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
-                                node RemoteReposDummy @{Label='Deduplicating Storage Appliances'; fontsize=18; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
+                            SubGraph RemoteRepos -Attributes @{Label='Deduplicating Storage Appliances'; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
+                                node RemoteReposDummy @{Label='RemoteReposDummy'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'}
                                 if ($RemoteBackupRepo.count -le 4) {
                                     foreach ($REPOOBJ in ($RemoteBackupRepo | Sort-Object -Property Name)) {
                                         $REPOHASHTABLE = @{}
                                         $REPOOBJ.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
-                                        node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label;}
+                                        node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label; fontname="Segoe Ui"}
                                     }
                                     edge -from RemoteReposDummy -to $RemoteBackupRepo.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                 }
@@ -92,7 +92,7 @@ function Get-DiagBackupToRepo {
                                             $Group[$Number] | ForEach-Object {
                                                 $REPOHASHTABLE = @{}
                                                 $_.psobject.properties | ForEach-Object {$REPOHASHTABLE[$_.Name] = $_.Value }
-                                                node $_.Name @{Label=$REPOHASHTABLE.Label}
+                                                node $_.Name @{Label=$REPOHASHTABLE.Label; fontname="Segoe Ui"}
                                             }
                                         }
                                         $Number++
@@ -107,18 +107,18 @@ function Get-DiagBackupToRepo {
                                     }
                                 }
                             }
-                            $Rank += 'RemoteRepos'
+                            $Rank += 'clusterRemoteRepos'
                             edge -from BackupRepository -to RemoteReposDummy @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
 
                         }
                         if ($ObjStorage) {
-                            SubGraph ObjectStorage -Attributes @{Label=' '; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
-                                node ObjectStorageDummy @{Label='Object Repository'; fontsize=18; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
+                            SubGraph ObjectStorage -Attributes @{Label='Object Repository'; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
+                                node ObjectStorageDummy @{Label='ObjectStorageDummy'; style=$SubGraphDebug.style; color=$SubGraphDebug.color; shape='plain'}
                                 if ($ObjStorage.count -le 4) {
                                     foreach ($STORAGEOBJ in ($ObjStorage | Sort-Object -Property Name)) {
                                         $OBJHASHTABLE = @{}
                                         $STORAGEOBJ.psobject.properties | ForEach-Object { $OBJHASHTABLE[$_.Name] = $_.Value }
-                                        node $STORAGEOBJ -NodeScript {$_.Name} @{Label=$OBJHASHTABLE.Label}
+                                        node $STORAGEOBJ -NodeScript {$_.Name} @{Label=$OBJHASHTABLE.Label; fontname="Segoe Ui"}
                                     }
                                     edge -from ObjectStorageDummy -to $ObjStorage.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                 }
@@ -130,7 +130,7 @@ function Get-DiagBackupToRepo {
                                             $Group[$Number] | ForEach-Object {
                                                 $REPOHASHTABLE = @{}
                                                 $_.psobject.properties | ForEach-Object {$REPOHASHTABLE[$_.Name] = $_.Value }
-                                                node $_.Name @{Label=$REPOHASHTABLE.Label}
+                                                node $_.Name @{Label=$REPOHASHTABLE.Label; fontname="Segoe Ui"}
                                             }
                                         }
                                         $Number++
@@ -145,17 +145,17 @@ function Get-DiagBackupToRepo {
                                     }
                                 }
                             }
-                            $Rank += 'ObjectStorage'
+                            $Rank += 'clusterObjectStorage'
                             edge -from BackupRepository -to ObjectStorageDummy @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                         }
                         if ($ArchiveObjStorage) {
-                            SubGraph ArchiveObjectStorage -Attributes @{Label=' '; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
-                                node ArchiveObjectStorageDummy @{Label='Archive Object Repository'; fontsize=18; fontname="Comic Sans MS bold"; fontcolor='#005f4b'; shape='plain'}
+                            SubGraph ArchiveObjectStorage -Attributes @{Label='Archive Object Repository'; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
+                                node ArchiveObjectStorageDummy @{Label='ArchiveObjectStorageDummy'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'}
                                 if ($ArchiveObjStorage.count -le 4) {
                                     foreach ($STORAGEArchiveOBJ in ($ArchiveObjStorage | Sort-Object -Property Name)) {
                                         $ARCHOBJHASHTABLE = @{}
                                         $STORAGEArchiveOBJ.psobject.properties | ForEach-Object { $ARCHOBJHASHTABLE[$_.Name] = $_.Value }
-                                        node $STORAGEArchiveOBJ -NodeScript {$_.Name} @{Label=$ARCHOBJHASHTABLE.Label}
+                                        node $STORAGEArchiveOBJ -NodeScript {$_.Name} @{Label=$ARCHOBJHASHTABLE.Label; fontname="Segoe Ui"}
                                     }
                                     edge -from ArchiveObjectStorageDummy -to $ArchiveObjStorage.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                 }
@@ -167,7 +167,7 @@ function Get-DiagBackupToRepo {
                                             $Group[$Number] | ForEach-Object {
                                                 $REPOHASHTABLE = @{}
                                                 $_.psobject.properties | ForEach-Object {$REPOHASHTABLE[$_.Name] = $_.Value }
-                                                node $_.Name @{Label=$REPOHASHTABLE.Label}
+                                                node $_.Name @{Label=$REPOHASHTABLE.Label; fontname="Segoe Ui"}
                                             }
                                         }
                                         $Number++
@@ -182,7 +182,7 @@ function Get-DiagBackupToRepo {
                                     }
                                 }
                             }
-                            $Rank += 'ArchiveObjectStorage'
+                            $Rank += 'clusterArchiveObjectStorage'
                             edge -from BackupRepository -to ArchiveObjectStorageDummy @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
 
                         }

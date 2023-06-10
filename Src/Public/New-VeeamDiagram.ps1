@@ -174,7 +174,7 @@ param (
         Mandatory = $true,
         HelpMessage = 'Controls type of Veeam VBR generated diagram'
     )]
-    [ValidateSet('Backup-to-Tape', 'Backup-to-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-All')]
+    [ValidateSet('Backup-to-Tape', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-All')]
     [string] $DiagramType,
 
     [Parameter(
@@ -225,7 +225,7 @@ begin {
 
     if ($EnableSubGraphDebug) {
         $SubGraphDebug = @{style='dashed'; color='red'}
-    } else {$SubGraphDebug = @{style='invis'; color='black'}}
+    } else {$SubGraphDebug = @{style='invis'; color='gray'}}
 
     $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
     $IconPath = Join-Path $RootPath 'icons'
@@ -242,7 +242,7 @@ begin {
         overlap   = 'false'
         splines   = $EdgeType
         penwidth  = 1.5
-        fontname  = "Comic Sans MS bold"
+        fontname  = "Segoe Ui Black"
         fontcolor = '#005f4b'
         fontsize  = 32
         style = "dashed"
@@ -250,6 +250,7 @@ begin {
         imagepath = $IconPath
         nodesep = $NodeSeparation
         ranksep = $SectionSeparation
+        # size = "7.5,10"
     }
 }
 
@@ -277,7 +278,6 @@ process {
                 fillColor = 'white'
                 fontsize = 14;
                 imagescale = $true
-                group = "main"
             }
             # Edge default theme
             edge @{
@@ -357,10 +357,15 @@ process {
                     }
                 }
 
-                if ($DiagramType -eq 'Backup-to-Proxy') {
-                    if (Get-DiagBackupToProxy) {
-                        Get-DiagBackupToProxy
-                    } else {Write-Warning "No Proxy Infrastructure available to diagram"}
+                if ($DiagramType -eq 'Backup-to-HyperV-Proxy') {
+                    if (Get-DiagBackupToHvProxy) {
+                        Get-DiagBackupToHvProxy
+                    } else {Write-Warning "No HyperV Proxy Infrastructure available to diagram"}
+                }
+                elseif ($DiagramType -eq 'Backup-to-vSphere-Proxy') {
+                    if (Get-DiagBackupToViProxy) {
+                        Get-DiagBackupToViProxy
+                    } else {Write-Warning "No vSphere Proxy Infrastructure available to diagram"}
                 }
                 elseif ($DiagramType -eq 'Backup-to-WanAccelerator') {
                     if (Get-DiagBackupToWanAccel) {
@@ -373,8 +378,9 @@ process {
                     } else {Write-Warning "No Backup Repository available to diagram"}
                 }
                 elseif ($DiagramType -eq 'Backup-to-Tape') {
-                    if (Get-DiagBackupToTape) {
-                        Get-DiagBackupToTape
+                    $BackupToTape = Get-DiagBackupToTape
+                    if ($BackupToTape) {
+                        $BackupToTape
                     } else {Write-Warning "No Tape Infrastructure available to diagram"}
                 }
                 elseif ($DiagramType -eq 'Backup-to-Sobr') {
