@@ -1,5 +1,11 @@
 # :arrows_clockwise: Veeam.Diagrammer Changelog
 
+## [0.5.3] - 2023-06.07
+
+### Changed
+
+- Cleaned diagram look and feel
+
 ## [0.5.2] - 2023-06.04
 
 ### Changed

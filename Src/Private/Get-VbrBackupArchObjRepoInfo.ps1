@@ -5,7 +5,7 @@ function Get-VbrBackupArchObjRepoInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.1.0
+        Version:        0.5.3
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -38,10 +38,26 @@ function Get-VbrBackupArchObjRepoInfo {
                     $Rows = @{
                         Type = $ArchObjStorage.ArchiveType
                         Folder = $Folder
-                        Gateway = Switch ($ArchObjStorage.UseGatewayServer) {
-                            $true {$ArchObjStorage.GatewayServer.Name.Split('.')[0]}
-                            $false {'Disabled'}
-                            default {'Unknown'}
+                        Gateway = &{
+                            if (-Not $ArchObjStorage.UseGatewayServer) {
+                                Switch ($ArchObjStorage.GatewayMode) {
+                                    'Gateway' {
+                                        switch ($ArchObjStorage.GatewayServer.count) {
+                                            0 {"Disable"}
+                                            1 {$ArchObjStorage.GatewayServer.Name.Split('.')[0]}
+                                            Default {'Automatic'}
+                                        }
+                                    }
+                                    'Direct' {'Direct'}
+                                    default {'Unknown'}
+                                }
+                            } else {
+                                switch ($ArchObjStorage.GatewayServer.count) {
+                                    0 {"Disable"}
+                                    1 {$ArchObjStorage.GatewayServer.Name.Split('.')[0]}
+                                    Default {'Automatic'}
+                                }
+                            }
                         }
                     }
 

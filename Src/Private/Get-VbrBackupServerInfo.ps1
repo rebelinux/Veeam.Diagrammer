@@ -5,7 +5,7 @@ function Get-VbrBackupServerInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.1
+        Version:        0.5.3
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -104,10 +104,6 @@ function Get-VbrBackupServerInfo {
                         Role = 'Enterprise Manager Server'
                         IP = $EMServerIP
                     }
-
-                    # if ($EMServer.URL) {
-                    #     $Rows.add('Server URL', $EMServer.URL)
-                    # }
 
                     $script:EMServerInfo = [PSCustomObject]@{
                         Name = $EMServer.ServerName.split(".")[0]

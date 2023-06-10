@@ -5,7 +5,7 @@ function Get-VbrBackupTapeDrivesInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.4.0
+        Version:        0.5.3
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -26,10 +26,6 @@ function Get-VbrBackupTapeDrivesInfo {
             if ($TapeLibrary) {
                 $TapeDrives = Get-VBRTapeDrive -Library $TapeLibrary
             } Else {$TapeDrives = Get-VBRTapeDrive}
-            # $TapeMediaPool = Get-VBRTapeMediaPool
-            # $TapeVault = Get-VBRTapeVault
-            # $TapeDrive = Get-VBRTapeDrive
-            # $TapeMedium = Get-VBRTapeMedium
 
             $BackupTapeDriveInfo = @()
             if ($TapeDrives) {
@@ -44,7 +40,7 @@ function Get-VbrBackupTapeDrivesInfo {
 
 
                     $TempBackupTapeDriveInfo = [PSCustomObject]@{
-                        Name = "$((Remove-SpecialChars -String ($TapeDrive.Name) -SpecialChars '\').toUpper()) "
+                        Name = "$((Remove-SpecialChars -String ($TapeDrive.Name) -SpecialChars '\').toUpper())_$(Get-Random)"
                         Label = Get-NodeIcon -Name "$((Remove-SpecialChars -String ("Drive $($TapeDrive.Address + 1)").split(".")[0] -SpecialChars '\').toUpper())" -Type 'VBR_Tape_Drive' -Align "Center" -Rows $Rows
                         LibraryId = $TapeDrive.LibraryId
                         Id = $TapeDrive.Id

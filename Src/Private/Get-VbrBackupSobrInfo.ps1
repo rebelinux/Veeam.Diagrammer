@@ -5,7 +5,7 @@ function Get-VbrBackupSobrInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.1.0
+        Version:        0.5.3
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -61,19 +61,51 @@ function Get-VbrBackupSobrInfo {
                     $CapacityRows = @{
                         Type = $Sobr.CapacityExtent.Repository.Type
                         Folder = "/$($Folder)"
-                        Gateway = Switch ($Sobr.CapacityExtent.Repository.UseGatewayServer) {
-                            $true {$Sobr.CapacityExtent.Repository.GatewayServer.Name.Split('.')[0]}
-                            $false {'Disabled'}
-                            default {'Unknown'}
+                        Gateway = &{
+                            if (-Not $Sobr.CapacityExtent.Repository.UseGatewayServer) {
+                                Switch ($Sobr.CapacityExtent.Repository.ConnectionType) {
+                                    'Gateway' {
+                                        switch ($Sobr.CapacityExtent.Repository.GatewayServer.count) {
+                                            0 {"Disable"}
+                                            1 {$Sobr.CapacityExtent.Repository.GatewayServer.Name.Split('.')[0]}
+                                            Default {'Automatic'}
+                                        }
+                                    }
+                                    'Direct' {'Direct'}
+                                    default {'Unknown'}
+                                }
+                            } else {
+                                switch ($Sobr.CapacityExtent.Repository.GatewayServer.count) {
+                                    0 {"Disable"}
+                                    1 {$Sobr.CapacityExtent.Repository.GatewayServer.Name.Split('.')[0]}
+                                    Default {'Automatic'}
+                                }
+                            }
                         }
                     }
 
                     $ArchiveRows = [ordered]@{
                         Type = $Sobr.ArchiveExtent.Repository.ArchiveType
-                        Gateway = Switch ($Sobr.ArchiveExtent.Repository.UseGatewayServer) {
-                            $true {$Sobr.ArchiveExtent.Repository.GatewayServer.Name.Split('.')[0].toUpper()}
-                            $false {'Disabled'}
-                            default {'Unknown'}
+                        Gateway = &{
+                            if (-Not $Sobr.ArchiveExtent.Repository.UseGatewayServer) {
+                                Switch ($Sobr.ArchiveExtent.Repository.GatewayMode) {
+                                    'Gateway' {
+                                        switch ($Sobr.ArchiveExtent.Repository.GatewayServer.count) {
+                                            0 {"Disable"}
+                                            1 {$Sobr.ArchiveExtent.Repository.GatewayServer.Name.Split('.')[0]}
+                                            Default {'Automatic'}
+                                        }
+                                    }
+                                    'Direct' {'Direct'}
+                                    default {'Unknown'}
+                                }
+                            } else {
+                                switch ($Sobr.ArchiveExtent.Repository.GatewayServer.count) {
+                                    0 {"Disable"}
+                                    1 {$Sobr.ArchiveExtent.Repository.GatewayServer.Name.Split('.')[0]}
+                                    Default {'Automatic'}
+                                }
+                            }
                         }
                     }
 

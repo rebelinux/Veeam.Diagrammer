@@ -43,15 +43,15 @@ Veeam Diagrammer is a PowerShell module to automatically generate Veeam Backup &
 
 ### Scale-Out Backup Repository Diagram
 
-![Scale-Out Backup Repository Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/Backup_SOBR.png "Scale-Out Backup Repository Diagram")
+![Scale-Out Backup Repository Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/Backup_SOBR.webp "Scale-Out Backup Repository Diagram")
 
 ### Backup Repository Diagram
 
-![Backup Repository Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/Backup_Repository.png "Backup Repository Diagram")
+![Backup Repository Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/Backup_Repository.webp "Backup Repository Diagram")
 
 ### Backup Proxy Diagram
 
-![Backup Proxy Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/VBR_Backup_Proxy_with_Debug.png "Backup Proxy Diagram")
+![Backup Proxy Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/VBR_Backup_Proxy_with_Debug.webp "Backup Proxy Diagram")
 
 
 # :beginner: Getting Started
