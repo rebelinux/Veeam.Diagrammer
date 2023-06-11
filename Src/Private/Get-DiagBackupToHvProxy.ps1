@@ -27,7 +27,7 @@ function Get-DiagBackupToHvProxy {
                         $HvClusterObjs = Get-VBRServer | Where-Object {$_.Type -eq 'HvCluster'}
                         $HyperVServerObjs = Get-VBRServer | Where-Object {$_.Type -eq 'HvServer' -and $_.HasParent() -like 'False'}
                         if ($HyperVBackupProxy) {
-                            SubGraph HyperVProxies -Attributes @{Label='HyperV Backup Proxies'; style='dashed'; color=$SubGraphDebug.color; fontsize=18; penwidth=1.5} {
+                            SubGraph HyperVProxies -Attributes @{Label='HyperV Backup Proxies'; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=18; penwidth=1.5} {
                                 node HyperVProxyMain @{Label='HyperVProxyMain'; shape='plain'; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                 foreach ($ProxyObj in ($HyperVBackupProxy | Sort-Object)) {
                                     $PROXYHASHTABLE = @{}
@@ -44,10 +44,10 @@ function Get-DiagBackupToHvProxy {
                             }
                         }
                         if ($HvClusterObjs -or $HyperVServerObjs) {
-                            SubGraph HyperVMAIN -Attributes @{Label='HyperV Infrastructure'; style='dashed'; color=$SubGraphDebug.color; fontsize=18; penwidth=1; labelloc='t'} {
+                            SubGraph HyperVMAIN -Attributes @{Label='HyperV Infrastructure'; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=18; penwidth=1; labelloc='t'} {
                                 # Dummy Node used for subgraph centering
                                 if ($HyperVServerObjs) {
-                                    SubGraph HyperVHostMAIN -Attributes @{Label='HyperV Standalone Servers'; style='dashed'; color=$SubGraphDebug.color; fontsize=18; penwidth=1; labelloc='t'} {
+                                    SubGraph HyperVHostMAIN -Attributes @{Label='HyperV Standalone Servers'; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=18; penwidth=1; labelloc='t'} {
                                         # Dummy Node used for subgraph centering
                                         node HyperVInfraHost @{Label='HyperVInfraHost'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'}
                                         foreach ($HyperVHost in $HyperVServerObjs) {
@@ -64,7 +64,7 @@ function Get-DiagBackupToHvProxy {
                                 edge -from HyperVBackupProxyMain:s -to HyperVInfraDummy:n @{minlen=2; style=$EdgeDebug.style; color=$EdgeDebug.color}
 
                                 if ($HvClusterObjs) {
-                                    SubGraph HyperVClusterMAIN -Attributes @{Label='HyperV Cluster Servers'; style='dashed'; color=$SubGraphDebug.color; fontsize=18; penwidth=1; labelloc='t'} {
+                                    SubGraph HyperVClusterMAIN -Attributes @{Label='HyperV Cluster Servers'; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=18; penwidth=1; labelloc='t'} {
                                         # Dummy Node used for subgraph centering
                                         node HyperVInfraCluster @{Label='HyperVInfraCluster'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'}
                                         foreach ($VirtManager in ($HvClusterObjs | Sort-Object)) {

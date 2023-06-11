@@ -27,7 +27,7 @@ function Get-DiagBackupToViProxy {
                     $VirtObjs = Get-VBRServer | Where-Object {$_.Type -eq 'VC'}
                     $EsxiObjs = Get-VBRServer | Where-Object {$_.Type -eq 'Esxi' -and $_.IsStandaloneEsx() -eq 'True'}
                     if ($VMwareBackupProxy) {
-                        SubGraph VMwareProxies -Attributes @{Label='VMware Backup Proxies'; style='dashed'; color=$SubGraphDebug.color; fontsize=18; penwidth=1.5} {
+                        SubGraph VMwareProxies -Attributes @{Label='VMware Backup Proxies'; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=18; penwidth=1.5} {
                             node VMwareProxyMain @{Label='VMwareProxyMain'; shape='plain'; style=$EdgeDebug.style; color=$EdgeDebug.color}
                             foreach ($ProxyObj in ($VMwareBackupProxy | Sort-Object)) {
                                 $PROXYHASHTABLE = @{}
@@ -45,9 +45,9 @@ function Get-DiagBackupToViProxy {
                     }
 
                     if ($VirtObjs -or $EsxiObjs) {
-                        SubGraph vSphereMAIN -Attributes @{Label='vSphere Infrastructure'; style='dashed'; color=$SubGraphDebug.color; penwidth=1} {
+                        SubGraph vSphereMAIN -Attributes @{Label='vSphere Infrastructure'; style='dashed,rounded'; color=$SubGraphDebug.color; penwidth=1} {
                             if ($EsxiObjs) {
-                                SubGraph ESXiMAIN -Attributes @{Label='Standalone Servers'; style='dashed'; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
+                                SubGraph ESXiMAIN -Attributes @{Label='Standalone Servers'; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
                                     # Dummy Node used for subgraph centering
                                     node ESXiBackupProxy @{Label='ESXiBackupProxy'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'}
                                     if ($EsxiObjs.count -le 4) {
@@ -88,7 +88,7 @@ function Get-DiagBackupToViProxy {
                             edge -from VMWAREBackupProxyMain:s -to vSphereInfraDummy:n @{minlen=2; style=$EdgeDebug.style; color=$EdgeDebug.color}
 
                             if ($VirtObjs) {
-                                SubGraph VCENTERMAIN -Attributes @{Label='VMware vCenter Servers'; style='dashed'; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
+                                SubGraph VCENTERMAIN -Attributes @{Label='VMware vCenter Servers'; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
                                     # Dummy Node used for subgraph centering
                                     node vCenterServers @{Label='vCenterServers'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'}
                                     foreach ($VirtManager in ($VirtObjs | Sort-Object)) {

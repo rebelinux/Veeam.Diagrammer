@@ -38,7 +38,7 @@ function Get-DiagBackupToTape {
                                 $Rank = @()
                                 foreach ($TSOBJ in ($BackupTapeServers | Sort-Object -Property Name)) {
                                     $TSSubGraph = Remove-SpecialChars -String $TSOBJ.id -SpecialChars '\-'
-                                    SubGraph  $TSSubGraph -Attributes @{Label=' '; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
+                                    SubGraph  $TSSubGraph -Attributes @{Label=' '; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
                                         $TSHASHTABLE = @{}
                                         $TSOBJ.psobject.properties | ForEach-Object {$TSHASHTABLE[$_.Name] = $_.Value }
                                         node $TSOBJ -NodeScript {$_.Name} @{Label=$TSHASHTABLE.Label; fontname="Segoe Ui"}
@@ -46,7 +46,7 @@ function Get-DiagBackupToTape {
                                             $BKPTLOBJ = ($BackupTapeLibrary | Where-Object {$_.TapeServerId -eq $TSOBJ.Id} | Sort-Object -Property Name)
                                             foreach ($TSLibraryOBJ in $BKPTLOBJ) {
                                                 $TLSubGraph = Remove-SpecialChars -String $TSLibraryOBJ.id -SpecialChars '\-'
-                                                SubGraph $TLSubGraph -Attributes @{Label=' '; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
+                                                SubGraph $TLSubGraph -Attributes @{Label=' '; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
                                                     $TSLHASHTABLE = @{}
                                                     $TSLibraryOBJ.psobject.properties | ForEach-Object {$TSLHASHTABLE[$_.Name] = $_.Value }
                                                     node $TSLibraryOBJ -NodeScript {$_.Id} @{Label=$TSLHASHTABLE.Label; fontname="Segoe Ui"}

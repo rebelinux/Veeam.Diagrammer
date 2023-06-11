@@ -35,7 +35,7 @@ function Get-DiagBackupToRepo {
                         node BackupRepository @{Label='Backup Repositories'; fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
                         $Rank = @()
                         if ($LocalBackupRepo) {
-                            SubGraph LocalRepos -Attributes @{Label='Local Repository'; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
+                            SubGraph LocalRepos -Attributes @{Label='Local Repository'; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
                                 # Node used for subgraph centering
                                 node LocalReposDummy @{Label='LocalReposDummy'; style=$SubGraphDebug.style; color=$SubGraphDebug.color; shape='plain'}
                                 $Rank = @()
@@ -74,7 +74,7 @@ function Get-DiagBackupToRepo {
                             edge -from BackupRepository -to LocalReposDummy @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                         }
                         if ($RemoteBackupRepo) {
-                            SubGraph RemoteRepos -Attributes @{Label='Deduplicating Storage Appliances'; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
+                            SubGraph RemoteRepos -Attributes @{Label='Deduplicating Storage Appliances'; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
                                 node RemoteReposDummy @{Label='RemoteReposDummy'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'}
                                 if ($RemoteBackupRepo.count -le 4) {
                                     foreach ($REPOOBJ in ($RemoteBackupRepo | Sort-Object -Property Name)) {
@@ -112,7 +112,7 @@ function Get-DiagBackupToRepo {
 
                         }
                         if ($ObjStorage) {
-                            SubGraph ObjectStorage -Attributes @{Label='Object Repository'; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
+                            SubGraph ObjectStorage -Attributes @{Label='Object Repository'; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
                                 node ObjectStorageDummy @{Label='ObjectStorageDummy'; style=$SubGraphDebug.style; color=$SubGraphDebug.color; shape='plain'}
                                 if ($ObjStorage.count -le 4) {
                                     foreach ($STORAGEOBJ in ($ObjStorage | Sort-Object -Property Name)) {
@@ -149,7 +149,7 @@ function Get-DiagBackupToRepo {
                             edge -from BackupRepository -to ObjectStorageDummy @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                         }
                         if ($ArchiveObjStorage) {
-                            SubGraph ArchiveObjectStorage -Attributes @{Label='Archive Object Repository'; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed'} {
+                            SubGraph ArchiveObjectStorage -Attributes @{Label='Archive Object Repository'; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
                                 node ArchiveObjectStorageDummy @{Label='ArchiveObjectStorageDummy'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'}
                                 if ($ArchiveObjStorage.count -le 4) {
                                     foreach ($STORAGEArchiveOBJ in ($ArchiveObjStorage | Sort-Object -Property Name)) {

@@ -32,7 +32,7 @@ function Get-DiagBackupToWanAccel {
                         penwidth = 1.5
                         labelloc = 'b'
                         color=$SubGraphDebug.color
-                        style='dashed'
+                        style='dashed,rounded'
                     }
                     SubGraph MAINWANACCEL -Attributes $WANAccelAttr -ScriptBlock {
                         # Dummy Node used for subgraph centering
@@ -44,6 +44,11 @@ function Get-DiagBackupToWanAccel {
                             edge -From WANACCELSERVER -To $WANOBJ.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                         }
                         Rank $WanAccel.Name
+                        Record WANACCEL @(
+                            'Name'
+                            'Environment'
+                            'Test <I>[string]</I>'
+                        )
                     }
                     edge $BackupServerInfo.Name -to WANACCELSERVER @{minlen=3; xlabel=($WanAccel.TrafficPort[0])}
                 }
