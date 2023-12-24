@@ -129,7 +129,7 @@ param (
     [string] $Direction = 'top-to-bottom',
 
     [Parameter(
-        Mandatory = $true,
+        Mandatory = $false,
         HelpMessage = 'Please provide the path to the diagram output file'
     )]
     [ValidateScript( { Test-Path -Path $_ -IsValid })]
@@ -205,7 +205,7 @@ begin {
         $Credential = New-Object System.Management.Automation.PSCredential ($Username, $SecurePassword)
     }
 
-    if (!(Test-Path $OutputFolderPath)) {
+    if (($Format -ne "base64") -and  !(Test-Path $OutputFolderPath)) {
         Write-Error "OutputFolderPath '$OutputFolderPath' is not a valid folder path."
         break
     }
@@ -389,11 +389,16 @@ process {
                     } else {Write-Warning "No Scale-Out Backup Repository available to diagram"}
                 }
                 elseif ($DiagramType -eq 'Backup-to-All') {
-                    Get-DiagBackupToProxy
+                    if (Get-DiagBackupToHvProxy) {
+                        Get-DiagBackupToHvProxy
+                    } else {Write-Warning "No HyperV Proxy Infrastructure available to diagram"}
+                    if (Get-DiagBackupToViProxy) {
+                        Get-DiagBackupToViProxy
+                    } else {Write-Warning "No vSphere Proxy Infrastructure available to diagram"}
                     Get-DiagBackupToWanAccel
                     Get-DiagBackupToRepo
                     Get-DiagBackupToSobr
-                    # Get-DiagBackupToTape
+                    Get-DiagBackupToTape
                 }
             }
 
@@ -412,6 +417,7 @@ process {
                                 Write-ColorOutput -Color green  "Diagram '$FileName' has been saved to '$OutputFolderPath'."
                             } else {
                                 $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat $OutputFormat
+                                #Fix icon path issue with svg output
                                 $images = Select-String -Path $($Document.fullname) -Pattern '<image xlink:href=".*png".*>' -AllMatches
                                 foreach($match in $images) {
                                     $matchFound = $match -Match '"(.*png)"'
@@ -432,11 +438,28 @@ process {
                         } else {
                             $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat 'png'
                             if ($Document) {
-                                $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
-                                if ($Base64) {
-                                    Remove-Item -Path $Document.FullName
-                                    $Base64
-                                } else {Remove-Item -Path $Document.FullName}
+                                # Code used to allow rotating image!
+                                if ($Rotate) {
+                                    Add-Type -AssemblyName System.Windows.Forms
+                                    $RotatedIMG = new-object System.Drawing.Bitmap $Document.FullName
+                                    $RotatedIMG.RotateFlip("Rotate90FlipNone")
+                                    $RotatedIMG.Save($Document.FullName,"png")
+                                    if ($RotatedIMG) {
+                                        $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
+                                        if ($Base64) {
+                                            Remove-Item -Path $Document.FullName
+                                            $Base64
+                                        } else {Remove-Item -Path $Document.FullName}
+                                    }
+                                } else {
+                                    # Code used to output image to base64 format
+                                    $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
+                                    if ($Base64) {
+                                        Remove-Item -Path $Document.FullName
+                                        $Base64
+                                    } else {Remove-Item -Path $Document.FullName}
+
+                                }
                             }
                         }
                     } catch {

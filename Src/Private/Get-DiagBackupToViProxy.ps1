@@ -59,7 +59,6 @@ function Get-DiagBackupToViProxy {
                                             node $ESxiHost.Name @{Label=(Get-NodeIcon -Name $ESxiHost.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows $ESXiInfo)}
                                             edge -From ESXiBackupProxy:s -To $ESxiHost.Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                         }
-                                        edge -from VMWAREBackupProxyMain:s -to ESXiBackupProxy:n @{minlen=2; style='dashed'}
                                     }
                                     else {
                                         $Group = Split-array -inArray $EsxiObjs -size 4
@@ -78,13 +77,15 @@ function Get-DiagBackupToViProxy {
                                             $Start++
                                             $ESXiNum++
                                         }
-                                        edge -from VMWAREBackupProxyMain:s -to ESXiBackupProxy:n @{minlen=2; style='dashed'}
                                     }
+                                }
+                                if ($EsxiObjs) {
+                                    edge -from vSphereInfraDummy:s -to ESXiBackupProxy:n @{minlen=2; style='dashed'}
                                 }
                             }
 
                             # Dummy Node used for subgraph centering
-                            node vSphereInfraDummy @{Label='HyperVInfraDummy'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='box'}
+                            node vSphereInfraDummy @{Label='vSphereInfraDummy'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='box'}
                             edge -from VMWAREBackupProxyMain:s -to vSphereInfraDummy:n @{minlen=2; style=$EdgeDebug.style; color=$EdgeDebug.color}
 
                             if ($VirtObjs) {
@@ -136,7 +137,7 @@ function Get-DiagBackupToViProxy {
                                 # Edge Lines from Dummy Node vCenter Servers to Dummy Node vSphere Virtual Infrastructure
                                 edge -from vCenterServers:s -to $VirtObjs.Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                                 # Edge Lines from Dummy Node vSphere Virtual Infrastructure to Dummy Node vCenter Servers
-                                edge -from VMWAREBackupProxyMain:s -to vCenterServers:n @{minlen=2; style='dashed'}
+                                edge -from vSphereInfraDummy:s -to vCenterServers:n @{minlen=2; style='dashed'}
                             }
                         }
                     }
