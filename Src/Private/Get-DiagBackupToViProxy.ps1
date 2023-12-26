@@ -5,7 +5,7 @@ function Get-DiagBackupToViProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.3
+        Version:        0.5.4
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -64,7 +64,8 @@ function Get-DiagBackupToViProxy {
                                         $Group = Split-array -inArray $EsxiObjs -size 4
                                         $Number = 0
                                         while ($Number -ne $Group.Length) {
-                                            SubGraph "SAESXiGroup$($Number)" -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
+                                            $Random = Get-Random
+                                            SubGraph "SAESXiGroup$($Number)_$Random" -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
                                                 $Group[$Number] | ForEach-Object { node $_.Name @{Label=(Get-NodeIcon -Name $_.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows ($ESXiInfo = @{Version = $_.Info.ViVersion.ToString(); IP = try {$_.getManagmentAddresses().IPAddressToString} catch {"Unknown"}})) }}
                                             }
                                             $Number++
@@ -117,7 +118,8 @@ function Get-DiagBackupToViProxy {
                                                 $Group = Split-array -inArray $EsxiHosts -size 4
                                                 $Number = 0
                                                 while ($Number -ne $Group.Length) {
-                                                    SubGraph "ESXiGroup$($Number)" -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
+                                                    $Random = Get-Random
+                                                    SubGraph "ESXiGroup$($Number)_$Random" -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
                                                         $Group[$Number] | ForEach-Object { node $_.Name @{Label=(Get-NodeIcon -Name $_.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows ($ESXiInfo = @{Version = $_.Info.ViVersion.ToString(); IP = try {$_.getManagmentAddresses().IPAddressToString} catch {"Unknown"}}))}}
                                                     }
                                                     $Number++

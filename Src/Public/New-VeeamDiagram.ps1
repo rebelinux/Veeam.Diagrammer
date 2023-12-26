@@ -45,7 +45,7 @@ function New-VeeamDiagram {
 .PARAMETER EnableErrorDebug
     Control to enable error debugging.
 .NOTES
-    Version:        0.5.1
+    Version:        0.5.4
     Author(s):      Jonathan Colon
     Twitter:        @jcolonfzenpr
     Github:         rebelinux
@@ -133,7 +133,7 @@ param (
         HelpMessage = 'Please provide the path to the diagram output file'
     )]
     [ValidateScript( { Test-Path -Path $_ -IsValid })]
-    [string] $OutputFolderPath = (Join-Path ([System.IO.Path]::GetTempPath()) "$Filename.$Format"),
+    [string] $OutputFolderPath = [System.IO.Path]::GetTempPath(),
 
     [Parameter(
         Mandatory = $false,
@@ -411,7 +411,7 @@ process {
             foreach ($OutputFormat in $Format) {
                 if ($Filename) {
                     Try {
-                    if ($OutputFormat -ne "base64") {
+                        if ($OutputFormat -ne "base64") {
                             if($OutputFormat -ne "svg") {
                                 $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat $OutputFormat
                                 Write-ColorOutput -Color green  "Diagram '$FileName' has been saved to '$OutputFolderPath'."

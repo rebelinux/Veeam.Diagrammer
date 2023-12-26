@@ -5,7 +5,7 @@ function Get-DiagBackupToTape {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.3
+        Version:        0.5.4
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -52,7 +52,7 @@ function Get-DiagBackupToTape {
                                                     node $TSLibraryOBJ -NodeScript {$_.Id} @{Label=$TSLHASHTABLE.Label; fontname="Segoe Ui"}
                                                     if ($BackupTapeDrives) {
                                                         $TapeLibraryDrives = ($BackupTapeDrives | Where-Object {$_.LibraryId -eq $TSLibraryOBJ.Id} | Sort-Object -Property Name)
-                                                        if ($TapeLibraryDrives.count -le 4) {
+                                                        if ($TapeLibraryDrives.count -le 3) {
                                                             foreach ($TSDriveOBJ in $TapeLibraryDrives) {
                                                                 $TSDHASHTABLE = @{}
                                                                 $TSDriveOBJ.psobject.properties | ForEach-Object {$TSDHASHTABLE[$_.Name] = $_.Value }
@@ -61,10 +61,11 @@ function Get-DiagBackupToTape {
                                                             }
                                                         }
                                                         else {
-                                                            $Group = Split-array -inArray $TapeLibraryDrives -size 4
+                                                            $Group = Split-array -inArray $TapeLibraryDrives -size 3
                                                             $Number = 0
                                                             while ($Number -ne $Group.Length) {
-                                                                SubGraph "TDGroup$($Number)" -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
+                                                                $Random = Get-Random
+                                                                SubGraph "TDGroup$($Number)_$Random" -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
                                                                     $Group[$Number] | ForEach-Object {
                                                                         $TSDHASHTABLE = @{}
                                                                         $_.psobject.properties | ForEach-Object {$TSDHASHTABLE[$_.Name] = $_.Value }
