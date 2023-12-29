@@ -1,5 +1,11 @@
 # :arrows_clockwise: Veeam.Diagrammer Changelog
 
+## [0.5.4] - 2023-12.29
+
+### Changed
+
+- Misc fixes
+
 ## [0.5.3] - 2023-06.07
 
 ### Changed
