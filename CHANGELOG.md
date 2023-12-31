@@ -1,5 +1,11 @@
 # :arrows_clockwise: Veeam.Diagrammer Changelog
 
+## [0.5.5] - 2023-12.31
+
+### Fixed
+
+- Fix issue with Postgre Database #17
+  
 ## [0.5.4] - 2023-12.29
 
 ### Changed
