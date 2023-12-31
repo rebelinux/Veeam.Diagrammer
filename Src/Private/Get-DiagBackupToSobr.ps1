@@ -35,6 +35,11 @@ function Get-DiagBackupToSobr {
                     SubGraph MainSOBR -Attributes @{Label=$DiagramLabel ; fontsize=22; penwidth=1.5; labelloc='t'; style='dashed,rounded'; color=$SubGraphDebug.color} {
                         # Dummy Node used for subgraph centering
                         node DummySOBREPO @{Label=$DiagramDummyLabel; fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
+                        node SobrRepoLeft @{Label='SobrRepoLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                        node SobrRepoLeftt @{Label='SobrRepoLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                        node SobrRepoRight @{Label='SobrRepoRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                        edge SobrRepoLeft,SobrRepoLeftt,DummySOBREPO,SobrRepoRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
+                        rank SobrRepoLeft,SobrRepoLeftt,DummySOBREPO,SobrRepoRight
                         foreach ($SOBROBJ in $SobrRepo) {
                             $SubGraphName = Remove-SpecialChars -String $SOBROBJ.Name -SpecialChars '\- '
                             SubGraph $SubGraphName  -Attributes @{Label=$SOBROBJ.Name; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {

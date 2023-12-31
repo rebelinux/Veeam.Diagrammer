@@ -23,33 +23,60 @@ function Get-DiagBackupToViProxy {
             $VMwareBackupProxy = Get-VbrBackupProxyInfo -Type 'vmware'
             if ($BackupServerInfo) {
                 if ($Dir -eq 'LR') {
-                    $DiagramLabel = 'Backup Proxies'
+                    $DiagramLabel = 'VMware Backup Proxies'
                     $DiagramDummyLabel = ' '
                 } else {
                     $DiagramLabel = ' '
-                    $DiagramDummyLabel = 'Backup Proxies'
+                    $DiagramDummyLabel = 'VMware Backup Proxies'
                 }
-                node DummyBackupProxy @{Label=$DiagramDummyLabel;fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
                 if ($VMwareBackupProxy) {
-                    $VirtObjs = Get-VBRServer | Where-Object {$_.Type -eq 'VC'}
-                    $EsxiObjs = Get-VBRServer | Where-Object {$_.Type -eq 'Esxi' -and $_.IsStandaloneEsx() -eq 'True'}
-                    if ($VMwareBackupProxy) {
-                        SubGraph VMwareProxies -Attributes @{Label='VMware Backup Proxies'; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=18; penwidth=1.5} {
-                            node VMwareProxyMain @{Label='VMwareProxyMain'; shape='plain'; style=$EdgeDebug.style; color=$EdgeDebug.color}
-                            foreach ($ProxyObj in ($VMwareBackupProxy | Sort-Object)) {
-                                $PROXYHASHTABLE = @{}
-                                $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
-                                node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
-                                edge -From VMwareProxyMain -To $ProxyObj.Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
-                            }
-                            # if ($VirtObjs -or $EsxiObjs) {
-                            #     # Dummy Node used for subgraph centering (Always hidden)
-                            #     node VMWAREBackupProxyMain @{Label='VMWAREBackupProxyMain'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'}
-                            #     # Edge Lines from VMware Backup Proxies to Dummy Node VMWAREBackupProxyMain
-                            #     edge -from ($VMwareBackupProxy | Sort-Object).Name -to VMWAREBackupProxyMain:n @{style=$EdgeDebug.style; color=$EdgeDebug.color;}
-                            # }
-                        }
+                    $ProxiesAttr = @{
+                        Label = $DiagramLabel
+                        fontsize = 18
+                        penwidth = 1.5
+                        labelloc = 't'
+                        color=$SubGraphDebug.color
+                        style='dashed,rounded'
                     }
+                    SubGraph MainVMwareProxies -Attributes $ProxiesAttr -ScriptBlock {
+                        # Dummy Node used for subgraph centering
+                        node DummyVMwareProxy @{Label=$DiagramDummyLabel; fontsize=18; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
+                        node ViLeft @{Label='ViLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                        node ViLeftt @{Label='ViLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                        node ViRight @{Label='ViRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                        edge ViLeft,ViLeftt,DummyVMwareProxy,ViRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
+                        rank ViLeft,ViLeftt,DummyVMwareProxy,ViRight
+                        foreach ($ProxyObj in $VMwareBackupProxy) {
+                            $PROXYHASHTABLE = @{}
+                            $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
+                            node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label; fontname="Segoe Ui"}
+                            edge -From DummyVMwareProxy -To $ProxyObj.Name @{constraint="true"; minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                        }
+                        Rank $VMwareBackupProxy.Name
+                    }
+
+                    if ($Dir -eq 'LR') {
+                        edge $BackupServerInfo.Name -to DummyVMwareProxy @{minlen=3;}
+                    } else {
+                        edge $BackupServerInfo.Name -to DummyVMwareProxy @{minlen=3;}
+                    }
+                    # $VirtObjs = Get-VBRServer | Where-Object {$_.Type -eq 'VC'}
+                    # $EsxiObjs = Get-VBRServer | Where-Object {$_.Type -eq 'Esxi' -and $_.IsStandaloneEsx() -eq 'True'}
+                    # SubGraph MainVMwareProxies -Attributes @{Label=$DiagramLabel; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=18; penwidth=1.5} {
+                    #     node DummyVMwareProxy @{Label='VMwareProxyMain'; shape='plain'; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                    #     foreach ($ProxyObj in ($VMwareBackupProxy | Sort-Object)) {
+                    #         $PROXYHASHTABLE = @{}
+                    #         $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
+                    #         node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label}
+                    #         edge -From DummyVMwareProxy -To $ProxyObj.Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
+                    #     }
+                    #     # if ($VirtObjs -or $EsxiObjs) {
+                    #     #     # Dummy Node used for subgraph centering (Always hidden)
+                    #     #     node VMWAREBackupProxyMain @{Label='VMWAREBackupProxyMain'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'}
+                    #     #     # Edge Lines from VMware Backup Proxies to Dummy Node VMWAREBackupProxyMain
+                    #     #     edge -from ($VMwareBackupProxy | Sort-Object).Name -to VMWAREBackupProxyMain:n @{style=$EdgeDebug.style; color=$EdgeDebug.color;}
+                    #     # }
+                    # }
 
                     # if ($VirtObjs -or $EsxiObjs) {
                     #     SubGraph vSphereMAIN -Attributes @{Label='vSphere Infrastructure'; style='dashed,rounded'; color=$SubGraphDebug.color; penwidth=1} {
@@ -151,11 +178,11 @@ function Get-DiagBackupToViProxy {
                     #     }
                     # }
                 }
-                edge -from $BackupServerInfo.Name -to DummyBackupProxy:n @{minlen=2}
+                # # edge -from $BackupServerInfo.Name -to DummyBackupProxy:n @{minlen=2}
 
-                if ($VMwareBackupProxy) {
-                    edge -from DummyBackupProxy:s -to VMwareProxyMain:n @{style=$EdgeDebug.style; color=$EdgeDebug.color}
-                }
+                # if ($VMwareBackupProxy) {
+                #     edge -from DummyBackupProxy -to VMwareProxyMain @{style=$EdgeDebug.style; color=$EdgeDebug.color}
+                # }
             }
         }
         catch {

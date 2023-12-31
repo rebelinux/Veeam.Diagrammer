@@ -211,7 +211,8 @@ function New-VeeamDiagram {
 
         $MainGraphLabel = Switch ($DiagramType) {
             'Backup-to-Sobr' {'Scale-Out Backup Repository Diagram'}
-            'Backup-to-Proxy' {'Backup Proxy Diagram'}
+            'Backup-to-vSphere-Proxy' {'VMware Backup Proxy Diagram'}
+            'Backup-to-HyperV-Proxy' {'HyperV Backup Proxy Diagram'}
             'Backup-to-Repository' {'Backup Repository Diagram'}
             'Backup-to-WanAccelerator' {'Wan Accelerators Diagram'}
             'Backup-to-Tape' {'Tape Infrastructure Diagram'}

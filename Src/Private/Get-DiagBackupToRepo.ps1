@@ -40,6 +40,11 @@ function Get-DiagBackupToRepo {
                     SubGraph MainRepos -Attributes @{Label=$DiagramLabel; fontsize=22; penwidth=1; labelloc='t'; style='dashed,rounded'; color=$SubGraphDebug.color} {
                         # Node used for subgraph centering
                         node BackupRepository @{Label=$DiagramDummyLabel; fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
+                        node RepoLeft @{Label='RepoLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                        node RepoLeftt @{Label='RepoLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                        node RepoRight @{Label='RepoRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                        edge RepoLeft,RepoLeftt,BackupRepository,RepoRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
+                        rank RepoLeft,RepoLeftt,BackupRepository,RepoRight
                         if ($LocalBackupRepo) {
                             SubGraph LocalRepos -Attributes @{Label='Local Repository'; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
                                 # Node used for subgraph centering

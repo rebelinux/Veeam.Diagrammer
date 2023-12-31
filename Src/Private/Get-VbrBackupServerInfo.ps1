@@ -97,8 +97,6 @@ function Get-VbrBackupServerInfo {
                     $Rows = @{
                         Role = 'Database Server'
                         IP = $DatabaseServerIP
-                        "DB Type" = $VeeamDBFlavor.SqlActiveConfiguration
-
                     }
 
                     if ($VeeamDBInfo.SqlInstanceName) {

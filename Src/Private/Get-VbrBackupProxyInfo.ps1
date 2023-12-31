@@ -40,8 +40,13 @@ function Get-VbrBackupProxyInfo {
                     $BPRows = @{
                         # Role = $Role
                         Type = Switch ($Type) {
-                            'vmware' {$BackupProxy.ChassisType}
-                            'hyperv' {$BackupProxy.Info.Type}
+                            'vmware' {$BackupProxy.Host.Type}
+                            'hyperv' {
+                                Switch ($BackupProxy.Info.Type) {
+                                    'HvOffhost' {"Off-Host Backup"}
+                                    'HvOnhost' {"On-Host Backup"}
+                                }
+                            }
                         }
                         IP = Get-NodeIP -HostName $BackupProxy.Host.Name
                         Status = Switch ($BackupProxy.isDisabled) {
