@@ -26,15 +26,21 @@ function Get-DiagBackupToTape {
             $BackupTapeDrives = Get-VbrBackupTapeDrivesInfo
 
             if ($BackupServerInfo) {
-
+                if ($Dir -eq 'LR') {
+                    $DiagramLabel = 'Tape Servers'
+                    $DiagramDummyLabel = ' '
+                } else {
+                    $DiagramLabel = ' '
+                    $DiagramDummyLabel = 'Tape Servers'
+                }
                 if ($BackupTapeServers) {
-                    SubGraph MainTapeInfra -Attributes @{Label=''; fontsize=18; penwidth=1; labelloc='b'; style=$SubGraphDebug.style; color=$SubGraphDebug.color} {
+                    SubGraph MainTapeInfra -Attributes @{Label=$DiagramLabel; fontsize=22; penwidth=1; labelloc='t'; style='dashed,rounded'; color=$SubGraphDebug.color} {
                         if ($BackupTapeServers) {
                             # Node used for subgraph centering
-                            node TapeServersLabel @{Label='Tape Servers'; fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
+                            node TapeServersLabel @{Label=$DiagramDummyLabel; fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
                             SubGraph TapeServers -Attributes @{Label=' '; fontsize=18; penwidth=1.5; labelloc='t'; style=$SubGraphDebug.style; color=$SubGraphDebug.color} {
                                 # Node used for subgraph centering
-                                node TapeServerDummy @{Label='TapeServerDummy'; shape='plain'; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                node TapeServerDummy @{Label=$DiagramDummyLabel; shape='plain'; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                 $Rank = @()
                                 foreach ($TSOBJ in ($BackupTapeServers | Sort-Object -Property Name)) {
                                     $TSSubGraph = Remove-SpecialChars -String $TSOBJ.id -SpecialChars '\-'
@@ -92,7 +98,7 @@ function Get-DiagBackupToTape {
                                 }
                                 ($BackupTapeServers | Sort-Object -Property Name) | ForEach-Object { edge -from TapeServerDummy -to $_.Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}}
                             }
-                            edge -from TapeServersLabel:s -to TapeServerDummy:n @{style=$EdgeDebug.style; color=$EdgeDebug.color}
+                            edge -from TapeServersLabel -to TapeServerDummy @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                         }
                     }
                     edge -from $BackupServerInfo.Name -to TapeServersLabel @{minlen=2}

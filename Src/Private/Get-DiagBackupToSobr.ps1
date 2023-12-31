@@ -24,11 +24,17 @@ function Get-DiagBackupToSobr {
             $SobrRepo = Get-VbrBackupSobrInfo
 
             if ($SobrRepo) {
-                $Rank = @()
+                if ($Dir -eq 'LR') {
+                    $DiagramLabel = 'SOBR Repository'
+                    $DiagramDummyLabel = ' '
+                } else {
+                    $DiagramLabel = ' '
+                    $DiagramDummyLabel = 'SOBR Repository'
+                }
                 if ($SobrRepo) {
-                    SubGraph MainSOBR -Attributes @{Label=''; fontsize=18; penwidth=1.5; labelloc='t'; style=$SubGraphDebug.style; color=$SubGraphDebug.color} {
+                    SubGraph MainSOBR -Attributes @{Label=$DiagramLabel ; fontsize=22; penwidth=1.5; labelloc='t'; style='dashed,rounded'; color=$SubGraphDebug.color} {
                         # Dummy Node used for subgraph centering
-                        node SOBREPO @{Label='SOBR Repository'; fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
+                        node DummySOBREPO @{Label=$DiagramDummyLabel; fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
                         foreach ($SOBROBJ in $SobrRepo) {
                             $SubGraphName = Remove-SpecialChars -String $SOBROBJ.Name -SpecialChars '\- '
                             SubGraph $SubGraphName  -Attributes @{Label=$SOBROBJ.Name; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
@@ -59,10 +65,10 @@ function Get-DiagBackupToSobr {
 
                                 } else {$SOBROBJ.Performance | ForEach-Object {edge -from $SOBROBJ.Name -to $SOBROBJ.Capacity.Name,$_.Name @{minlen=2}} | Select-Object -Unique}
                             }
-                            edge -From SOBREPO -To $SOBROBJ.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                            edge -From DummySOBREPO -To $SOBROBJ.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                         }
                     }
-                    edge -from $BackupServerInfo.Name -to SOBREPO @{minlen=3}
+                    edge -from $BackupServerInfo.Name -to DummySOBREPO @{minlen=3}
 
                 }
             }

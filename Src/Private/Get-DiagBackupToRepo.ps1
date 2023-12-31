@@ -28,23 +28,33 @@ function Get-DiagBackupToRepo {
             $ArchiveObjStorage = Get-VbrBackupArchObjRepoInfo
 
             if ($BackupServerInfo) {
+                if ($Dir -eq 'LR') {
+                    $DiagramLabel = 'Backup Repositories'
+                    $DiagramDummyLabel = ' '
+                } else {
+                    $DiagramLabel = ' '
+                    $DiagramDummyLabel = 'Backup Repository'
+                }
 
                 if ($BackupRepo) {
-                    SubGraph MainRepos -Attributes @{Label=' '; fontsize=18; penwidth=1; labelloc='b'; style=$SubGraphDebug.style; color=$SubGraphDebug.color} {
+                    SubGraph MainRepos -Attributes @{Label=$DiagramLabel; fontsize=22; penwidth=1; labelloc='t'; style='dashed,rounded'; color=$SubGraphDebug.color} {
                         # Node used for subgraph centering
-                        node BackupRepository @{Label='Backup Repositories'; fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
-                        $Rank = @()
+                        node BackupRepository @{Label=$DiagramDummyLabel; fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
                         if ($LocalBackupRepo) {
                             SubGraph LocalRepos -Attributes @{Label='Local Repository'; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
                                 # Node used for subgraph centering
                                 node LocalReposDummy @{Label='LocalReposDummy'; style=$SubGraphDebug.style; color=$SubGraphDebug.color; shape='plain'}
-                                $Rank = @()
                                 if ($LocalBackupRepo.count -le 3) {
                                     foreach ($REPOOBJ in ($LocalBackupRepo | Sort-Object -Property Name)) {
                                         $REPOHASHTABLE = @{}
                                         $REPOOBJ.psobject.properties | ForEach-Object {$REPOHASHTABLE[$_.Name] = $_.Value }
                                         node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label; fontname="Segoe Ui"}
                                     }
+
+                                    if ($Dir -eq 'LR') {
+                                        rank LocalReposDummy,$LocalBackupRepo.Name
+                                    }
+
                                     edge -from LocalReposDummy -to $LocalBackupRepo.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                 }
                                 else {
@@ -61,6 +71,11 @@ function Get-DiagBackupToRepo {
                                         }
                                         $Number++
                                     }
+
+                                    if ($Dir -eq 'LR') {
+                                        rank LocalReposDummy,$Group[0].Name
+                                    }
+
                                     edge -From LocalReposDummy -To $Group[0].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                     $Start = 0
                                     $LocalRepoNum = 1
@@ -71,7 +86,6 @@ function Get-DiagBackupToRepo {
                                     }
                                 }
                             }
-                            $Rank += 'clusterLocalRepos'
                             edge -from BackupRepository -to LocalReposDummy @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                         }
                         if ($RemoteBackupRepo) {
@@ -83,6 +97,11 @@ function Get-DiagBackupToRepo {
                                         $REPOOBJ.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
                                         node $REPOOBJ -NodeScript {$_.Name} @{Label=$REPOHASHTABLE.Label; fontname="Segoe Ui"}
                                     }
+
+                                    if ($Dir -eq 'LR') {
+                                        rank RemoteReposDummy,$RemoteBackupRepo.Name
+                                    }
+
                                     edge -from RemoteReposDummy -to $RemoteBackupRepo.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                 }
                                 else {
@@ -99,6 +118,11 @@ function Get-DiagBackupToRepo {
                                         }
                                         $Number++
                                     }
+
+                                    if ($Dir -eq 'LR') {
+                                        rank RemoteReposDummy,$Group[0].Name
+                                    }
+
                                     edge -From RemoteReposDummy -To $Group[0].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                     $Start = 0
                                     $RemoteRepoNum = 1
@@ -109,7 +133,6 @@ function Get-DiagBackupToRepo {
                                     }
                                 }
                             }
-                            $Rank += 'clusterRemoteRepos'
                             edge -from BackupRepository -to RemoteReposDummy @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
 
                         }
@@ -121,6 +144,10 @@ function Get-DiagBackupToRepo {
                                         $OBJHASHTABLE = @{}
                                         $STORAGEOBJ.psobject.properties | ForEach-Object { $OBJHASHTABLE[$_.Name] = $_.Value }
                                         node $STORAGEOBJ -NodeScript {$_.Name} @{Label=$OBJHASHTABLE.Label; fontname="Segoe Ui"}
+                                    }
+
+                                    if ($Dir -eq 'LR') {
+                                        rank ObjectStorageDummy,$ObjStorage.Name
                                     }
                                     edge -from ObjectStorageDummy -to $ObjStorage.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                 }
@@ -138,6 +165,11 @@ function Get-DiagBackupToRepo {
                                         }
                                         $Number++
                                     }
+
+                                    if ($Dir -eq 'LR') {
+                                        rank ObjectStorageDummy,$Group[0].Name
+                                    }
+
                                     edge -From ObjectStorageDummy -To $Group[0].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                     $Start = 0
                                     $ObjectStorageNum = 1
@@ -148,7 +180,6 @@ function Get-DiagBackupToRepo {
                                     }
                                 }
                             }
-                            $Rank += 'clusterObjectStorage'
                             edge -from BackupRepository -to ObjectStorageDummy @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                         }
                         if ($ArchiveObjStorage) {
@@ -160,7 +191,13 @@ function Get-DiagBackupToRepo {
                                         $STORAGEArchiveOBJ.psobject.properties | ForEach-Object { $ARCHOBJHASHTABLE[$_.Name] = $_.Value }
                                         node $STORAGEArchiveOBJ -NodeScript {$_.Name} @{Label=$ARCHOBJHASHTABLE.Label; fontname="Segoe Ui"}
                                     }
-                                    edge -from ArchiveObjectStorageDummy -to $ArchiveObjStorage.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+
+                                    if ($Dir -eq 'LR') {
+                                        rank ArchiveObjectStorageDummy,$ArchiveObjStorage.Name
+                                        edge -from ArchiveObjectStorageDummy -to $ArchiveObjStorage.Name @{constraint="false";minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                    } else {
+                                        edge -from ArchiveObjectStorageDummy -to $ArchiveObjStorage.Name @{constraint="true";minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                    }
                                 }
                                 else {
                                     $Group = Split-array -inArray ($ArchiveObjStorage| Sort-Object -Property Name) -size 3
@@ -176,6 +213,11 @@ function Get-DiagBackupToRepo {
                                         }
                                         $Number++
                                     }
+
+                                    if ($Dir -eq 'LR') {
+                                        rank ArchiveObjectStorageDummy,$Group[0].Name
+                                    }
+
                                     edge -From ArchiveObjectStorageDummy -To $Group[0].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                     $Start = 0
                                     $ArchiveObjectStorageNum = 1
@@ -186,13 +228,16 @@ function Get-DiagBackupToRepo {
                                     }
                                 }
                             }
-                            $Rank += 'clusterArchiveObjectStorage'
                             edge -from BackupRepository -to ArchiveObjectStorageDummy @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
 
                         }
-                        rank $Rank
                     }
-                    edge -from $BackupServerInfo.Name -to BackupRepository @{minlen=3}
+
+                    if ($Dir -eq 'LR') {
+                        edge -from $BackupServerInfo.Name -to BackupRepository @{minlen=3}
+                    } else {
+                        edge -from $BackupServerInfo.Name -to BackupRepository @{minlen=3}
+                    }
                 }
             }
         }

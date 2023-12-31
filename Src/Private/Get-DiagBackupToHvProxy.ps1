@@ -21,8 +21,15 @@ function Get-DiagBackupToHvProxy {
     process {
         try {
             $HyperVBackupProxy = Get-VbrBackupProxyInfo -Type 'hyperv'
+                if ($Dir -eq 'LR') {
+                    $DiagramLabel = 'Backup Proxies'
+                    $DiagramDummyLabel = ' '
+                } else {
+                    $DiagramLabel = ' '
+                    $DiagramDummyLabel = 'Backup Proxies'
+                }
                 if ($BackupServerInfo) {
-                    node DummyBackupProxy @{Label='Backup Proxies';fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
+                    node DummyBackupProxy @{Label=$DiagramDummyLabel;fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
                     if ($HyperVBackupProxy) {
                         $HvClusterObjs = Get-VBRServer | Where-Object {$_.Type -eq 'HvCluster'}
                         $HyperVServerObjs = Get-VBRServer | Where-Object {$_.Type -eq 'HvServer' -and $_.HasParent() -like 'False'}

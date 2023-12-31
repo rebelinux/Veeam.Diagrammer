@@ -25,7 +25,6 @@ function Get-VbrBackupRepoInfo {
             [Array]$ScaleOuts = Get-VBRBackupRepository -ScaleOut
             $ViBackupProxy = Get-VBRViProxy
             $HvBackupProxy = Get-VBRHvProxy
-            $BackupProxies = $ViBackupProxy + $HvBackupProxy
 
             if ($ScaleOuts) {
                 $Extents = Get-VBRRepositoryExtent -Repository $ScaleOuts
@@ -52,7 +51,7 @@ function Get-VbrBackupRepoInfo {
 
                     $Name = Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\'
 
-                    if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($BackupRepo.Host.Name -in $BackupProxies.Host.Name)) {
+                    if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($BackupRepo.Host.Name -in $ViBackupProxy.Host.Name -or $BackupRepo.Host.Name -in $HvBackupProxy.Host.Name)) {
                         $BackupType = 'Proxy'
                     } else {$BackupType = $BackupRepo.Type}
 
