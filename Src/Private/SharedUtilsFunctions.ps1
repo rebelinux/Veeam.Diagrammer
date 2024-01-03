@@ -101,10 +101,18 @@ function Get-NodeIP {
     )
 
     try {
-        $IP = try {[System.Net.Dns]::GetHostAddresses($Hostname).IPAddressToString} catch { $null}
-        $NodeIP = Switch ([string]::IsNullOrEmpty($IP)) {
+        try {
+            if ("InterNetwork" -in [System.Net.Dns]::GetHostAddresses($Hostname).AddressFamily) {
+                $IPADDR = ([System.Net.Dns]::GetHostAddresses($Hostname) | Where-Object {$_.AddressFamily -eq 'InterNetwork'}).IPAddressToString
+            } elseif ("InterNetworkV6" -in [System.Net.Dns]::GetHostAddresses($Hostname).AddressFamily) {
+                $IPADDR = ([System.Net.Dns]::GetHostAddresses($Hostname) | Where-Object {$_.AddressFamily -eq 'InterNetworkV6'}).IPAddressToString
+            } else {
+                $IPADDR = 127.0.0.1
+            }
+        } catch { $null }
+        $NodeIP = Switch ([string]::IsNullOrEmpty($IPADDR)) {
             $true {'Unknown'}
-            $false {$IP}
+            $false {$IPADDR}
             default {$Hostname}
         }
     }
