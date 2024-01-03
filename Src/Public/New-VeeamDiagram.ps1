@@ -6,6 +6,10 @@ function New-VeeamDiagram {
         Diagram the configuration of Veeam Backup & Replication infrastructure in PDF/SVG/DOT/PNG formats using PSGraph and Graphviz.
     .PARAMETER DiagramType
         Specifies the type of veeam vbr diagram that will be generated.
+        The supported output diagrams are:
+            'Backup-to-Sobr', 'Backup-to-vSphere-Proxy', 'Backup-to-HyperV-Proxy',
+            'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-Tape',
+            'Backup-to-All'
     .PARAMETER Target
         Specifies the IP/FQDN of the system to connect.
         Multiple targets may be specified, separated by a comma.
@@ -24,6 +28,8 @@ function New-VeeamDiagram {
         Multiple output formats may be specified, separated by a comma.
     .PARAMETER Direction
         Set the direction in which resource are plotted on the visualization
+        The supported directions are:
+            'top-to-bottom', 'left-to-right'
         By default, direction will be set to top-to-bottom.
     .PARAMETER NodeSeparation
         Controls Node separation ratio in visualization
@@ -33,7 +39,10 @@ function New-VeeamDiagram {
         By default, NodeSeparation will be set to .75.
     .PARAMETER EdgeType
         Controls how edges lines appear in visualization
+        The supported edge type are:
+            'polyline', 'curved', 'ortho', 'line', 'spline'
         By default, EdgeType will be set to spline.
+        References: https://graphviz.org/docs/attrs/splines/
     .PARAMETER OutputFolderPath
         Specifies the folder path to save the diagram.
     .PARAMETER Filename
@@ -221,10 +230,12 @@ function New-VeeamDiagram {
 
         if ($EnableEdgeDebug) {
             $EdgeDebug = @{style='filled'; color='red'}
+            $URLIcon = $true
         } else {$EdgeDebug = @{style='invis'; color='red'}}
 
         if ($EnableSubGraphDebug) {
             $SubGraphDebug = @{style='dashed'; color='red'}
+            $URLIcon = $true
         } else {$SubGraphDebug = @{style='invis'; color='gray'}}
 
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
