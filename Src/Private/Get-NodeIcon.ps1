@@ -13,6 +13,8 @@ Function Get-NodeIcon {
 
     if ($Type -eq 'NoIcon') {
         $ICON = 'NoIcon'
+    } elseif ($URLIcon) {
+        $ICON = 'NoIcon'
     } elseif ($images[$Type]) {
         $ICON = $images[$Type]
     } else {$ICON = "no_icon.png"}
