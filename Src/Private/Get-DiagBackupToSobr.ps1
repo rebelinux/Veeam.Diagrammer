@@ -5,7 +5,7 @@ function Get-DiagBackupToSobr {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.3
+        Version:        0.5.6
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -32,36 +32,38 @@ function Get-DiagBackupToSobr {
                     $DiagramDummyLabel = 'SOBR Repository'
                 }
                 if ($SobrRepo) {
-                    SubGraph MainSOBR -Attributes @{Label=$DiagramLabel ; fontsize=22; penwidth=1.5; labelloc='t'; style='dashed,rounded'; color=$SubGraphDebug.color} {
+                    SubGraph MainSubGraph -Attributes @{Label=$DiagramLabel ; fontsize=22; penwidth=1.5; labelloc='t'; style='dashed,rounded'; color=$SubGraphDebug.color} {
                         # Dummy Node used for subgraph centering
                         node DummySOBREPO @{Label=$DiagramDummyLabel; fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
-                        node SobrRepoLeft @{Label='SobrRepoLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                        node SobrRepoLeftt @{Label='SobrRepoLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                        node SobrRepoRight @{Label='SobrRepoRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                        edge SobrRepoLeft,SobrRepoLeftt,DummySOBREPO,SobrRepoRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
-                        rank SobrRepoLeft,SobrRepoLeftt,DummySOBREPO,SobrRepoRight
+                        if ($Dir -eq 'TB') {
+                            node SobrRepoLeft @{Label='SobrRepoLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                            node SobrRepoLeftt @{Label='SobrRepoLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                            node SobrRepoRight @{Label='SobrRepoRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                            edge SobrRepoLeft,SobrRepoLeftt,DummySOBREPO,SobrRepoRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
+                            rank SobrRepoLeft,SobrRepoLeftt,DummySOBREPO,SobrRepoRight
+                        }
                         foreach ($SOBROBJ in $SobrRepo) {
                             $SubGraphName = Remove-SpecialChars -String $SOBROBJ.Name -SpecialChars '\- '
                             SubGraph $SubGraphName  -Attributes @{Label=$SOBROBJ.Name; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
                                 $SOBRHASHTABLE = @{}
                                 $SOBROBJ.psobject.properties | ForEach-Object { $SOBRHASHTABLE[$_.Name] = $_.Value }
-                                node $SOBROBJ -NodeScript {$_.Name} @{Label=$SOBRHASHTABLE.Label; fontname="Segoe Ui"}
+                                node $SOBROBJ -NodeScript {$_.Name} @{Label=$SOBRHASHTABLE.Label; fontname="Segoe Ui"; shape="plain";}
                                 if ($SOBROBJ.Performance) {
-                                    SubGraph "$($SubGraphName)Performance" -Attributes @{Label="Performance Extent"; fontsize=18; penwidth=1.5; labelloc='b'; style="dashed,rounded"} {
+                                    SubGraph "$($SubGraphName)Performance" -Attributes @{Label="Performance Extent"; fontsize=18; penwidth=1.5; labelloc='b'; style="dashed,rounded";} {
 
-                                        $SOBROBJ.Performance | ForEach-Object {node $_.Name @{Label=Get-NodeIcon -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows; fontname="Segoe Ui"}}
+                                        $SOBROBJ.Performance | ForEach-Object {node $_.Name @{Label=Get-NodeIcon -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows; fontname="Segoe Ui"; shape="plain"}}
                                     }
                                 }
                                 if ($SOBROBJ.Capacity) {
                                     SubGraph "$($SubGraphName)Capacity" -Attributes @{Label="Capacity Extent"; fontsize=18; penwidth=1.5; labelloc='b'; style="dashed,rounded"} {
 
-                                        $SOBROBJ.Capacity | ForEach-Object {node $_.Name @{Label=Get-NodeIcon -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows; fontname="Segoe Ui"}}
+                                        $SOBROBJ.Capacity | ForEach-Object {node $_.Name @{Label=Get-NodeIcon -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows; fontname="Segoe Ui"; shape="plain"}}
                                     }
                                 }
                                 if ($SOBROBJ.Archive) {
                                     SubGraph "$($SubGraphName)Archive" -Attributes @{Label="Archive Extent"; fontsize=18; penwidth=1.5; labelloc='b'; style="dashed,rounded"} {
 
-                                        $SOBROBJ.Archive | ForEach-Object {node $_.Name @{Label=Get-NodeIcon -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows; fontname="Segoe Ui"}}
+                                        $SOBROBJ.Archive | ForEach-Object {node $_.Name @{Label=Get-NodeIcon -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows; fontname="Segoe Ui"; shape="plain"}}
                                     }
                                 }
 

@@ -20,4 +20,5 @@ $Images = @{
     'VBR_Tape_Library' = 'Tape_Library.png'
     'VBR_Tape_Drive' = 'Tape_Drive.png'
     "VBR_Server_DB_PG" = "PostGre_SQL_DB.png"
+    "VBR_LOGO_Footer" = "verified_recoverability.png"
 }

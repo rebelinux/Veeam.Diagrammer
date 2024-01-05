@@ -5,7 +5,7 @@ function Get-DiagBackupToTape {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.4
+        Version:        0.5.6
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -34,15 +34,17 @@ function Get-DiagBackupToTape {
                     $DiagramDummyLabel = 'Tape Servers'
                 }
                 if ($BackupTapeServers) {
-                    SubGraph MainTapeInfra -Attributes @{Label=$DiagramLabel; fontsize=22; penwidth=1; labelloc='t'; style='dashed,rounded'; color=$SubGraphDebug.color} {
+                    SubGraph MainSubGraph -Attributes @{Label=$DiagramLabel; fontsize=22; penwidth=1; labelloc='t'; style='dashed,rounded'; color=$SubGraphDebug.color} {
                         if ($BackupTapeServers) {
                             # Node used for subgraph centering
                             node TapeServersLabel @{Label=$DiagramDummyLabel; fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
-                            node TapeLeft @{Label='TapeLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            node TapeLeftt @{Label='TapeLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            node TapeRight @{Label='TapeRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            edge TapeLeft,TapeLeftt,TapeServersLabel,TapeRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
-                            rank TapeLeft,TapeLeftt,TapeServersLabel,TapeRight
+                            if ($Dir -eq "TB") {
+                                node TapeLeft @{Label='TapeLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                                node TapeLeftt @{Label='TapeLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                                node TapeRight @{Label='TapeRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                                edge TapeLeft,TapeLeftt,TapeServersLabel,TapeRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                rank TapeLeft,TapeLeftt,TapeServersLabel,TapeRight
+                            }
                             SubGraph TapeServers -Attributes @{Label=' '; fontsize=18; penwidth=1.5; labelloc='t'; style=$SubGraphDebug.style; color=$SubGraphDebug.color} {
                                 # Node used for subgraph centering
                                 node TapeServerDummy @{Label=$DiagramDummyLabel; shape='plain'; style=$EdgeDebug.style; color=$EdgeDebug.color}

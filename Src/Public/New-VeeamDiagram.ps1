@@ -54,7 +54,7 @@ function New-VeeamDiagram {
     .PARAMETER EnableErrorDebug
         Control to enable error debugging.
     .NOTES
-        Version:        0.5.4
+        Version:        0.5.6
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -142,6 +142,13 @@ function New-VeeamDiagram {
         )]
         [ValidateScript( { Test-Path -Path $_ -IsValid })]
         [string] $OutputFolderPath = [System.IO.Path]::GetTempPath(),
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Please provide the path to the custom logo'
+        )]
+        [ValidateScript( { Test-Path -Path $_ -IsValid })]
+        [string] $Logo,
 
         [Parameter(
             Mandatory = $false,
@@ -261,7 +268,6 @@ function New-VeeamDiagram {
             imagepath = $IconPath
             nodesep = $NodeSeparation
             ranksep = $SectionSeparation
-            # size = "7.5,10"
         }
     }
 
@@ -300,7 +306,7 @@ function New-VeeamDiagram {
                     arrowsize = 1
                 }
 
-                SubGraph MainGraph -Attributes @{Label=(Get-HTMLLabel -Label $MainGraphLabel -Type "VBR_LOGO" ); fontsize=24; penwidth=0} {
+                SubGraph MainGraph -Attributes @{Label=(Get-HTMLLabel -Label $MainGraphLabel -Type "VBR_LOGO"); fontsize=24; penwidth=0} {
 
                     SubGraph BackupServer -Attributes @{Label='Backup Server'; style="rounded"; bgcolor="#ceedc4"; fontsize=18; penwidth=2} {
                         if (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and $EMServerInfo) {
@@ -313,9 +319,9 @@ function New-VeeamDiagram {
                             $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
                             $EMServerInfo.psobject.properties | ForEach-Object { $EMHASHTABLE[$_.Name] = $_.Value }
 
-                            node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'}
-                            node $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label; fillColor='#ceedc4'}
-                            node $EMServerInfo.Name -Attributes @{Label=$EMHASHTABLE.Label; fillColor='#ceedc4'}
+                            node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
+                            node $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
+                            node $EMServerInfo.Name -Attributes @{Label=$EMHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
 
                             if ($Dir -eq 'LR') {
                                 rank $EMServerInfo.Name,$DatabaseServerInfo.Name
@@ -335,8 +341,8 @@ function New-VeeamDiagram {
                             $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
                             $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
 
-                            node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'}
-                            node $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label; fillColor='#ceedc4'}
+                            node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
+                            node $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
 
                             if ($Dir -eq 'LR') {
                                 rank $BackupServerInfo.Name,$DatabaseServerInfo.Name
@@ -354,8 +360,8 @@ function New-VeeamDiagram {
                             $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
                             $EMServerInfo.psobject.properties | ForEach-Object { $EMHASHTABLE[$_.Name] = $_.Value }
 
-                            node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'}
-                            node $EMServerInfo.Name -Attributes @{Label=$EMHASHTABLE.Label; fillColor='#ceedc4'}
+                            node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
+                            node $EMServerInfo.Name -Attributes @{Label=$EMHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
 
                             if ($Dir -eq 'LR') {
                                 rank $EMServerInfo.Name,$BackupServerInfo.Name
@@ -371,7 +377,7 @@ function New-VeeamDiagram {
                             node Left @{Label='Left'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
                             node Leftt @{Label='Leftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
                             node Right @{Label='Right'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'}
+                            node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
                             edge Left,Leftt,$BackupServerInfo.Name,Right @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                             rank Left,Leftt,$BackupServerInfo.Name,Right
                         }
@@ -439,6 +445,15 @@ function New-VeeamDiagram {
                         Get-DiagBackupToTape
                     }
                 }
+                SubGraph Legend @{Label=" "; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=1} {
+                    if ($Logo) {
+                        node LegendTable -Attributes @{Label=(Get-HTMLTable -Rows 'Author: Jonathan Colon Feliciano','Company: Zen PR Solutions' -TableBorder 0 -CellBorder 0 -align 'left' -Logo $Logo); shape='plain'}
+                    } else {
+                        node LegendTable -Attributes @{Label=(Get-HTMLTable -Rows 'Author: Jonathan Colon Feliciano','Company: Zen PR Solutions' -TableBorder 0 -CellBorder 0 -align 'left' -Logo "VBR_LOGO_Footer"); shape='plain'}
+                    }
+                }
+                inline {rank="sink"; "Legend"; "LegendTable";}
+                edge -from MainSubGraph:s -to LegendTable @{minlen=5; constrains='false'; style=$EdgeDebug.style; color=$EdgeDebug.color}
             }
         }
     }

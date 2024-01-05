@@ -5,7 +5,7 @@ function Get-DiagBackupToViProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.4
+        Version:        0.5.6
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -38,14 +38,16 @@ function Get-DiagBackupToViProxy {
                         color=$SubGraphDebug.color
                         style='dashed,rounded'
                     }
-                    SubGraph MainVMwareProxies -Attributes $ProxiesAttr -ScriptBlock {
+                    SubGraph MainSubGraph -Attributes $ProxiesAttr -ScriptBlock {
                         # Dummy Node used for subgraph centering
                         node DummyVMwareProxy @{Label=$DiagramDummyLabel; fontsize=18; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
-                        node ViLeft @{Label='ViLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                        node ViLeftt @{Label='ViLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                        node ViRight @{Label='ViRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                        edge ViLeft,ViLeftt,DummyVMwareProxy,ViRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
-                        rank ViLeft,ViLeftt,DummyVMwareProxy,ViRight
+                        if ($Dir -eq "TB") {
+                            node ViLeft @{Label='ViLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                            node ViLeftt @{Label='ViLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                            node ViRight @{Label='ViRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                            edge ViLeft,ViLeftt,DummyVMwareProxy,ViRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
+                            rank ViLeft,ViLeftt,DummyVMwareProxy,ViRight
+                        }
                         foreach ($ProxyObj in $VMwareBackupProxy) {
                             $PROXYHASHTABLE = @{}
                             $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }

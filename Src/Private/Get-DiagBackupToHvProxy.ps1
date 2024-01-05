@@ -5,7 +5,7 @@ function Get-DiagBackupToHvProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.3
+        Version:        0.5.6
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -37,14 +37,16 @@ function Get-DiagBackupToHvProxy {
                     color=$SubGraphDebug.color
                     style='dashed,rounded'
                 }
-                SubGraph MainHyperVProxies -Attributes $ProxiesAttr -ScriptBlock {
+                SubGraph MainSubGraph -Attributes $ProxiesAttr -ScriptBlock {
                     # Dummy Node used for subgraph centering
                     node DummyHyperVProxy @{Label=$DiagramDummyLabel; fontsize=18; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
-                    node HvLeft @{Label='HvLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                    node HvLeftt @{Label='HvLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                    node HvRight @{Label='HvRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                    edge HvLeft,HvLeftt,DummyHyperVProxy,HvRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
-                    rank HvLeft,HvLeftt,DummyHyperVProxy,HvRight
+                    if ($Dir -eq "TB") {
+                        node HvLeft @{Label='HvLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                        node HvLeftt @{Label='HvLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                        node HvRight @{Label='HvRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                        edge HvLeft,HvLeftt,DummyHyperVProxy,HvRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
+                        rank HvLeft,HvLeftt,DummyHyperVProxy,HvRight
+                    }
                     foreach ($ProxyObj in $HyperVBackupProxy) {
                         $PROXYHASHTABLE = @{}
                         $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
