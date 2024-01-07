@@ -24,6 +24,6 @@ Function Get-HTMLTable {
     } elseif ($URLIcon) {
         return '<TABLE COLOR="red" border="1" cellborder="1" cellpadding="5">{0}</TABLE>' -f $TR
     } else {
-        return '<TABLE border="{0}" cellborder="{1}" cellpadding="5"><TR><TD ALIGN="{2}" colspan="1" rowspan="4"><img src="{3}"/></TD></TR>{4}</TABLE>' -f $TableBorder, $CellBorder, $Align, $Icon, $TR
+        return '<TABLE border="{0}" cellborder="{1}" cellpadding="5"><TR><TD fixedsize="true" width="120" height="120" ALIGN="{2}" colspan="1" rowspan="4"><img src="{3}"/></TD></TR>{4}</TABLE>' -f $TableBorder, $CellBorder, $Align, $Icon, $TR
     }
 }

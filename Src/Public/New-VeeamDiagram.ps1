@@ -53,6 +53,19 @@ function New-VeeamDiagram {
         Control to enable subgraph debugging ( Subgraph Lines ).
     .PARAMETER EnableErrorDebug
         Control to enable error debugging.
+    .PARAMETER AuthorName
+        Allow to set footer signature Author Name.
+    .PARAMETER CompanyName
+        Allow to set footer signature Company Name.
+    .PARAMETER Logo
+        Allow to change the Veeam logo to a custom one.
+        Image should be 400px x 100px or less in size.
+    .PARAMETER SignatureLogo
+        Allow to change the Veeam.Diagrammer signature logo to a custom one.
+        Image should be 120px x 130px or less in size.
+    .PARAMETER Signature
+        Allow the creation of footer signature.
+        AuthorName and CompanyName must be set to use this property.
     .NOTES
         Version:        0.5.6
         Author(s):      Jonathan Colon
@@ -140,14 +153,39 @@ function New-VeeamDiagram {
             Mandatory = $false,
             HelpMessage = 'Please provide the path to the diagram output file'
         )]
-        [ValidateScript( { Test-Path -Path $_ -IsValid })]
+        [ValidateScript( {
+            if (Test-Path -Path $_) {
+                $true
+            } else {
+                throw "Path $_ not found!"
+            }
+        })]
         [string] $OutputFolderPath = [System.IO.Path]::GetTempPath(),
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Please provide the path to the custom logo used for Signature'
+        )]
+        [ValidateScript( {
+            if (Test-Path -Path $_) {
+                $true
+            } else {
+                throw "File $_ not found!"
+            }
+        })]
+        [string] $SignatureLogo,
 
         [Parameter(
             Mandatory = $false,
             HelpMessage = 'Please provide the path to the custom logo'
         )]
-        [ValidateScript( { Test-Path -Path $_ -IsValid })]
+        [ValidateScript( {
+            if (Test-Path -Path $_) {
+                $true
+            } else {
+                throw "File $_ not found!"
+            }
+        })]
         [string] $Logo,
 
         [Parameter(
@@ -189,7 +227,7 @@ function New-VeeamDiagram {
             Mandatory = $true,
             HelpMessage = 'Controls type of Veeam VBR generated diagram'
         )]
-        [ValidateSet('Backup-to-Tape', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-All')]
+        [ValidateSet('Backup-to-Tape', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator','Backup-to-ProtectedGroup', 'Backup-to-All')]
         [string] $DiagramType,
 
         [Parameter(
@@ -207,7 +245,25 @@ function New-VeeamDiagram {
             Mandatory = $false,
             HelpMessage = 'Allow to enable error debugging'
         )]
-        [Switch] $EnableErrorDebug = $false
+        [Switch] $EnableErrorDebug = $false,
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Allow to set footer signature Author Name'
+        )]
+        [string] $AuthorName,
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Allow to set footer signature Company Name'
+        )]
+        [string] $CompanyName,
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Allow the creation of footer signature'
+        )]
+        [Switch] $Signature = $false
         )
 
 
@@ -225,6 +281,10 @@ function New-VeeamDiagram {
             break
         }
 
+        if ($Signature -and (([string]::IsNullOrEmpty($AuthorName)) -or ([string]::IsNullOrEmpty($CompanyName)))) {
+            throw "New-VeeamDiagram : AuthorName and CompanyName must be defined if the Signature option is specified"
+        }
+
         $MainGraphLabel = Switch ($DiagramType) {
             'Backup-to-Sobr' {'Scale-Out Backup Repository Diagram'}
             'Backup-to-vSphere-Proxy' {'VMware Backup Proxy Diagram'}
@@ -232,6 +292,7 @@ function New-VeeamDiagram {
             'Backup-to-Repository' {'Backup Repository Diagram'}
             'Backup-to-WanAccelerator' {'Wan Accelerators Diagram'}
             'Backup-to-Tape' {'Tape Infrastructure Diagram'}
+            'Backup-to-ProtectedGroup' {'Physical Infrastructure Diagram'}
             'Backup-to-All' {'Backup Infrastructure Diagram'}
         }
 
@@ -252,6 +313,12 @@ function New-VeeamDiagram {
             'left-to-right' {'LR'}
         }
 
+        # Validate Custom logo
+        $CustomLogo = Test-Logo -LogoPath $Logo
+        # Validate Custom Signature Logo
+        $CustomSignatureLogo = Test-Logo -LogoPath $SignatureLogo -Signature
+
+        # Validate Veeam Powershell Module
         Get-VbrRequiredModule -Name 'Veeam.Backup.PowerShell' -Version '1.0'
 
         $MainGraphAttributes = @{
@@ -306,7 +373,7 @@ function New-VeeamDiagram {
                     arrowsize = 1
                 }
 
-                SubGraph MainGraph -Attributes @{Label=(Get-HTMLLabel -Label $MainGraphLabel -Type "VBR_LOGO"); fontsize=24; penwidth=0} {
+                SubGraph MainGraph -Attributes @{Label=(Get-HTMLLabel -Label $MainGraphLabel -Type $CustomLogo); fontsize=24; penwidth=0} {
 
                     SubGraph BackupServer -Attributes @{Label='Backup Server'; style="rounded"; bgcolor="#ceedc4"; fontsize=18; penwidth=2} {
                         if (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and $EMServerInfo) {
@@ -415,6 +482,14 @@ function New-VeeamDiagram {
                             throw "No Backup Repository available to diagram"
                         }
                     }
+                    elseif ($DiagramType -eq 'Backup-to-ProtectedGroup') {
+                        $BackuptoProtectedGroup = Get-DiagBackupToProtectedGroup
+                        if ($BackuptoProtectedGroup) {
+                            $BackuptoProtectedGroup
+                        } else {
+                            throw "No Backup Protected Group available to diagram"
+                        }
+                    }
                     elseif ($DiagramType -eq 'Backup-to-Tape') {
                         $BackupToTape = Get-DiagBackupToTape
                         if ($BackupToTape) {
@@ -445,15 +520,17 @@ function New-VeeamDiagram {
                         Get-DiagBackupToTape
                     }
                 }
-                SubGraph Legend @{Label=" "; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=1} {
-                    if ($Logo) {
-                        node LegendTable -Attributes @{Label=(Get-HTMLTable -Rows 'Author: Jonathan Colon Feliciano','Company: Zen PR Solutions' -TableBorder 0 -CellBorder 0 -align 'left' -Logo $Logo); shape='plain'}
-                    } else {
-                        node LegendTable -Attributes @{Label=(Get-HTMLTable -Rows 'Author: Jonathan Colon Feliciano','Company: Zen PR Solutions' -TableBorder 0 -CellBorder 0 -align 'left' -Logo "VBR_LOGO_Footer"); shape='plain'}
+                if ($Signature) {
+                    SubGraph Legend @{Label=" "; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=1} {
+                        if ($CustomSignatureLogo) {
+                            node LegendTable -Attributes @{Label=(Get-HTMLTable -Rows "Author: $($AuthorName)","Company: $($CompanyName)" -TableBorder 0 -CellBorder 0 -align 'left' -Logo $CustomSignatureLogo); shape='plain'}
+                        } else {
+                            node LegendTable -Attributes @{Label=(Get-HTMLTable -Rows "Author: $($AuthorName)","Company: $($CompanyName)" -TableBorder 0 -CellBorder 0 -align 'left' -Logo "VBR_LOGO_Footer"); shape='plain'}
+                        }
                     }
+                    inline {rank="sink"; "Legend"; "LegendTable";}
+                    edge -from MainSubGraph:s -to LegendTable @{minlen=5; constrains='false'; style=$EdgeDebug.style; color=$EdgeDebug.color}
                 }
-                inline {rank="sink"; "Legend"; "LegendTable";}
-                edge -from MainSubGraph:s -to LegendTable @{minlen=5; constrains='false'; style=$EdgeDebug.style; color=$EdgeDebug.color}
             }
         }
     }
