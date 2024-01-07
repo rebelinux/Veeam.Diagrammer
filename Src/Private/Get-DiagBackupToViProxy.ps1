@@ -134,7 +134,7 @@ function Get-DiagBackupToViProxy {
                     #                         Version = $VirtManager.Info.ViVersion.ToString()
                     #                         IP = try {$VirtManager.getManagmentAddresses().IPAddressToString} catch {"Unknown"}
                     #                     }
-                    #                     $vCenterSubGraphName = Remove-SpecialChars -String $VirtManager.Name -SpecialChars '\-. '
+                    #                     $vCenterSubGraphName = Remove-SpecialChar -String $VirtManager.Name -SpecialChars '\-. '
                     #                     SubGraph $vCenterSubGraphName -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
                     #                         node $VirtManager.Name @{Label=(Get-NodeIcon -Name $VirtManager.Name -Type 'VBR_vCenter_Server' -Align "Center" -Rows $VCInfo)}
                     #                         # foreach ($ESXi in $VirtManager.getchilds()) {

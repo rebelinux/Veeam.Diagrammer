@@ -50,7 +50,7 @@ function Get-DiagBackupToTape {
                                 node TapeServerDummy @{Label=$DiagramDummyLabel; shape='plain'; style=$EdgeDebug.style; color=$EdgeDebug.color}
                                 $Rank = @()
                                 foreach ($TSOBJ in ($BackupTapeServers | Sort-Object -Property Name)) {
-                                    $TSSubGraph = Remove-SpecialChars -String $TSOBJ.id -SpecialChars '\-'
+                                    $TSSubGraph = Remove-SpecialChar -String $TSOBJ.id -SpecialChars '\-'
                                     SubGraph  $TSSubGraph -Attributes @{Label=' '; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
                                         $TSHASHTABLE = @{}
                                         $TSOBJ.psobject.properties | ForEach-Object {$TSHASHTABLE[$_.Name] = $_.Value }
@@ -58,7 +58,7 @@ function Get-DiagBackupToTape {
                                         if ($BackupTapeLibrary) {
                                             $BKPTLOBJ = ($BackupTapeLibrary | Where-Object {$_.TapeServerId -eq $TSOBJ.Id} | Sort-Object -Property Name)
                                             foreach ($TSLibraryOBJ in $BKPTLOBJ) {
-                                                $TLSubGraph = Remove-SpecialChars -String $TSLibraryOBJ.id -SpecialChars '\-'
+                                                $TLSubGraph = Remove-SpecialChar -String $TSLibraryOBJ.id -SpecialChars '\-'
                                                 SubGraph $TLSubGraph -Attributes @{Label=' '; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
                                                     $TSLHASHTABLE = @{}
                                                     $TSLibraryOBJ.psobject.properties | ForEach-Object {$TSLHASHTABLE[$_.Name] = $_.Value }

@@ -118,11 +118,11 @@ function Get-VbrBackupSobrInfo {
                         Name = "$($Sobr.Name.toUpper())"
                         Label = Get-NodeIcon -Name "$($Sobr.Name)" -Type "VBR_SOBR" -Align "Center" -Rows $SobrRows
 
-                        Capacity = $Sobr.CapacityExtent.Repository | Select-Object -Property @{Name= 'Name'; Expression={Remove-SpecialChars -String $_.Name -SpecialChars '\'}},@{Name = 'Rows'; Expression={$CapacityRows}}, @{Name = 'Icon'; Expression={Get-IconType -String $_.Type}}
+                        Capacity = $Sobr.CapacityExtent.Repository | Select-Object -Property @{Name= 'Name'; Expression={Remove-SpecialChar -String $_.Name -SpecialChars '\'}},@{Name = 'Rows'; Expression={$CapacityRows}}, @{Name = 'Icon'; Expression={Get-IconType -String $_.Type}}
 
-                        Archive = $Sobr.ArchiveExtent.Repository | Select-Object -Property @{Name= 'Name'; Expression={Remove-SpecialChars -String $_.Name -SpecialChars '\'}},@{Name = 'Rows'; Expression={$ArchiveRows}}, @{Name = 'Icon'; Expression={Get-IconType -String $_.ArchiveType}}
+                        Archive = $Sobr.ArchiveExtent.Repository | Select-Object -Property @{Name= 'Name'; Expression={Remove-SpecialChar -String $_.Name -SpecialChars '\'}},@{Name = 'Rows'; Expression={$ArchiveRows}}, @{Name = 'Icon'; Expression={Get-IconType -String $_.ArchiveType}}
 
-                        Performance = $Sobr.Extent | Select-Object -Property @{Name= 'Name'; Expression={Remove-SpecialChars -String $_.Name -SpecialChars '\'}},@{Name = 'Rows'; Expression={$SOBRPERFHASHTABLE}}, @{Name = 'Icon'; Expression={Get-IconType -String $_.Repository.Type}}
+                        Performance = $Sobr.Extent | Select-Object -Property @{Name= 'Name'; Expression={Remove-SpecialChar -String $_.Name -SpecialChars '\'}},@{Name = 'Rows'; Expression={$SOBRPERFHASHTABLE}}, @{Name = 'Icon'; Expression={Get-IconType -String $_.Repository.Type}}
                     }
                     $SobrInfo += $TempSobrInfo
                 }

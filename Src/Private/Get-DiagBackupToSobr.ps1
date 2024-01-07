@@ -43,7 +43,7 @@ function Get-DiagBackupToSobr {
                             rank SobrRepoLeft,SobrRepoLeftt,DummySOBREPO,SobrRepoRight
                         }
                         foreach ($SOBROBJ in $SobrRepo) {
-                            $SubGraphName = Remove-SpecialChars -String $SOBROBJ.Name -SpecialChars '\- '
+                            $SubGraphName = Remove-SpecialChar -String $SOBROBJ.Name -SpecialChars '\- '
                             SubGraph $SubGraphName  -Attributes @{Label=$SOBROBJ.Name; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
                                 $SOBRHASHTABLE = @{}
                                 $SOBROBJ.psobject.properties | ForEach-Object { $SOBRHASHTABLE[$_.Name] = $_.Value }

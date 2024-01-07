@@ -13,7 +13,7 @@ function Out-VbrDiagram {
         https://github.com/rebelinux/Veeam.Diagrammer
     #>
     [CmdletBinding()]
-
+    [OutputType([String])]
     Param
     (
 

@@ -1,5 +1,5 @@
 
-function Remove-SpecialChars {
+function Remove-SpecialChar {
     <#
     .SYNOPSIS
         Used by Veeam.Diagrammer to remove unsupported characters.
