@@ -5,7 +5,7 @@ function Get-VbrServerConnection {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.0.2
+        Version:        0.5.6
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -37,7 +37,7 @@ function Get-VbrServerConnection {
                 Connect-VBRServer -Server $System -Credential $Credential -Port $Port
             }
             catch {
-                Write-Output -Debug $_.Exception.Message
+                Write-Verbose "$($_.Exception.Message)"
                 Throw "Failed to connect to Veeam Backup Server Host $($System):$($Port) with username $($Credential.USERNAME)"
             }
         }
@@ -49,14 +49,14 @@ function Get-VbrServerConnection {
                 Connect-VBRServer -Server $System -Credential $Credential -Port $Port
             }
             catch {
-                Write-Output -Debug $_.Exception.Message
+                Write-Verbose $_.Exception.Message
                 Throw "Failed to connect to Veeam Backup Server Host $($System):$($Port) with username $($Credential.USERNAME)"
             }
         }
         Write-Verbose -Message "Validating connection to $($System)"
         $NewConnection = (Get-VBRServerSession).Server
         if ($null -eq $NewConnection) {
-            Write-Output -Debug $_.Exception.Message
+            Write-Verbose $_.Exception.Message
             Throw "Failed to connect to Veeam Backup Server Host $($System):$($Port) with username $($Credential.USERNAME)"
         }
         elseif ($NewConnection) {

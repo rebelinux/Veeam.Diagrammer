@@ -25,7 +25,6 @@ function Get-VbrBackupRepoInfo {
             [Array]$ScaleOuts = Get-VBRBackupRepository -ScaleOut
             $ViBackupProxy = Get-VBRViProxy
             $HvBackupProxy = Get-VBRHvProxy
-            $BackupProxies = $ViBackupProxy + $HvBackupProxy
 
             if ($ScaleOuts) {
                 $Extents = Get-VBRRepositoryExtent -Repository $ScaleOuts
@@ -50,17 +49,17 @@ function Get-VbrBackupRepoInfo {
                         $Rows.add('Used Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
                     }
 
-                    $Name = Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\'
+                    $Name = Remove-SpecialChar -String $BackupRepo.Name -SpecialChars '\'
 
-                    if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($BackupRepo.Host.Name -in $BackupProxies.Host.Name)) {
+                    if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($BackupRepo.Host.Name -in $ViBackupProxy.Host.Name -or $BackupRepo.Host.Name -in $HvBackupProxy.Host.Name)) {
                         $BackupType = 'Proxy'
                     } else {$BackupType = $BackupRepo.Type}
 
                     $Type = Get-IconType -String $BackupType
 
                     $TempBackupRepoInfo = [PSCustomObject]@{
-                        Name = "$((Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\').toUpper()) "
-                        Label = Get-NodeIcon -Name "$((Remove-SpecialChars -String $BackupRepo.Name -SpecialChars '\').toUpper())" -Type $Type -Align "Center" -Rows $Rows
+                        Name = "$((Remove-SpecialChar -String $BackupRepo.Name -SpecialChars '\').toUpper()) "
+                        Label = Get-NodeIcon -Name "$((Remove-SpecialChar -String $BackupRepo.Name -SpecialChars '\').toUpper())" -Type $Type -Align "Center" -Rows $Rows
                         Role = $Role
                     }
 

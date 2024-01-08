@@ -37,24 +37,41 @@ function Get-VbrBackupServerInfo {
             } catch {$_}
 
             if ($VeeamDBInfo11.SqlServerName) {
-                $VeeamInfo = $VeeamDBInfo11
+                $VeeamDBInfo = $VeeamDBInfo11.SqlServerName
             }
             elseif ($VeeamDBInfo12.SqlServerName) {
-                $VeeamInfo = $VeeamDBInfo12
+                $VeeamDBInfo = $VeeamDBInfo12.SqlServerName
+            }
+            elseif ($VeeamDBInfo12.SqlHostName) {
+                    $VeeamDBInfo = Switch ($VeeamDBInfo12.SqlHostName) {
+                        'localhost' {$VBRServer.Name}
+                        default {$VeeamDBInfo12.SqlHostName}
+                    }
             } else {
-                $VeeamInfo = $VBRServer.Name
+                $VeeamDBInfo = $VBRServer.Name
             }
 
             try {
                 if ($VBRServer) {
 
+                    if ($VeeamDBInfo -eq $VBRServer.Name) {
+                        $Roles = 'Backup and Database'
+                        $DBType = $VeeamDBFlavor.SqlActiveConfiguration
+                    } else {
+                        $Roles = 'Backup Server'
+                    }
+
                     $Rows = @{
-                        Role = 'Backup Server'
+                        Role = $Roles
                         IP = Get-NodeIP -HostName $VBRServer.Name
                     }
 
                     if ($VeeamVersion) {
                         $Rows.add('Version', $VeeamVersion.DisplayVersion)
+                    }
+
+                    if ($VeeamDBInfo -eq $VBRServer.Name) {
+                        $Rows.add('DB Type', $DBType)
                     }
 
                     $script:BackupServerInfo = [PSCustomObject]@{
@@ -66,9 +83,14 @@ function Get-VbrBackupServerInfo {
             catch {
                 $_
             }
-
             try {
-                $DatabaseServer = $VeeamInfo.SqlServerName
+                $DatabaseServer = $VeeamDBInfo
+                if ($VeeamDBFlavor.SqlActiveConfiguration -eq "PostgreSql") {
+                    $DBPort = "$($VeeamDBInfo12.SqlHostPort)/TCP"
+                } else {
+                    $DBPort = "1433/TCP"
+                }
+
                 if ($DatabaseServer) {
                     $DatabaseServerIP = Get-NodeIP -HostName $DatabaseServer
 
@@ -77,17 +99,23 @@ function Get-VbrBackupServerInfo {
                         IP = $DatabaseServerIP
                     }
 
-                    if ($VeeamInfo.SqlInstanceName) {
-                        $Rows.add('Instance', $VeeamInfo.SqlInstanceName)
+                    if ($VeeamDBInfo.SqlInstanceName) {
+                        $Rows.add('Instance', $VeeamDBInfo.SqlInstanceName)
                     }
-                    if ($VeeamInfo.SqlDatabaseName) {
-                        $Rows.add('Database', $VeeamInfo.SqlDatabaseName)
+                    if ($VeeamDBInfo.SqlDatabaseName) {
+                        $Rows.add('Database', $VeeamDBInfo.SqlDatabaseName)
+                    }
+
+                    if ($VeeamDBFlavor.SqlActiveConfiguration -eq "PostgreSql") {
+                        $DBIconType = "VBR_Server_DB_PG"
+                    } else {
+                        $DBIconType = "VBR_Server_DB"
                     }
 
                     $script:DatabaseServerInfo = [PSCustomObject]@{
                         Name = $DatabaseServer.split(".")[0]
-                        Label = Get-NodeIcon -Name "$($DatabaseServer.split(".")[0])" -Type "VBR_Server_DB" -Align "Center" -Rows $Rows
-                        DBPort = "1433/TCP"
+                        Label = Get-NodeIcon -Name "$($DatabaseServer.split(".")[0])" -Type $DBIconType -Align "Center" -Rows $Rows
+                        DBPort = $DBPort
                     }
                 }
             }

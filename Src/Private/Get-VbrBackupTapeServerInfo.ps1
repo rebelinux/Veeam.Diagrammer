@@ -39,8 +39,8 @@ function Get-VbrBackupTapeServerInfo {
 
 
                     $TempBackupTapeServersInfo = [PSCustomObject]@{
-                        Name = "$((Remove-SpecialChars -String $TapeServer.Name -SpecialChars '\').toUpper())_$(Get-Random)"
-                        Label = Get-NodeIcon -Name "$((Remove-SpecialChars -String $TapeServer.Name.split(".")[0] -SpecialChars '\').toUpper())" -Type 'VBR_Tape_Server' -Align "Center" -Rows $Rows
+                        Name = "$((Remove-SpecialChar -String $TapeServer.Name -SpecialChars '\').toUpper())_$(Get-Random)"
+                        Label = Get-NodeIcon -Name "$((Remove-SpecialChar -String $TapeServer.Name.split(".")[0] -SpecialChars '\').toUpper())" -Type 'VBR_Tape_Server' -Align "Center" -Rows $Rows
                         Id = $TapeServer.Id
                     }
 

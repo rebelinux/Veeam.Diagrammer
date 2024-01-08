@@ -1,21 +1,27 @@
 
-function Remove-SpecialChars {
+function Remove-SpecialChar {
     <#
     .SYNOPSIS
-        Used by Veeam.Diagrammer to remove unsupported characters.
+        Used by Veeam.Diagrammer to remove unsupported graphviz dot characters.
     .DESCRIPTION
     .NOTES
         Version:        0.1.0
         Author:         Prateek Singh
     .EXAMPLE
+        Remove-SpecialChar -String "Non Supported chars ()[]{}&."
     .LINK
     #>
+
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]
     param(
         [string]$String,
         [string]$SpecialChars = "()[]{}&."
     )
 
-    $String -replace $($SpecialChars.ToCharArray().ForEach( { [regex]::Escape($_) }) -join "|"), ""
+    if ($PSCmdlet.ShouldProcess($String, ("Remove {0} chars" -f $SpecialChars,$String)))
+    {
+        $String -replace $($SpecialChars.ToCharArray().ForEach( { [regex]::Escape($_) }) -join "|"), ""
+    }
 }
 
 
@@ -101,10 +107,18 @@ function Get-NodeIP {
     )
 
     try {
-        $IP = try {[System.Net.Dns]::GetHostAddresses($Hostname).IPAddressToString} catch { $null}
-        $NodeIP = Switch ([string]::IsNullOrEmpty($IP)) {
+        try {
+            if ("InterNetwork" -in [System.Net.Dns]::GetHostAddresses($Hostname).AddressFamily) {
+                $IPADDR = ([System.Net.Dns]::GetHostAddresses($Hostname) | Where-Object {$_.AddressFamily -eq 'InterNetwork'}).IPAddressToString
+            } elseif ("InterNetworkV6" -in [System.Net.Dns]::GetHostAddresses($Hostname).AddressFamily) {
+                $IPADDR = ([System.Net.Dns]::GetHostAddresses($Hostname) | Where-Object {$_.AddressFamily -eq 'InterNetworkV6'}).IPAddressToString
+            } else {
+                $IPADDR = 127.0.0.1
+            }
+        } catch { $null }
+        $NodeIP = Switch ([string]::IsNullOrEmpty($IPADDR)) {
             $true {'Unknown'}
-            $false {$IP}
+            $false {$IPADDR}
             default {$Hostname}
         }
     }
@@ -220,4 +234,79 @@ function Split-array {
     }
     return ,$outArray
 
+}
+
+function Test-Image {
+        <#
+    .SYNOPSIS
+        Used by Veeam.Diagrammer to validate supported logo image extension.
+    .DESCRIPTION
+    .NOTES
+        Version:        0.1.0
+        Author:         Doctor Scripto
+    .EXAMPLE
+        Test-Image -Path "C:\Users\jocolon\logo.png"
+    .LINK
+        https://devblogs.microsoft.com/scripting/psimaging-part-1-test-image/
+    #>
+
+    [CmdletBinding()]
+    param(
+
+        [parameter(Mandatory=$true, Position=0, ValueFromPipeline=$true)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('PSPath')]
+        $Path
+    )
+
+    PROCESS {
+        $knownImageExtensions = @( ".jpeg", ".jpg", ".png" )
+        $extension = [System.IO.Path]::GetExtension($Path)
+        return $knownImageExtensions -contains $extension.ToLower()
+    }
+}
+
+function Test-Logo {
+    <#
+    .SYNOPSIS
+        Used by Veeam.Diagrammer to validate logo path.
+    .DESCRIPTION
+    .NOTES
+        Version:        0.1.0
+        Author:         Joanthan Colon
+    .EXAMPLE
+        Test-Image -LogoPath "C:\Users\jocolon\logo.png"
+    .LINK
+    #>
+
+    [CmdletBinding()]
+    [OutputType([String])]
+    param(
+
+        [parameter(Mandatory=$true, Position=0, ValueFromPipeline=$true)]
+        $LogoPath,
+        [Switch] $Signature
+    )
+
+    PROCESS {
+        if ([string]::IsNullOrEmpty($LogoPath)) {
+            if ($Signature) {
+                return "VBR_LOGO_Footer"
+            } else {
+                return "VBR_Logo"
+            }
+        } else {
+            if (Test-Image -Path $LogoPath) {
+                # Add logo path to the Image variable
+                Copy-Item -Path $LogoPath -Destination $IconPath
+                $outputLogoFile = Split-Path $LogoPath -leaf
+                if ($outputLogoFile) {
+                    $Images.Add("Custom", $outputLogoFile)
+                    return "Custom"
+                }
+            } else {
+                throw "New-VeeamDiagram : Logo isn't a supported image file. Please use the following format [.jpeg, .jpg, .png]"
+            }
+        }
+    }
 }
