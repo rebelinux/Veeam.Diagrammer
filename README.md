@@ -107,8 +107,6 @@ Find-Package graphviz | Install-Package -ForceBootstrap -Force
 ### PowerShell
 
 ```powershell
-# Install PSGraph from the Powershell Gallery
-Install-Module -Name PSGraph
 
 # Install Veeam.Diagrammer from the Powershell Gallery
 install-module -Name Veeam.Diagrammer
