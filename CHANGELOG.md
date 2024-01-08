@@ -1,11 +1,29 @@
 # :arrows_clockwise: Veeam.Diagrammer Changelog
 
+## [0.5.6] - 2024-01.08
+
+### Added
+
+- Added option to specified footer image:
+  - Author Name
+  - Company Name
+
+### Changed
+
+- Prefer ipv4 address family if available (Get-NodeIP)
+- Improved diagram debug feature
+- Improved help documentation
+
+### Fixed
+
+- Fix PSScriptAnalyzer warnings
+
 ## [0.5.5] - 2023-12.31
 
 ### Fixed
 
 - Fix issue with Postgre Database #17
-  
+
 ## [0.5.4] - 2023-12.29
 
 ### Changed
