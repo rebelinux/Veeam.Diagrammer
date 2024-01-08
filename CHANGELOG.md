@@ -4,7 +4,7 @@
 
 ### Added
 
-- Added option to specified footer image:
+- Added option to specify footer image:
   - Author Name
   - Company Name
 
