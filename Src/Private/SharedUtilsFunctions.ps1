@@ -55,6 +55,10 @@ function Get-IconType {
         'Proxy' {'VBR_Repository'}
         'ESXi' {'VBR_ESXi_Server'}
         'HyperVHost' {'Hyper-V_host'}
+        'ManuallyDeployed' {'VBR_AGENT_MC'}
+        'IndividualComputers' {'VBR_AGENT_IC'}
+        'ActiveDirectory' {'VBR_AGENT_AD'}
+        'CSV' {'VBR_AGENT_CSV'}
         default {'VBR_No_Icon'}
     }
 
