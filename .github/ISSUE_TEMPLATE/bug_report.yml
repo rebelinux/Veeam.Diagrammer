@@ -87,7 +87,7 @@ body:
         If you are unsure of what a specific requirement means, please follow the links to learn about it and understand why it is necessary before submitting.
       options:
         - label: >-
-            I have read and followed the [bug reporting guidelines](https://github.com/rebelinux/Veeam.Diagrammer/blob/dev/CHANGELOG.md).
+            I have read and followed the [bug reporting guidelines](https://github.com/rebelinux/Veeam.Diagrammer/blob/dev/CONTRIBUTING.md).
           required: true
         - label: >-
             I have read [the documentation](https://github.com/rebelinux/Veeam.Diagrammer/blob/dev/README.md),
