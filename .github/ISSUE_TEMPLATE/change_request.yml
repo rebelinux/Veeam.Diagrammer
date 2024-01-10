@@ -27,7 +27,7 @@ body:
       options:
         - label: >-
             I have read [the documentation](https://github.com/rebelinux/Veeam.Diagrammer/blob/dev/README.md),
-            and referred to the [known issues](https://github.com/rebelinux/Veeam.Diagrammer/#known-issues) before submitting this change request.
+            and referred to the [known issues](https://github.com/rebelinux/Veeam.Diagrammer/?tab=readme-ov-file#x-known-issues) before submitting this change request.
           required: true
         - label: >-
             I have checked for previously opened & closed [issues](https://github.com/rebelinux/Veeam.Diagrammer/issues) before submitting this change request.

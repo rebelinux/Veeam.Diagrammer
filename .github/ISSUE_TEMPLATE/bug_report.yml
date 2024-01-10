@@ -87,11 +87,11 @@ body:
         If you are unsure of what a specific requirement means, please follow the links to learn about it and understand why it is necessary before submitting.
       options:
         - label: >-
-            I have read and followed the [bug reporting guidelines](https://github.com/rebelinux/Veeam.Diagrammer/blob/dev/Contributing.md).
+            I have read and followed the [bug reporting guidelines](https://github.com/rebelinux/Veeam.Diagrammer/blob/dev/CHANGELOG.md).
           required: true
         - label: >-
             I have read [the documentation](https://github.com/rebelinux/Veeam.Diagrammer/blob/dev/README.md),
-            and referred to the [known issues](https://github.com/rebelinux/Veeam.Diagrammer/#known-issues/) before submitting this bug report.
+            and referred to the [known issues](https://github.com/rebelinux/Veeam.Diagrammer/?tab=readme-ov-file#x-known-issues) before submitting this bug report.
           required: true
         - label: >-
             I have checked for previously opened & closed [issues](https://github.com/rebelinux/Veeam.Diagrammer/issues) before submitting this bug report.
