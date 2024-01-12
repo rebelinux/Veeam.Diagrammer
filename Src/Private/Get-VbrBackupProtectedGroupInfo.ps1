@@ -43,6 +43,7 @@ function Get-VbrBackupProtectedGroupInfo {
                         Name = "$((Remove-SpecialChar -String $ProtectedGroup.Name -SpecialChars '\').toUpper()) "
                         Label = Get-NodeIcon -Name "$((Remove-SpecialChar -String $ProtectedGroup.Name -SpecialChars '\').toUpper())" -Type $Type -Align "Center" -Rows $Rows
                         Container = $ProtectedGroup.Container.Type
+                        Object = $ProtectedGroup
                     }
 
                     $ProtectedGroupInfo += $TempProtectedGroupInfo
