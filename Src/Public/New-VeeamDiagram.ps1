@@ -227,7 +227,7 @@ function New-VeeamDiagram {
             Mandatory = $true,
             HelpMessage = 'Controls type of Veeam VBR generated diagram'
         )]
-        [ValidateSet('Backup-to-Tape', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator','Backup-to-ProtectedGroup', 'Backup-to-All')]
+        [ValidateSet('Backup-to-Tape', 'Backup-to-File-Proxy', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator','Backup-to-ProtectedGroup', 'Backup-to-All')]
         [string] $DiagramType,
 
         [Parameter(
@@ -287,6 +287,7 @@ function New-VeeamDiagram {
 
         $MainGraphLabel = Switch ($DiagramType) {
             'Backup-to-Sobr' {'Scale-Out Backup Repository Diagram'}
+            'Backup-to-File-Proxy' {'File Backup Proxy Diagram'}
             'Backup-to-vSphere-Proxy' {'VMware Backup Proxy Diagram'}
             'Backup-to-HyperV-Proxy' {'HyperV Backup Proxy Diagram'}
             'Backup-to-Repository' {'Backup Repository Diagram'}
@@ -464,6 +465,14 @@ function New-VeeamDiagram {
                             $BackuptovSphereProxy
                         } else {
                             Write-Warning "No vSphere Proxy Infrastructure available to diagram"
+                        }
+                    }
+                    elseif ($DiagramType -eq 'Backup-to-File-Proxy') {
+                        $BackuptoFileProxy = Get-DiagBackupToFileProxy
+                        if ($BackuptoFileProxy) {
+                            $BackuptoFileProxy
+                        } else {
+                            Write-Warning "No File Proxy Infrastructure available to diagram"
                         }
                     }
                     elseif ($DiagramType -eq 'Backup-to-WanAccelerator') {

@@ -89,6 +89,8 @@ function Get-RoleType {
         'SanSnapshotOnly' {'SAN'}
         "vmware" {'VMware Backup Proxy'}
         "hyperv" {'HyperV Backup Proxy'}
+        "agent" {'Agent & Files Backup Proxy'}
+        "nas" {'NAS Backup Proxy'}
         default {'Backup Repository'}
     }
 

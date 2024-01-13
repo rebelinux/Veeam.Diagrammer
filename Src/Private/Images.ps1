@@ -28,5 +28,6 @@ $Images = @{
     "VBR_AGENT_CSV" = "CSV_Computers.png"
     "VBR_AGENT_AD_Logo" = "Microsoft Active Directory.png"
     "VBR_AGENT_CSV_Logo" = "File.png"
+    "VBR_AGENT_Server" = "Server_with_Veeam_Agent.png"
 
 }

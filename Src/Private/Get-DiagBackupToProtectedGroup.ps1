@@ -27,6 +27,59 @@ function Get-DiagBackupToProtectedGroup {
             $IndividualContainer = $ProtectedGroups | Where-Object {$_.Container -eq 'IndividualComputers'}
             $CSVContainer = $ProtectedGroups | Where-Object {$_.Container -eq 'CSV'}
 
+            try {
+                $FileBackupProxy = Get-VbrBackupProxyInfo -Type 'nas'
+                if ($BackupServerInfo) {
+                    if ($Dir -eq 'LR') {
+                        $DiagramLabel = 'File Backup Proxies'
+                        $DiagramDummyLabel = ' '
+                    } else {
+                        $DiagramLabel = ' '
+                        $DiagramDummyLabel = 'File Backup Proxies'
+                    }
+                    if ($FileBackupProxy) {
+                        $ProxiesAttr = @{
+                            Label = $DiagramLabel
+                            fontsize = 18
+                            penwidth = 1.5
+                            labelloc = 't'
+                            color=$SubGraphDebug.color
+                            style='dashed,rounded'
+                        }
+                        SubGraph MainSubGraphFileProxy -Attributes $ProxiesAttr -ScriptBlock {
+                            # Dummy Node used for subgraph centering
+                            node DummyFileProxy @{Label=$DiagramDummyLabel; fontsize=18; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
+                            node DummyFileProxyToPG @{Label="DummyFileProxyToPG"; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                            if ($Dir -eq "TB") {
+                                node FileLeft @{Label='FileLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                                node FileLeftt @{Label='FileLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                                node FileRight @{Label='FileRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                                edge FileLeft,FileLeftt,DummyFileProxy,FileRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                rank FileLeft,FileLeftt,DummyFileProxy,FileRight
+                            }
+                            foreach ($ProxyObj in $FileBackupProxy) {
+                                $PROXYHASHTABLE = @{}
+                                $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
+                                node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label; fontname="Segoe Ui"}
+                                edge -From DummyFileProxy -To $ProxyObj.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                edge -from $ProxyObj.Name -to DummyFileProxyToPG @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+
+                            }
+                            Rank $FileBackupProxy.Name
+                        }
+
+                        if ($Dir -eq 'LR') {
+                            edge $BackupServerInfo.Name -to DummyFileProxy @{minlen=3;}
+                        } else {
+                            edge $BackupServerInfo.Name -to DummyFileProxy @{minlen=3;}
+                        }
+                    }
+                }
+            }
+            catch {
+                $_
+            }
+
             if ($ProtectedGroups) {
                 if ($Dir -eq 'LR') {
                     $DiagramLabel = 'Protected Groups'
@@ -320,7 +373,7 @@ function Get-DiagBackupToProtectedGroup {
                         }
                     }
 
-                    edge -from $BackupServerInfo.Name -to ProtectedGroup @{minlen=3}
+                    edge -from DummyFileProxyToPG -to ProtectedGroup @{minlen=3}
                 }
             }
         }
