@@ -224,4 +224,4 @@ PS C:\> New-VeeamDiagram -DiagramType Backup-to-SOBR -Target veeam-vbr.pharmax.l
 
 ## :x: Known Issues
 
-- Since many of Veeam's features depend on the Standard+ license, the Community edition will not be supported.
+- Since many of Veeam's features depend on the Standard+ license, the Community edition is not supported.
