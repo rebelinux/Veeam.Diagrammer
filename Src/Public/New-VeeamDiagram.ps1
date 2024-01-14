@@ -9,7 +9,7 @@ function New-VeeamDiagram {
         The supported output diagrams are:
             'Backup-to-Sobr', 'Backup-to-vSphere-Proxy', 'Backup-to-HyperV-Proxy',
             'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-Tape',
-            'Backup-to-All'
+            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup', 'Backup-to-All'
     .PARAMETER Target
         Specifies the IP/FQDN of the system to connect.
         Multiple targets may be specified, separated by a comma.
@@ -67,7 +67,7 @@ function New-VeeamDiagram {
         Allow the creation of footer signature.
         AuthorName and CompanyName must be set to use this property.
     .NOTES
-        Version:        0.5.6
+        Version:        0.5.7
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux

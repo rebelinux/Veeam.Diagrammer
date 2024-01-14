@@ -141,9 +141,9 @@ The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication d
 .PARAMETER DiagramType
   Specifies the type of veeam vbr diagram that will be generated.
   The supported output diagrams are:
-      'Backup-to-Sobr', 'Backup-to-vSphere-Proxy', 'Backup-to-HyperV-Proxy',
-      'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-Tape',
-      'Backup-to-All'
+            'Backup-to-Sobr', 'Backup-to-vSphere-Proxy', 'Backup-to-HyperV-Proxy',
+            'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-Tape',
+            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup', 'Backup-to-All'
 .PARAMETER Target
   Specifies the IP/FQDN of the system to connect.
   Multiple targets may be specified, separated by a comma.
