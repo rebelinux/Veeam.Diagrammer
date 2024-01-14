@@ -1,10 +1,20 @@
 # :arrows_clockwise: Veeam.Diagrammer Changelog
 
+## [0.5.7] - 2024-01.13
+
+### Added
+
+- Added support for Physical Infrastructure Diagram.
+
+### Fixed
+
+- Fix [#16](https://github.com/rebelinux/Veeam.Diagrammer/issues/16)
+
 ## [0.5.6] - 2024-01.08
 
 ### Added
 
-- Added option to specified footer image:
+- Added option to specify footer image:
   - Author Name
   - Company Name
 

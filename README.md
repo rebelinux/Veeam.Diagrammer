@@ -63,6 +63,7 @@ Below are the instructions on how to install, configure and generate a Veeam.Dia
 The Veeam.Diagrammer supports the following Veeam Backup & Replication version;
 
 - Veeam Backup & Replication V11 (Standard, Enterprise & Enterprise Plus Edition)
+- Veeam Backup & Replication v12+ (Standard, Enterprise & Enterprise Plus Edition)
 
 ### :closed_lock_with_key: Required Privileges
 
@@ -93,9 +94,12 @@ We need to install GraphViz on our system before we can proceed with using the '
 Make sure you are running Powershell 5.0 (WMF 5.0). I don't know that it is a hard requirement at the moment but I plan on using 5.0 features.
 
 ```powershell
+# Install Chocolatey
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
 # Install GraphViz from the Chocolatey repo
-Register-PackageSource -Name Chocolatey -ProviderName Chocolatey -Location http://chocolatey.org/api/v2/
-Find-Package graphviz | Install-Package -ForceBootstrap
+Register-PackageSource -Name Chocolatey -ProviderName Chocolatey -Location http://chocolatey.org/api/v2/ -Force
+Find-Package graphviz | Install-Package -ForceBootstrap -Force
 ```
 
 ## :package: Module Installation
@@ -103,8 +107,6 @@ Find-Package graphviz | Install-Package -ForceBootstrap
 ### PowerShell
 
 ```powershell
-# Install PSGraph from the Powershell Gallery
-Install-Module -Name PSGraph
 
 # Install Veeam.Diagrammer from the Powershell Gallery
 install-module -Name Veeam.Diagrammer
@@ -139,9 +141,9 @@ The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication d
 .PARAMETER DiagramType
   Specifies the type of veeam vbr diagram that will be generated.
   The supported output diagrams are:
-      'Backup-to-Sobr', 'Backup-to-vSphere-Proxy', 'Backup-to-HyperV-Proxy',
-      'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-Tape',
-      'Backup-to-All'
+            'Backup-to-Sobr', 'Backup-to-vSphere-Proxy', 'Backup-to-HyperV-Proxy',
+            'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-Tape',
+            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup', 'Backup-to-All'
 .PARAMETER Target
   Specifies the IP/FQDN of the system to connect.
   Multiple targets may be specified, separated by a comma.
@@ -212,14 +214,14 @@ There are a few examples listed below on running the Veeam.Diagrammer script aga
 
 ```powershell
 # Generate a Veeam.Diagrammer diagram for Backup Server 'veeam-vbr.pharmax.local' using specified credentials. Export report to PDF & PNG formats. Use default report style. Save reports to 'C:\Users\Jon\Documents'
-PS C:\> New-VeeamDiagram -DiagramType Backup-to-Proxy -Target veeam-vbr.pharmax.local -Username 'Domain\veeam_admin' -Password 'P@ssw0rd' -Format pdf,png -OutputFolderPath 'C:\Users\Jon\Documents'
+PS C:\> New-VeeamDiagram -DiagramType Backup-to-SOBR -Target veeam-vbr.pharmax.local -Username 'Domain\veeam_admin' -Password 'P@ssw0rd' -Format pdf,png -OutputFolderPath 'C:\Users\Jon\Documents'
 
 # Generate a Veeam.Diagrammer diagram for Backup Server veeam-vbr.pharmax.local using stored credentials. Export report to DOT & SVG formats. Save reports to 'C:\Users\Jon\Documents'.
 PS C:\> $Creds = Get-Credential
-PS C:\> New-VeeamDiagram -DiagramType Backup-to-Proxy -Target veeam-vbr.pharmax.local -Credential $Creds -Format DOT,SVG -OutputFolderPath 'C:\Users\Jon\Documents'
+PS C:\> New-VeeamDiagram -DiagramType Backup-to-SOBR -Target veeam-vbr.pharmax.local -Credential $Creds -Format dot,pdf -OutputFolderPath 'C:\Users\Jon\Documents'
 
 ```
 
 ## :x: Known Issues
 
-- Since many of Veeam's features depend on the Standard+ license, the Community edition will not be supported.
+- Since many of Veeam's features depend on the Standard+ license, the Community edition is not supported.

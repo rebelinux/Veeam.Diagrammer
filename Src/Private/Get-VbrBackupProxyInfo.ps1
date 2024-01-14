@@ -5,7 +5,7 @@ function Get-VbrBackupProxyInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.1.0
+        Version:        0.5.7
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -19,7 +19,7 @@ function Get-VbrBackupProxyInfo {
     Param
     (
         # Backup Proxy Type
-        [ValidateSet('vmware', 'hyperv')]
+        [ValidateSet('vmware', 'hyperv', 'nas')]
         [string] $Type
 
     )
@@ -29,6 +29,8 @@ function Get-VbrBackupProxyInfo {
             $BPType = switch ($Type) {
                 'vmware' {Get-VBRViProxy}
                 'hyperv' {Get-VBRHvProxy}
+                'nas' {Get-VBRNASProxyServer}
+
             }
             $BackupProxies = $BPType
             $BackupProxyInfo = @()
@@ -37,8 +39,36 @@ function Get-VbrBackupProxyInfo {
 
                     $Role = Get-RoleType -String $Type
 
-                    $BPRows = @{
-                        # Role = $Role
+                    $Hostname = Switch ($Type) {
+                        'vmware' {$BackupProxy.Host.Name}
+                        'hyperv' {$BackupProxy.Host.Name}
+                        'nas' {$BackupProxy.Server.Name}
+                    }
+
+                    $Status = Switch ($Type) {
+                        'vmware' {
+                            Switch ($BackupProxy.isDisabled) {
+                                $false {'Enabled'}
+                                $true {'Disabled'}
+                            }
+                        }
+                        'hyperv' {
+                            Switch ($BackupProxy.isDisabled) {
+                                $false {'Enabled'}
+                                $true {'Disabled'}
+                            }
+                        }
+                        'nas' {
+                            Switch ($BackupProxy.IsEnabled) {
+                                $false {'Disabled'}
+                                $true {'Enabled'}
+                            }
+                        }
+                    }
+
+                    $BPRows = [ordered]@{
+                        IP = Get-NodeIP -HostName $Hostname
+                        Status = $Status
                         Type = Switch ($Type) {
                             'vmware' {$BackupProxy.Host.Type}
                             'hyperv' {
@@ -47,20 +77,29 @@ function Get-VbrBackupProxyInfo {
                                     'HvOnhost' {"On-Host Backup"}
                                 }
                             }
+                            'nas' {"File Backup"}
                         }
-                        IP = Get-NodeIP -HostName $BackupProxy.Host.Name
-                        Status = Switch ($BackupProxy.isDisabled) {
-                            $false {'Enabled'}
-                            $true {'Disabled'}
+                        Concurrent_Tasks = Switch ($Type) {
+                            'vmware' {$BackupProxy.MaxTasksCount}
+                            'hyperv' {$BackupProxy.MaxTasksCount}
+                            'nas' {$BackupProxy.ConcurrentTaskNumber}
                         }
                     }
+
                     $VIManagerRows = @{
                         Version = $VirtObjs.Info.ViVersion
                     }
 
+                    $IconType = Switch ($Type) {
+                        'vmware' {"VBR_Proxy_Server"}
+                        'hyperv' {"VBR_Proxy_Server"}
+                        'nas' {"VBR_AGENT_Server"}
+                    }
+
                     $TempBackupProxyInfo = [PSCustomObject]@{
-                        Name = "$($BackupProxy.Host.Name.toUpper().split(".")[0]) "
-                        Label = Get-NodeIcon -Name "$($BackupProxy.Host.Name.toUpper().split(".")[0])" -Type "VBR_Proxy_Server" -Align "Center" -Rows $BPRows
+                        Name = "$($Hostname.toUpper().split(".")[0]) "
+                        Label = Get-NodeIcon -Name "$($Hostname.toUpper().split(".")[0])" -Type $IconType -Align "Center" -Rows $BPRows
+                        Object = $BackupProxy
                     }
 
                     $BackupProxyInfo += $TempBackupProxyInfo

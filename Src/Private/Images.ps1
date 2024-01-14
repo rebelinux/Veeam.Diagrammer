@@ -21,4 +21,13 @@ $Images = @{
     'VBR_Tape_Drive' = 'Tape_Drive.png'
     "VBR_Server_DB_PG" = "PostGre_SQL_DB.png"
     "VBR_LOGO_Footer" = "verified_recoverability.png"
+    "VBR_AGENT_Container" = "Folder.png"
+    "VBR_AGENT_AD" = "Server.png"
+    "VBR_AGENT_MC" = "Task list.png"
+    "VBR_AGENT_IC" = "Workstation.png"
+    "VBR_AGENT_CSV" = "CSV_Computers.png"
+    "VBR_AGENT_AD_Logo" = "Microsoft Active Directory.png"
+    "VBR_AGENT_CSV_Logo" = "File.png"
+    "VBR_AGENT_Server" = "Server_with_Veeam_Agent.png"
+
 }
