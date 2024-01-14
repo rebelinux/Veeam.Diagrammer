@@ -4,7 +4,11 @@
 
 ### Added
 
-- Added support for Physical Infrastructure Diagram. Fix [#16](https://github.com/rebelinux/Veeam.Diagrammer/issues/16)
+- Added support for Physical Infrastructure Diagram.
+
+### Fixed
+
+- Fix [#16](https://github.com/rebelinux/Veeam.Diagrammer/issues/16)
 
 ## [0.5.6] - 2024-01.08
 
