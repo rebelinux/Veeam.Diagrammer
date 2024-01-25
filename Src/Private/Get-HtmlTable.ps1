@@ -13,7 +13,6 @@ Function Get-HTMLTable {
     } else {$ICON = $false}
 
     $TR = ''
-    $flag = $true
     foreach ($r in $Rows) {
         Write-Verbose "Creating Node: $r"
         $TR += '<TR><TD valign="top" align="{0}" colspan="2"><B><FONT POINT-SIZE="{1}">{2}</FONT></B></TD></TR>' -f $Align, $FontSize, $r
