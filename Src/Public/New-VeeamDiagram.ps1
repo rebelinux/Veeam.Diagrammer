@@ -297,14 +297,16 @@ function New-VeeamDiagram {
             'Backup-to-All' {'Backup Infrastructure Diagram'}
         }
 
+        $URLIcon = $false
+
         if ($EnableEdgeDebug) {
             $EdgeDebug = @{style='filled'; color='red'}
-            $script:URLIcon = $true
+            $URLIcon = $true
         } else {$EdgeDebug = @{style='invis'; color='red'}}
 
         if ($EnableSubGraphDebug) {
             $SubGraphDebug = @{style='dashed'; color='red'}
-            $script:URLIcon = $true
+            $URLIcon = $true
         } else {$SubGraphDebug = @{style='invis'; color='gray'}}
 
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
@@ -546,6 +548,6 @@ function New-VeeamDiagram {
     }
     end {
         #Export Diagram
-        Out-ADDiagram -GraphObj $Graph -ErrorDebug $EnableErrorDebug -Rotate $Rotate
+        Out-VbrDiagram -GraphObj $Graph -ErrorDebug $EnableErrorDebug -Rotate $Rotate
     }
 }
