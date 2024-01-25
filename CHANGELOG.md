@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Chaged
 
 - Added Graphviz libraries to local module folder. (No need to manually install Graphviz)
+- Code improvements
 
 ## [0.5.7] - 2024-01.13
 
