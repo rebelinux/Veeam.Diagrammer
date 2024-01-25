@@ -88,19 +88,7 @@ PowerShell 5.1, and the following PowerShell modules are required for generating
 
 [Graphviz](http://graphviz.org/) is open source graph visualization software. Graph visualization is a way of representing structural information as diagrams of abstract graphs and networks. It has important applications in networking, bioinformatics,  software engineering, database and web design, machine learning, and in visual interfaces for other technical domains. 
 
-
-We need to install GraphViz on our system before we can proceed with using the 'Veeam.Diagrammer' PowerShell module.
-### Installing GraphViz
-Make sure you are running Powershell 5.0 (WMF 5.0). I don't know that it is a hard requirement at the moment but I plan on using 5.0 features.
-
-```powershell
-# Install Chocolatey
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-
-# Install GraphViz from the Chocolatey repo
-Register-PackageSource -Name Chocolatey -ProviderName Chocolatey -Location http://chocolatey.org/api/v2/ -Force
-Find-Package graphviz | Install-Package -ForceBootstrap -Force
-```
+No need to install GraphViz on your system because from now on it's libraries are included in the local module path.
 
 ## :package: Module Installation
 

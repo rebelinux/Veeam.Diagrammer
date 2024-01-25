@@ -67,7 +67,7 @@ function New-VeeamDiagram {
         Allow the creation of footer signature.
         AuthorName and CompanyName must be set to use this property.
     .NOTES
-        Version:        0.5.7
+        Version:        0.5.8
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -297,6 +297,8 @@ function New-VeeamDiagram {
             'Backup-to-All' {'Backup Infrastructure Diagram'}
         }
 
+        $URLIcon = $false
+
         if ($EnableEdgeDebug) {
             $EdgeDebug = @{style='filled'; color='red'}
             $URLIcon = $true
@@ -309,6 +311,7 @@ function New-VeeamDiagram {
 
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
         $IconPath = Join-Path $RootPath 'icons'
+        $script:GraphvizPath = Join-Path $RootPath 'Graphviz\bin\dot.exe'
         $Dir = switch ($Direction) {
             'top-to-bottom' {'TB'}
             'left-to-right' {'LR'}
@@ -343,17 +346,17 @@ function New-VeeamDiagram {
 
         foreach ($System in $Target) {
 
-            Get-VbrServerConnection
+            Get-VbrServerConnection -Port $Port
 
             try {
 
-                $VBRServer = Get-VBRServer -Type Local
+                $script:VBRServer = Get-VBRServer -Type Local
 
             } Catch {throw "Unable to get Veeam B&R Server"}
 
             Get-VbrBackupServerInfo
 
-            $Graph = Graph -Name VeeamVBR -Attributes $MainGraphAttributes {
+            $script:Graph = Graph -Name VeeamVBR -Attributes $MainGraphAttributes {
                 # Node default theme
                 node @{
                     label = ''
@@ -545,6 +548,6 @@ function New-VeeamDiagram {
     }
     end {
         #Export Diagram
-        Out-VbrDiagram
+        Out-VbrDiagram -GraphObj $Graph -ErrorDebug $EnableErrorDebug -Rotate $Rotate
     }
 }

@@ -5,7 +5,7 @@ function Get-VbrServerConnection {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.6
+        Version:        0.5.8
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -16,7 +16,12 @@ function Get-VbrServerConnection {
     #>
     [CmdletBinding()]
     param (
-
+        [Parameter(
+            Position = 0,
+            Mandatory = $true,
+            HelpMessage = 'TCP Port of target Veeam Backup Server'
+        )]
+        [string]$Port
     )
 
     begin {

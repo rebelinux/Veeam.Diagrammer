@@ -5,7 +5,7 @@ function Get-VbrBackupRepoInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.1.0
+        Version:        0.5.8
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -48,8 +48,6 @@ function Get-VbrBackupRepoInfo {
                         $Rows.add('Total Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
                         $Rows.add('Used Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
                     }
-
-                    $Name = Remove-SpecialChar -String $BackupRepo.Name -SpecialChars '\'
 
                     if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($BackupRepo.Host.Name -in $ViBackupProxy.Host.Name -or $BackupRepo.Host.Name -in $HvBackupProxy.Host.Name)) {
                         $BackupType = 'Proxy'

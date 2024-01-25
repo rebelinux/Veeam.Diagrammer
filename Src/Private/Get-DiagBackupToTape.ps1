@@ -5,7 +5,7 @@ function Get-DiagBackupToTape {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.6
+        Version:        0.5.8
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -48,7 +48,6 @@ function Get-DiagBackupToTape {
                             SubGraph TapeServers -Attributes @{Label=' '; fontsize=18; penwidth=1.5; labelloc='t'; style=$SubGraphDebug.style; color=$SubGraphDebug.color} {
                                 # Node used for subgraph centering
                                 node TapeServerDummy @{Label=$DiagramDummyLabel; shape='plain'; style=$EdgeDebug.style; color=$EdgeDebug.color}
-                                $Rank = @()
                                 foreach ($TSOBJ in ($BackupTapeServers | Sort-Object -Property Name)) {
                                     $TSSubGraph = Remove-SpecialChar -String $TSOBJ.id -SpecialChars '\-'
                                     SubGraph  $TSSubGraph -Attributes @{Label=' '; fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {

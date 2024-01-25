@@ -1,0 +1,18 @@
+debug.log
+.gitignore
+# Created by https://www.toptal.com/developers/gitignore/api/powershell
+# Edit at https://www.toptal.com/developers/gitignore?templates=powershell
+
+### PowerShell ###
+# Exclude packaged modules
+*.zip
+
+# End of https://www.toptal.com/developers/gitignore/api/powershell
+
+### vscode ###
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
+*.code-workspace
+
+# End of https://www.toptal.com/developers/gitignore/api/hugo,vscode

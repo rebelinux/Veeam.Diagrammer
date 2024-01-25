@@ -5,7 +5,7 @@ function Get-VbrBackupProxyInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.7
+        Version:        0.5.8
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -37,7 +37,7 @@ function Get-VbrBackupProxyInfo {
             if ($BackupProxies) {
                 foreach ($BackupProxy in $BackupProxies) {
 
-                    $Role = Get-RoleType -String $Type
+                    # $Role = Get-RoleType -String $Type
 
                     $Hostname = Switch ($Type) {
                         'vmware' {$BackupProxy.Host.Name}
@@ -84,10 +84,6 @@ function Get-VbrBackupProxyInfo {
                             'hyperv' {$BackupProxy.MaxTasksCount}
                             'nas' {$BackupProxy.ConcurrentTaskNumber}
                         }
-                    }
-
-                    $VIManagerRows = @{
-                        Version = $VirtObjs.Info.ViVersion
                     }
 
                     $IconType = Switch ($Type) {
