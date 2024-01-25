@@ -344,7 +344,7 @@ function New-VeeamDiagram {
 
         foreach ($System in $Target) {
 
-            Get-VbrServerConnection
+            Get-VbrServerConnection -Port $Port
 
             try {
 
