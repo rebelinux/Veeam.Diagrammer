@@ -299,12 +299,12 @@ function New-VeeamDiagram {
 
         if ($EnableEdgeDebug) {
             $EdgeDebug = @{style='filled'; color='red'}
-            $URLIcon = $true
+            $script:URLIcon = $true
         } else {$EdgeDebug = @{style='invis'; color='red'}}
 
         if ($EnableSubGraphDebug) {
             $SubGraphDebug = @{style='dashed'; color='red'}
-            $URLIcon = $true
+            $script:URLIcon = $true
         } else {$SubGraphDebug = @{style='invis'; color='gray'}}
 
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
@@ -348,13 +348,13 @@ function New-VeeamDiagram {
 
             try {
 
-                $VBRServer = Get-VBRServer -Type Local
+                $script:VBRServer = Get-VBRServer -Type Local
 
             } Catch {throw "Unable to get Veeam B&R Server"}
 
             Get-VbrBackupServerInfo
 
-            $Graph = Graph -Name VeeamVBR -Attributes $MainGraphAttributes {
+            $script:Graph = Graph -Name VeeamVBR -Attributes $MainGraphAttributes {
                 # Node default theme
                 node @{
                     label = ''
@@ -546,6 +546,6 @@ function New-VeeamDiagram {
     }
     end {
         #Export Diagram
-        Out-VbrDiagram
+        Out-ADDiagram -GraphObj $Graph -ErrorDebug $EnableErrorDebug -Rotate $Rotate
     }
 }

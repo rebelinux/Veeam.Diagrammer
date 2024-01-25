@@ -16,11 +16,28 @@ function Out-VbrDiagram {
     [OutputType([String])]
     Param
     (
-
+        [Parameter(
+            Position = 0,
+            Mandatory = $true,
+            HelpMessage = 'Please provide the graphviz dot object'
+        )]
+        $GraphObj,
+        [Parameter(
+            Position = 1,
+            Mandatory = $false,
+            HelpMessage = 'Allow to enable error debugging'
+        )]
+        [bool]$ErrorDebug,
+        [Parameter(
+            Position = 2,
+            Mandatory = $false,
+            HelpMessage = 'Allow to rotate the diagram output image. valid rotation degree (90, 180)'
+        )]
+        [int]$Rotate
     )
     process {
-        if ($EnableErrorDebug) {
-            $Graph
+        if ($ErrorDebug) {
+            $GraphObj
         } else {
             # If Filename parameter is not specified, set filename to the Output.$OutputFormat
             foreach ($OutputFormat in $Format) {
@@ -28,10 +45,10 @@ function Out-VbrDiagram {
                     Try {
                         if ($OutputFormat -ne "base64") {
                             if($OutputFormat -ne "svg") {
-                                $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat $OutputFormat -GraphVizPath $GraphvizPath
+                                $Document = Export-PSGraph -Source $GraphObj -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat $OutputFormat -GraphVizPath $GraphvizPath
                                 Write-ColorOutput -Color green  "Diagram '$FileName' has been saved to '$OutputFolderPath'."
                             } else {
-                                $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat $OutputFormat -GraphVizPath $GraphvizPath
+                                $Document = Export-PSGraph -Source $GraphObj -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat $OutputFormat -GraphVizPath $GraphvizPath
                                 #Fix icon path issue with svg output
                                 $images = Select-String -Path $($Document.fullname) -Pattern '<image xlink:href=".*png".*>' -AllMatches
                                 foreach($match in $images) {
@@ -51,13 +68,13 @@ function Out-VbrDiagram {
 
                             }
                         } else {
-                            $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat 'png' -GraphVizPath $GraphvizPath
+                            $Document = Export-PSGraph -Source $GraphObj -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat 'png' -GraphVizPath $GraphvizPath
                             if ($Document) {
                                 # Code used to allow rotating image!
                                 if ($Rotate) {
                                     Add-Type -AssemblyName System.Windows.Forms
                                     $RotatedIMG = new-object System.Drawing.Bitmap $Document.FullName
-                                    $RotatedIMG.RotateFlip("Rotate90FlipNone")
+                                    $RotatedIMG.RotateFlip("Rotate$($Rotate)FlipNone")
                                     $RotatedIMG.Save($Document.FullName,"png")
                                     if ($RotatedIMG) {
                                         $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
@@ -89,10 +106,10 @@ function Out-VbrDiagram {
                     Try {
                         if ($OutputFormat -ne "base64") {
                             if($OutputFormat -ne "svg") {
-                                $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat $OutputFormat -GraphVizPath $GraphvizPath
+                                $Document = Export-PSGraph -Source $GraphObj -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat $OutputFormat -GraphVizPath $GraphvizPath
                                 Write-ColorOutput -Color green  "Diagram '$File' has been saved to '$OutputFolderPath'."
                             } else {
-                                $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat $OutputFormat -GraphVizPath $GraphvizPath
+                                $Document = Export-PSGraph -Source $GraphObj -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat $OutputFormat -GraphVizPath $GraphvizPath
                                 $images = Select-String -Path $($Document.fullname) -Pattern '<image xlink:href=".*png".*>' -AllMatches
                                 foreach($match in $images) {
                                     $matchFound = $match -Match '"(.*png)"'
@@ -110,13 +127,29 @@ function Out-VbrDiagram {
                                 }
                             }
                         } else {
-                            $Document = Export-PSGraph -Source $Graph -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat 'png' -GraphVizPath $GraphvizPath
+                            $Document = Export-PSGraph -Source $GraphObj -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat 'png' -GraphVizPath $GraphvizPath
                             if ($Document) {
-                                $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
-                                if ($Base64) {
-                                    Remove-Item -Path $Document.FullName
-                                    $Base64
-                                } else {Remove-Item -Path $Document.FullName}
+                                # Code used to allow rotating image!
+                                if ($Rotate) {
+                                    Add-Type -AssemblyName System.Windows.Forms
+                                    $RotatedIMG = new-object System.Drawing.Bitmap $Document.FullName
+                                    $RotatedIMG.RotateFlip("Rotate$($Rotate)FlipNone")
+                                    $RotatedIMG.Save($Document.FullName,"png")
+                                    if ($RotatedIMG) {
+                                        $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
+                                        if ($Base64) {
+                                            Remove-Item -Path $Document.FullName
+                                            $Base64
+                                        } else {Remove-Item -Path $Document.FullName}
+                                    }
+                                } else {
+                                    # Code used to output image to base64 format
+                                    $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
+                                    if ($Base64) {
+                                        Remove-Item -Path $Document.FullName
+                                        $Base64
+                                    } else {Remove-Item -Path $Document.FullName}
+                                }
                             }
                         }
                     } catch {

@@ -16,7 +16,12 @@ function Get-VbrServerConnection {
     #>
     [CmdletBinding()]
     param (
-
+        [Parameter(
+            Position = 0,
+            Mandatory = $true,
+            HelpMessage = 'TCP Port of target Veeam Backup Server'
+        )]
+        [string]$Port
     )
 
     begin {
