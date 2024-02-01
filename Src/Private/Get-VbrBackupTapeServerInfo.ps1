@@ -32,8 +32,8 @@ function Get-VbrBackupTapeServerInfo {
                         IP = Get-NodeIP -HostName $TapeServer.Name
                         Role = 'Tape Server'
                         State = Switch ($TapeServer.IsAvailable) {
-                            'True' {'Available'}
-                            'False' {'Unavailable'}
+                            'True' { 'Available' }
+                            'False' { 'Unavailable' }
                         }
                     }
 
@@ -49,8 +49,7 @@ function Get-VbrBackupTapeServerInfo {
             }
 
             return $BackupTapeServersInfo
-        }
-        catch {
+        } catch {
             $_
         }
     }

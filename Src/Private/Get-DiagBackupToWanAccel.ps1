@@ -38,29 +38,28 @@ function Get-DiagBackupToWanAccel {
                         fontsize = 18
                         penwidth = 1.5
                         labelloc = 't'
-                        color=$SubGraphDebug.color
-                        style='dashed,rounded'
+                        color = $SubGraphDebug.color
+                        style = 'dashed,rounded'
                     }
                     SubGraph MainSubGraph -Attributes $WANAccelAttr -ScriptBlock {
                         # Dummy Node used for subgraph centering
-                        node WANACCELSERVER @{Label=$DiagramDummyLabel; fontsize=18; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
+                        Node WANACCELSERVER @{Label = $DiagramDummyLabel; fontsize = 18; fontname = "Segoe Ui Black"; fontcolor = '#005f4b'; shape = 'plain' }
                         foreach ($WANOBJ in $WanAccel) {
                             $WANHASHTABLE = @{}
                             $WANOBJ.psobject.properties | ForEach-Object { $WANHASHTABLE[$_.Name] = $_.Value }
-                            node $WANOBJ -NodeScript {$_.Name} @{Label=$WANHASHTABLE.Label; fontname="Segoe Ui"}
-                            edge -From WANACCELSERVER -To $WANOBJ.Name @{constraint="true"; minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                            Node $WANOBJ -NodeScript { $_.Name } @{Label = $WANHASHTABLE.Label; fontname = "Segoe Ui" }
+                            Edge -From WANACCELSERVER -To $WANOBJ.Name @{constraint = "true"; minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         Rank $WanAccel.Name
                     }
                     if ($Dir -eq 'LR') {
-                        edge $BackupServerInfo.Name -to WANACCELSERVER @{minlen=3; xlabel=($WanAccel.TrafficPort[0])}
+                        Edge $BackupServerInfo.Name -To WANACCELSERVER @{minlen = 3; xlabel = ($WanAccel.TrafficPort[0]) }
                     } else {
-                        edge $BackupServerInfo.Name -to WANACCELSERVER @{minlen=3; xlabel=($WanAccel.TrafficPort[0])}
+                        Edge $BackupServerInfo.Name -To WANACCELSERVER @{minlen = 3; xlabel = ($WanAccel.TrafficPort[0]) }
                     }
                 }
             }
-        }
-        catch {
+        } catch {
             $_
         }
     }

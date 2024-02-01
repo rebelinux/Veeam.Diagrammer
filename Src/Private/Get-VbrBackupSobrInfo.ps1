@@ -37,13 +37,11 @@ function Get-VbrBackupSobrInfo {
 
                     if ($Sobr.CapacityExtent.Repository.AmazonS3Folder) {
                         $Folder = $Sobr.CapacityExtent.Repository.AmazonS3Folder
-                    }
-                    elseif ($Sobr.CapacityExtent.Repository.AzureBlobFolder) {
+                    } elseif ($Sobr.CapacityExtent.Repository.AzureBlobFolder) {
                         $Folder = $Sobr.CapacityExtent.Repository.AzureBlobFolder
-                    }
-                    elseif ($Sobr.ArchiveExtent.Repository.AzureBlobFolder) {
+                    } elseif ($Sobr.ArchiveExtent.Repository.AzureBlobFolder) {
                         $Folder = $Sobr.ArchiveExtent.Repository.AzureBlobFolder
-                    } else {$Folder = 'Unknown'}
+                    } else { $Folder = 'Unknown' }
 
 
                     foreach ($Extent in $Sobr.Extent) {
@@ -61,24 +59,24 @@ function Get-VbrBackupSobrInfo {
                     $CapacityRows = @{
                         Type = $Sobr.CapacityExtent.Repository.Type
                         Folder = "/$($Folder)"
-                        Gateway = &{
+                        Gateway = & {
                             if (-Not $Sobr.CapacityExtent.Repository.UseGatewayServer) {
                                 Switch ($Sobr.CapacityExtent.Repository.ConnectionType) {
                                     'Gateway' {
                                         switch ($Sobr.CapacityExtent.Repository.GatewayServer.count) {
-                                            0 {"Disable"}
-                                            1 {$Sobr.CapacityExtent.Repository.GatewayServer.Name.Split('.')[0]}
-                                            Default {'Automatic'}
+                                            0 { "Disable" }
+                                            1 { $Sobr.CapacityExtent.Repository.GatewayServer.Name.Split('.')[0] }
+                                            Default { 'Automatic' }
                                         }
                                     }
-                                    'Direct' {'Direct'}
-                                    default {'Unknown'}
+                                    'Direct' { 'Direct' }
+                                    default { 'Unknown' }
                                 }
                             } else {
                                 switch ($Sobr.CapacityExtent.Repository.GatewayServer.count) {
-                                    0 {"Disable"}
-                                    1 {$Sobr.CapacityExtent.Repository.GatewayServer.Name.Split('.')[0]}
-                                    Default {'Automatic'}
+                                    0 { "Disable" }
+                                    1 { $Sobr.CapacityExtent.Repository.GatewayServer.Name.Split('.')[0] }
+                                    Default { 'Automatic' }
                                 }
                             }
                         }
@@ -86,24 +84,24 @@ function Get-VbrBackupSobrInfo {
 
                     $ArchiveRows = [ordered]@{
                         Type = $Sobr.ArchiveExtent.Repository.ArchiveType
-                        Gateway = &{
+                        Gateway = & {
                             if (-Not $Sobr.ArchiveExtent.Repository.UseGatewayServer) {
                                 Switch ($Sobr.ArchiveExtent.Repository.GatewayMode) {
                                     'Gateway' {
                                         switch ($Sobr.ArchiveExtent.Repository.GatewayServer.count) {
-                                            0 {"Disable"}
-                                            1 {$Sobr.ArchiveExtent.Repository.GatewayServer.Name.Split('.')[0]}
-                                            Default {'Automatic'}
+                                            0 { "Disable" }
+                                            1 { $Sobr.ArchiveExtent.Repository.GatewayServer.Name.Split('.')[0] }
+                                            Default { 'Automatic' }
                                         }
                                     }
-                                    'Direct' {'Direct'}
-                                    default {'Unknown'}
+                                    'Direct' { 'Direct' }
+                                    default { 'Unknown' }
                                 }
                             } else {
                                 switch ($Sobr.ArchiveExtent.Repository.GatewayServer.count) {
-                                    0 {"Disable"}
-                                    1 {$Sobr.ArchiveExtent.Repository.GatewayServer.Name.Split('.')[0]}
-                                    Default {'Automatic'}
+                                    0 { "Disable" }
+                                    1 { $Sobr.ArchiveExtent.Repository.GatewayServer.Name.Split('.')[0] }
+                                    Default { 'Automatic' }
                                 }
                             }
                         }
@@ -118,19 +116,18 @@ function Get-VbrBackupSobrInfo {
                         Name = "$($Sobr.Name.toUpper())"
                         Label = Get-NodeIcon -Name "$($Sobr.Name)" -Type "VBR_SOBR" -Align "Center" -Rows $SobrRows
 
-                        Capacity = $Sobr.CapacityExtent.Repository | Select-Object -Property @{Name= 'Name'; Expression={Remove-SpecialChar -String $_.Name -SpecialChars '\'}},@{Name = 'Rows'; Expression={$CapacityRows}}, @{Name = 'Icon'; Expression={Get-IconType -String $_.Type}}
+                        Capacity = $Sobr.CapacityExtent.Repository | Select-Object -Property @{Name = 'Name'; Expression = { Remove-SpecialChar -String $_.Name -SpecialChars '\' } }, @{Name = 'Rows'; Expression = { $CapacityRows } }, @{Name = 'Icon'; Expression = { Get-IconType -String $_.Type } }
 
-                        Archive = $Sobr.ArchiveExtent.Repository | Select-Object -Property @{Name= 'Name'; Expression={Remove-SpecialChar -String $_.Name -SpecialChars '\'}},@{Name = 'Rows'; Expression={$ArchiveRows}}, @{Name = 'Icon'; Expression={Get-IconType -String $_.ArchiveType}}
+                        Archive = $Sobr.ArchiveExtent.Repository | Select-Object -Property @{Name = 'Name'; Expression = { Remove-SpecialChar -String $_.Name -SpecialChars '\' } }, @{Name = 'Rows'; Expression = { $ArchiveRows } }, @{Name = 'Icon'; Expression = { Get-IconType -String $_.ArchiveType } }
 
-                        Performance = $Sobr.Extent | Select-Object -Property @{Name= 'Name'; Expression={Remove-SpecialChar -String $_.Name -SpecialChars '\'}},@{Name = 'Rows'; Expression={$SOBRPERFHASHTABLE}}, @{Name = 'Icon'; Expression={Get-IconType -String $_.Repository.Type}}
+                        Performance = $Sobr.Extent | Select-Object -Property @{Name = 'Name'; Expression = { Remove-SpecialChar -String $_.Name -SpecialChars '\' } }, @{Name = 'Rows'; Expression = { $SOBRPERFHASHTABLE } }, @{Name = 'Icon'; Expression = { Get-IconType -String $_.Repository.Type } }
                     }
                     $SobrInfo += $TempSobrInfo
                 }
             }
 
             return $SobrInfo
-        }
-        catch {
+        } catch {
             $_
         }
     }

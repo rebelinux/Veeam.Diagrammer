@@ -34,36 +34,35 @@ function Get-DiagBackupToHvProxy {
                     fontsize = 18
                     penwidth = 1.5
                     labelloc = 't'
-                    color=$SubGraphDebug.color
-                    style='dashed,rounded'
+                    color = $SubGraphDebug.color
+                    style = 'dashed,rounded'
                 }
                 SubGraph MainSubGraph -Attributes $ProxiesAttr -ScriptBlock {
                     # Dummy Node used for subgraph centering
-                    node DummyHyperVProxy @{Label=$DiagramDummyLabel; fontsize=18; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
+                    Node DummyHyperVProxy @{Label = $DiagramDummyLabel; fontsize = 18; fontname = "Segoe Ui Black"; fontcolor = '#005f4b'; shape = 'plain' }
                     if ($Dir -eq "TB") {
-                        node HvLeft @{Label='HvLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                        node HvLeftt @{Label='HvLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                        node HvRight @{Label='HvRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                        edge HvLeft,HvLeftt,DummyHyperVProxy,HvRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
-                        rank HvLeft,HvLeftt,DummyHyperVProxy,HvRight
+                        Node HvLeft @{Label = 'HvLeft'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                        Node HvLeftt @{Label = 'HvLeftt'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                        Node HvRight @{Label = 'HvRight'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                        Edge HvLeft, HvLeftt, DummyHyperVProxy, HvRight @{style = $EdgeDebug.style; color = $EdgeDebug.color }
+                        Rank HvLeft, HvLeftt, DummyHyperVProxy, HvRight
                     }
                     foreach ($ProxyObj in $HyperVBackupProxy) {
                         $PROXYHASHTABLE = @{}
                         $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
-                        node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label; fontname="Segoe Ui"}
-                        edge -From DummyHyperVProxy -To $ProxyObj.Name @{constraint="true"; minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                        Node $ProxyObj -NodeScript { $_.Name } @{Label = $PROXYHASHTABLE.Label; fontname = "Segoe Ui" }
+                        Edge -From DummyHyperVProxy -To $ProxyObj.Name @{constraint = "true"; minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                     }
                     Rank $HyperVBackupProxy.Name
                 }
 
                 if ($Dir -eq 'LR') {
-                    edge $BackupServerInfo.Name -to DummyHyperVProxy @{minlen=3;}
+                    Edge $BackupServerInfo.Name -To DummyHyperVProxy @{minlen = 3; }
                 } else {
-                    edge $BackupServerInfo.Name -to DummyHyperVProxy @{minlen=3;}
+                    Edge $BackupServerInfo.Name -To DummyHyperVProxy @{minlen = 3; }
                 }
             }
-        }
-        catch {
+        } catch {
             $_
         }
     }

@@ -1,5 +1,4 @@
-function Convert-TableToHTML
-{
+function Convert-TableToHTML {
     <#
     .SYNOPSIS
     Creates a html table object
@@ -105,47 +104,38 @@ function Convert-TableToHTML
         $HeaderColor = "black",
 
         [string]
-        $HeaderFontColor="white",
+        $HeaderFontColor = "white",
 
         [string]
-        $BorderColor="white"
+        $BorderColor = "white"
     )
-    begin
-    {
+    begin {
         $tableData = [System.Collections.ArrayList]::new()
-        if ( [string]::IsNullOrEmpty($Label) )
-        {
+        if ( [string]::IsNullOrEmpty($Label) ) {
             $Label = $Name
         }
     }
-    process
-    {
-        if ( $null -ne $ScriptBlock )
-        {
+    process {
+        if ( $null -ne $ScriptBlock ) {
             $Row = $ScriptBlock.Invoke()
         }
 
-        if ( $null -ne $RowScript )
-        {
-            $Row = foreach ( $node in $Row )
-            {
+        if ( $null -ne $RowScript ) {
+            $Row = foreach ( $node in $Row ) {
                 @($node).ForEach($RowScript)
             }
         }
 
-        $results = foreach ( $node in $Row )
-        {
+        $results = foreach ( $node in $Row ) {
             Row -Label $node
         }
 
-        foreach ( $node in $results )
-        {
+        foreach ( $node in $results ) {
             [void]$tableData.Add($node)
         }
     }
-    end
-    {
+    end {
         $html = "<TABLE CELLBORDER='1' BORDER='0' CELLSPACING='0'><TR><TD bgcolor='$HeaderColor' align='center'><font color='$HeaderFontColor'><B>{0}</B></font></TD></TR>{1}</TABLE>" -f $Label, ($tableData -join '')
-        Node $Name @{label = $html; shape = 'none'; fontname = $Fontname; fontsize = $FontSize; style = $Style; penwidth = 1; fillcolor = $Fillcolor; color = $BorderColor}
+        Node $Name @{label = $html; shape = 'none'; fontname = $Fontname; fontsize = $FontSize; style = $Style; penwidth = 1; fillcolor = $Fillcolor; color = $BorderColor }
     }
 }

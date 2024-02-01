@@ -25,7 +25,7 @@ function Get-VbrBackupTapeLibraryInfo {
 
             if ($TapeServer) {
                 $TapeLibraries = Get-VBRTapeLibrary -TapeServer $TapeServer
-            } Else {$TapeLibraries = Get-VBRTapeLibrary}
+            } Else { $TapeLibraries = Get-VBRTapeLibrary }
 
             $BackupTapelibraryInfo = @()
             if ($TapeLibraries) {
@@ -50,8 +50,7 @@ function Get-VbrBackupTapeLibraryInfo {
             }
 
             return $BackupTapelibraryInfo
-        }
-        catch {
+        } catch {
             $_
         }
     }

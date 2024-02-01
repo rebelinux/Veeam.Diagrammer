@@ -25,7 +25,7 @@ function Get-VbrBackupTapeDrivesInfo {
 
             if ($TapeLibrary) {
                 $TapeDrives = Get-VBRTapeDrive -Library $TapeLibrary
-            } Else {$TapeDrives = Get-VBRTapeDrive}
+            } Else { $TapeDrives = Get-VBRTapeDrive }
 
             $BackupTapeDriveInfo = @()
             if ($TapeDrives) {
@@ -51,8 +51,7 @@ function Get-VbrBackupTapeDrivesInfo {
             }
 
             return $BackupTapeDriveInfo
-        }
-        catch {
+        } catch {
             $_
         }
     }

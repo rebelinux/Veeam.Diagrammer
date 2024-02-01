@@ -29,12 +29,12 @@ function Get-VbrBackupProtectedGroupInfo {
 
                     $Rows = @{
                         'Type' = $ProtectedGroup.Type
-                        'Status' =  Switch ($ProtectedGroup.Enabled) {
-                            $true {'Enabled'}
-                            $false {'Disabled'}
-                            default {'Unknown'}
+                        'Status' = Switch ($ProtectedGroup.Enabled) {
+                            $true { 'Enabled' }
+                            $false { 'Disabled' }
+                            default { 'Unknown' }
                         }
-                        'Schedule' =  $ProtectedGroup.ScheduleOptions.PolicyType
+                        'Schedule' = $ProtectedGroup.ScheduleOptions.PolicyType
                     }
 
                     $Type = Get-IconType -String $ProtectedGroup.Container.Type
@@ -51,8 +51,7 @@ function Get-VbrBackupProtectedGroupInfo {
             }
 
             return $ProtectedGroupInfo
-        }
-        catch {
+        } catch {
             $_
         }
     }

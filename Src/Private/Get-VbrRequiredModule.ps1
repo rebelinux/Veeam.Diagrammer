@@ -37,17 +37,14 @@ function Get-VbrRequiredModule {
             try {
                 Write-Verbose -Message "Trying to import Veeam B&R modules."
                 $Modules | Import-Module -WarningAction SilentlyContinue -Verbose:$false
-            }
-            catch {
+            } catch {
                 Write-Verbose -Message "Failed to load Veeam Modules"
             }
-        }
-        else {
+        } else {
             try {
                 Write-Verbose -Message "No Veeam Modules found, Fallback to SnapIn."
                 Add-PSSnapin -Name VeeamPSSnapIn -PassThru -ErrorAction Stop | Out-Null
-            }
-            catch {
+            } catch {
                 Write-Verbose -Message "Failed to load VeeamPSSnapIn and no Modules found"
             }
         }
@@ -55,28 +52,25 @@ function Get-VbrRequiredModule {
             try {
                 Write-Verbose -Message "Identifying Veeam Powershell module version."
                 switch ($Module.Version.ToString()) {
-                    {$_ -eq "1.0"} {  [int]$VbrVersion = "11"  }
-                    Default {[int]$VbrVersion = "11"}
+                    { $_ -eq "1.0" } { [int]$VbrVersion = "11" }
+                    Default { [int]$VbrVersion = "11" }
                 }
                 Write-Verbose -Message "Using Veeam Powershell module version $($VbrVersion)."
-            }
-            catch {
+            } catch {
                 Write-Verbose -Message "Failed to get Version from Module"
             }
-        }
-        else {
+        } else {
             try {
                 Write-Verbose -Message "No Veeam Modules found, Fallback to SnapIn."
                 [int]$VbrVersion = (Get-PSSnapin VeeamPSSnapin -ErrorAction SilentlyContinue).PSVersion.ToString()
-            }
-            catch {
+            } catch {
                 Write-Verbose -Message "Failed to get Version from Module or SnapIn"
             }
         }
         # Check if the required version of VMware PowerCLI is installed
         $RequiredModule = Get-Module -ListAvailable -Name $Name | Sort-Object -Property Version -Descending | Select-Object -First 1
         $ModuleVersion = "$($RequiredModule.Version.Major)" + "." + "$($RequiredModule.Version.Minor)"
-        if ($ModuleVersion -eq ".")  {
+        if ($ModuleVersion -eq ".") {
             throw "$Name $Version or higher is required to run the Veeam VBR As Built Report. Install the Veeam Backup & Replication console that provide the required modules."
         }
         if ($ModuleVersion -lt $Version) {

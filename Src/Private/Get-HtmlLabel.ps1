@@ -9,10 +9,9 @@ Function Get-HTMLLabel {
         $ICON = 'NoIcon'
     } elseif ($URLIcon) {
         $ICON = 'NoIcon'
-    }
-    elseif ($images[$Type]) {
+    } elseif ($images[$Type]) {
         $ICON = $images[$Type]
-    } else {$ICON = "no_icon.png"}
+    } else { $ICON = "no_icon.png" }
 
     if (-Not $SubgraphLabel) {
         if ($ICON -ne 'NoIcon') {
@@ -24,7 +23,7 @@ Function Get-HTMLLabel {
                 <TD ALIGN='center'>$Label</TD>
             </TR>
             </TABLE>"
-        }  else {
+        } else {
             return "<TABLE border='0' cellborder='0' cellspacing='20' cellpadding='10'>
             <TR>
                 <TD bgcolor='#FFCCCC' ALIGN='center' colspan='1'>Veeam Logo</TD>

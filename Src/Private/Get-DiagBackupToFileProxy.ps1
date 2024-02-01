@@ -35,37 +35,36 @@ function Get-DiagBackupToFileProxy {
                         fontsize = 18
                         penwidth = 1.5
                         labelloc = 't'
-                        color=$SubGraphDebug.color
-                        style='dashed,rounded'
+                        color = $SubGraphDebug.color
+                        style = 'dashed,rounded'
                     }
                     SubGraph MainSubGraph -Attributes $ProxiesAttr -ScriptBlock {
                         # Dummy Node used for subgraph centering
-                        node DummyFileProxy @{Label=$DiagramDummyLabel; fontsize=18; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
+                        Node DummyFileProxy @{Label = $DiagramDummyLabel; fontsize = 18; fontname = "Segoe Ui Black"; fontcolor = '#005f4b'; shape = 'plain' }
                         if ($Dir -eq "TB") {
-                            node FileLeft @{Label='FileLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            node FileLeftt @{Label='FileLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            node FileRight @{Label='FileRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            edge FileLeft,FileLeftt,DummyFileProxy,FileRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
-                            rank FileLeft,FileLeftt,DummyFileProxy,FileRight
+                            Node FileLeft @{Label = 'FileLeft'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                            Node FileLeftt @{Label = 'FileLeftt'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                            Node FileRight @{Label = 'FileRight'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                            Edge FileLeft, FileLeftt, DummyFileProxy, FileRight @{style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Rank FileLeft, FileLeftt, DummyFileProxy, FileRight
                         }
                         foreach ($ProxyObj in $FileBackupProxy) {
                             $PROXYHASHTABLE = @{}
                             $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
-                            node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label; fontname="Segoe Ui"}
-                            edge -From DummyFileProxy -To $ProxyObj.Name @{constraint="true"; minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                            Node $ProxyObj -NodeScript { $_.Name } @{Label = $PROXYHASHTABLE.Label; fontname = "Segoe Ui" }
+                            Edge -From DummyFileProxy -To $ProxyObj.Name @{constraint = "true"; minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         Rank $FileBackupProxy.Name
                     }
 
                     if ($Dir -eq 'LR') {
-                        edge $BackupServerInfo.Name -to DummyFileProxy @{minlen=3;}
+                        Edge $BackupServerInfo.Name -To DummyFileProxy @{minlen = 3; }
                     } else {
-                        edge $BackupServerInfo.Name -to DummyFileProxy @{minlen=3;}
+                        Edge $BackupServerInfo.Name -To DummyFileProxy @{minlen = 3; }
                     }
                 }
             }
-        }
-        catch {
+        } catch {
             $_
         }
     }

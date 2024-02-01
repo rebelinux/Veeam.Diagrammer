@@ -24,29 +24,27 @@ function Get-VbrBackupServerInfo {
             $PssSession = New-PSSession $VBRServer.Name -Credential $Credential -Authentication Negotiate
             Write-Verbose -Message "Collecting Backup Server information from $($VBRServer.Name)."
             try {
-                $VeeamVersion = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { get-childitem -recurse HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | get-itemproperty | Where-Object { $_.DisplayName  -match 'Veeam Backup & Replication Server' } | Select-Object -Property DisplayVersion }
-            } catch {$_}
+                $VeeamVersion = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { Get-ChildItem -Recurse HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -match 'Veeam Backup & Replication Server' } | Select-Object -Property DisplayVersion }
+            } catch { $_ }
             try {
                 $VeeamDBFlavor = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations' }
-            } catch {$_}
+            } catch { $_ }
             try {
                 $VeeamDBInfo12 = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { Get-ItemProperty -Path "HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations\$(($Using:VeeamDBFlavor).SqlActiveConfiguration)" }
-            } catch {$_}
+            } catch { $_ }
             try {
                 $VeeamDBInfo11 = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication' }
-            } catch {$_}
+            } catch { $_ }
 
             if ($VeeamDBInfo11.SqlServerName) {
                 $VeeamDBInfo = $VeeamDBInfo11.SqlServerName
-            }
-            elseif ($VeeamDBInfo12.SqlServerName) {
+            } elseif ($VeeamDBInfo12.SqlServerName) {
                 $VeeamDBInfo = $VeeamDBInfo12.SqlServerName
-            }
-            elseif ($VeeamDBInfo12.SqlHostName) {
-                    $VeeamDBInfo = Switch ($VeeamDBInfo12.SqlHostName) {
-                        'localhost' {$VBRServer.Name}
-                        default {$VeeamDBInfo12.SqlHostName}
-                    }
+            } elseif ($VeeamDBInfo12.SqlHostName) {
+                $VeeamDBInfo = Switch ($VeeamDBInfo12.SqlHostName) {
+                    'localhost' { $VBRServer.Name }
+                    default { $VeeamDBInfo12.SqlHostName }
+                }
             } else {
                 $VeeamDBInfo = $VBRServer.Name
             }
@@ -79,8 +77,7 @@ function Get-VbrBackupServerInfo {
                         Label = Get-NodeIcon -Name "$($VBRServer.Name.split(".")[0])" -Type "VBR_Server" -Align "Center" -Rows $Rows
                     }
                 }
-            }
-            catch {
+            } catch {
                 $_
             }
             try {
@@ -118,8 +115,7 @@ function Get-VbrBackupServerInfo {
                         DBPort = $DBPort
                     }
                 }
-            }
-            catch {
+            } catch {
                 $_
             }
 
@@ -138,12 +134,10 @@ function Get-VbrBackupServerInfo {
                         Label = Get-NodeIcon -Name "$($EMServer.ServerName.split(".")[0])" -Type "VBR_Server_EM" -Align "Center" -Rows $Rows
                     }
                 }
-            }
-            catch {
+            } catch {
                 $_
             }
-        }
-        catch {
+        } catch {
             $_
         }
     }

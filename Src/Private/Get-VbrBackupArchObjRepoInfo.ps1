@@ -29,33 +29,32 @@ function Get-VbrBackupArchObjRepoInfo {
 
                     if ($ArchObjStorage.AmazonS3Folder) {
                         $Folder = $ArchObjStorage.AmazonS3Folder
-                    }
-                    elseif ($ArchObjStorage.AzureBlobFolder) {
+                    } elseif ($ArchObjStorage.AzureBlobFolder) {
                         $Folder = $ArchObjStorage.AzureBlobFolder.Name
                         $Container = $ArchObjStorage.AzureBlobFolder.Container
-                    } else {$Folder = 'Unknown'}
+                    } else { $Folder = 'Unknown' }
 
                     $Rows = @{
                         Type = $ArchObjStorage.ArchiveType
                         Folder = $Folder
-                        Gateway = &{
+                        Gateway = & {
                             if (-Not $ArchObjStorage.UseGatewayServer) {
                                 Switch ($ArchObjStorage.GatewayMode) {
                                     'Gateway' {
                                         switch ($ArchObjStorage.GatewayServer.count) {
-                                            0 {"Disable"}
-                                            1 {$ArchObjStorage.GatewayServer.Name.Split('.')[0]}
-                                            Default {'Automatic'}
+                                            0 { "Disable" }
+                                            1 { $ArchObjStorage.GatewayServer.Name.Split('.')[0] }
+                                            Default { 'Automatic' }
                                         }
                                     }
-                                    'Direct' {'Direct'}
-                                    default {'Unknown'}
+                                    'Direct' { 'Direct' }
+                                    default { 'Unknown' }
                                 }
                             } else {
                                 switch ($ArchObjStorage.GatewayServer.count) {
-                                    0 {"Disable"}
-                                    1 {$ArchObjStorage.GatewayServer.Name.Split('.')[0]}
-                                    Default {'Automatic'}
+                                    0 { "Disable" }
+                                    1 { $ArchObjStorage.GatewayServer.Name.Split('.')[0] }
+                                    Default { 'Automatic' }
                                 }
                             }
                         }
@@ -74,8 +73,7 @@ function Get-VbrBackupArchObjRepoInfo {
             }
 
             return $ArchObjStorageInfo
-        }
-        catch {
+        } catch {
             $_
         }
     }

@@ -51,7 +51,7 @@ function Get-VbrBackupRepoInfo {
 
                     if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($BackupRepo.Host.Name -in $ViBackupProxy.Host.Name -or $BackupRepo.Host.Name -in $HvBackupProxy.Host.Name)) {
                         $BackupType = 'Proxy'
-                    } else {$BackupType = $BackupRepo.Type}
+                    } else { $BackupType = $BackupRepo.Type }
 
                     $Type = Get-IconType -String $BackupType
 
@@ -66,8 +66,7 @@ function Get-VbrBackupRepoInfo {
             }
 
             return $BackupRepoInfo
-        }
-        catch {
+        } catch {
             $_
         }
     }

@@ -22,7 +22,7 @@ function Get-VbrBackupWanAccelInfo {
     process {
         Write-Verbose -Message "Collecting Wan Accelerator information from $($VBRServer.Name)."
         try {
-            $WANACCELS = Get-VbrWanAccelerator
+            $WANACCELS = Get-VBRWANAccelerator
             $WANACCELInfo = @()
             if ($WANACCELS) {
                 foreach ($WANACCEL in $WANACCELS) {
@@ -48,8 +48,7 @@ function Get-VbrBackupWanAccelInfo {
             }
 
             return $WANACCELInfo
-        }
-        catch {
+        } catch {
             $_
         }
     }

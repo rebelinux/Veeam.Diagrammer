@@ -68,6 +68,7 @@ The Veeam.Diagrammer supports the following Veeam Backup & Replication version;
 ### :closed_lock_with_key: Required Privileges
 
 Only users with Veeam Backup Administrator role assigned can generate a Diagram
+
 ### PowerShell
 
 This project is compatible with the following PowerShell versions;

@@ -29,32 +29,31 @@ function Get-VbrBackupObjectRepoInfo {
 
                     if ($ObjStorage.AmazonS3Folder) {
                         $Folder = $ObjStorage.AmazonS3Folder
-                    }
-                    elseif ($ObjStorage.AzureBlobFolder) {
+                    } elseif ($ObjStorage.AzureBlobFolder) {
                         $Folder = $ObjStorage.AzureBlobFolder
-                    } else {$Folder = 'Unknown'}
+                    } else { $Folder = 'Unknown' }
 
                     $Rows = @{
                         Type = $ObjStorage.Type
                         Folder = $Folder
-                        Gateway = &{
+                        Gateway = & {
                             if (-Not $ObjStorage.UseGatewayServer) {
                                 Switch ($ObjStorage.ConnectionType) {
                                     'Gateway' {
                                         switch ($ObjStorage.GatewayServer.count) {
-                                            0 {"Disable"}
-                                            1 {$ObjStorage.GatewayServer.Name.Split('.')[0]}
-                                            Default {'Automatic'}
+                                            0 { "Disable" }
+                                            1 { $ObjStorage.GatewayServer.Name.Split('.')[0] }
+                                            Default { 'Automatic' }
                                         }
                                     }
-                                    'Direct' {'Direct'}
-                                    default {'Unknown'}
+                                    'Direct' { 'Direct' }
+                                    default { 'Unknown' }
                                 }
                             } else {
                                 switch ($ObjStorage.GatewayServer.count) {
-                                    0 {"Disable"}
-                                    1 {$ObjStorage.GatewayServer.Name.Split('.')[0]}
-                                    Default {'Automatic'}
+                                    0 { "Disable" }
+                                    1 { $ObjStorage.GatewayServer.Name.Split('.')[0] }
+                                    Default { 'Automatic' }
                                 }
                             }
                         }
@@ -69,8 +68,7 @@ function Get-VbrBackupObjectRepoInfo {
             }
 
             return $ObjStorageInfo
-        }
-        catch {
+        } catch {
             $_
         }
     }
