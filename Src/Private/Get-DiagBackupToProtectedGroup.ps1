@@ -5,7 +5,7 @@ function Get-DiagBackupToProtectedGroup {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.7
+        Version:        0.5.9
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -18,9 +18,14 @@ function Get-DiagBackupToProtectedGroup {
     (
 
     )
+
+    begin {
+        # Get Veeam Backup Server Object
+        Get-DiagBackupServer
+    }
+
     process {
         try {
-
             $ProtectedGroups = Get-VbrBackupProtectedGroupInfo
             $ADContainer = $ProtectedGroups | Where-Object { $_.Container -eq 'ActiveDirectory' }
             $ManualContainer = $ProtectedGroups | Where-Object { $_.Container -eq 'ManuallyDeployed' }
@@ -100,7 +105,7 @@ function Get-DiagBackupToProtectedGroup {
                             Rank DummyPGLeft, DummyPGLeftt, ProtectedGroup, DummyPGRight
                         }
                         if ($ADContainer) {
-                            SubGraph ADContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Active Directory Computers' -Type "VBR_AGENT_AD_Logo" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
+                            SubGraph ADContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Active Directory Computers' -IconType "VBR_AGENT_AD_Logo" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node DummyADContainer @{Label = 'DummyADC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
                                 if ($ADContainer.count -le 2) {
@@ -174,7 +179,7 @@ function Get-DiagBackupToProtectedGroup {
                             Edge -From ProtectedGroup -To DummyADContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($ManualContainer) {
-                            SubGraph MCContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Manual Computers' -Type "VBR_AGENT_MC" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
+                            SubGraph MCContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Manual Computers' -IconType "VBR_AGENT_MC" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node DummyMCContainer @{Label = 'DummyMC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
                                 if ($ManualContainer.count -le 2) {
@@ -236,7 +241,7 @@ function Get-DiagBackupToProtectedGroup {
                             Edge -From ProtectedGroup -To DummyMCContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($IndividualContainer) {
-                            SubGraph ICContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Individual Computers' -Type "VBR_AGENT_IC" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
+                            SubGraph ICContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Individual Computers' -IconType "VBR_AGENT_IC" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node DummyICContainer @{Label = 'DummyIC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
                                 if ($IndividualContainer.count -le 2) {
@@ -313,7 +318,7 @@ function Get-DiagBackupToProtectedGroup {
                             Edge -From ProtectedGroup -To DummyICContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($CSVContainer) {
-                            SubGraph CSVContainer -Attributes @{Label = (Get-HTMLLabel -Label 'CSV Computers' -Type "VBR_AGENT_CSV_Logo" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
+                            SubGraph CSVContainer -Attributes @{Label = (Get-HTMLLabel -Label 'CSV Computers' -IconType "VBR_AGENT_CSV_Logo" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node DummyCSVContainer @{Label = 'DummyCSVC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
                                 if ($CSVContainer.count -le 2) {

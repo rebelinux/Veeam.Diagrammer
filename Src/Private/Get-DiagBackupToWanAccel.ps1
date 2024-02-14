@@ -5,7 +5,7 @@ function Get-DiagBackupToWanAccel {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.6
+        Version:        0.5.9
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -18,6 +18,12 @@ function Get-DiagBackupToWanAccel {
     (
 
     )
+
+    begin {
+        # Get Veeam Backup Server Object
+        Get-DiagBackupServer
+    }
+
     process {
         try {
 

@@ -5,7 +5,7 @@ function Get-DiagBackupToHvProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.6
+        Version:        0.5.9
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -18,6 +18,12 @@ function Get-DiagBackupToHvProxy {
     (
 
     )
+
+    begin {
+        # Get Veeam Backup Server Object
+        Get-DiagBackupServer
+    }
+
     process {
         try {
             $HyperVBackupProxy = Get-VbrBackupProxyInfo -Type 'hyperv'
@@ -57,9 +63,9 @@ function Get-DiagBackupToHvProxy {
                 }
 
                 if ($Dir -eq 'LR') {
-                    Edge $BackupServerInfo.Name -To DummyHyperVProxy @{minlen = 3; }
+                    Edge $BackupServerInfo.Name -To DummyHyperVProxy @{minlen = 3; lhead = "clusterMainSubGraph" }
                 } else {
-                    Edge $BackupServerInfo.Name -To DummyHyperVProxy @{minlen = 3; }
+                    Edge $BackupServerInfo.Name -To DummyHyperVProxy @{minlen = 3; lhead = "clusterMainSubGraph" }
                 }
             }
         } catch {

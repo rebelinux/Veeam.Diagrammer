@@ -5,7 +5,7 @@ function Get-DiagBackupToSobr {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.6
+        Version:        0.5.9
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -18,9 +18,14 @@ function Get-DiagBackupToSobr {
     (
 
     )
+
+    begin {
+        # Get Veeam Backup Server Object
+        Get-DiagBackupServer
+    }
+
     process {
         try {
-
             $SobrRepo = Get-VbrBackupSobrInfo
 
             if ($SobrRepo) {
@@ -51,19 +56,19 @@ function Get-DiagBackupToSobr {
                                 if ($SOBROBJ.Performance) {
                                     SubGraph "$($SubGraphName)Performance" -Attributes @{Label = "Performance Extent"; fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = "dashed,rounded"; } {
 
-                                        $SOBROBJ.Performance | ForEach-Object { Node $_.Name @{Label = Get-NodeIcon -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows; fontname = "Segoe Ui"; shape = "plain" } }
+                                        $SOBROBJ.Performance | ForEach-Object { Node $_.Name @{Label = Get-NodeIcon -Name $_.Name -IconType $_.Icon -Align "Center" -Rows $_.Rows; fontname = "Segoe Ui"; shape = "plain" } }
                                     }
                                 }
                                 if ($SOBROBJ.Capacity) {
                                     SubGraph "$($SubGraphName)Capacity" -Attributes @{Label = "Capacity Extent"; fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = "dashed,rounded" } {
 
-                                        $SOBROBJ.Capacity | ForEach-Object { Node $_.Name @{Label = Get-NodeIcon -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows; fontname = "Segoe Ui"; shape = "plain" } }
+                                        $SOBROBJ.Capacity | ForEach-Object { Node $_.Name @{Label = Get-NodeIcon -Name $_.Name -IconType $_.Icon -Align "Center" -Rows $_.Rows; fontname = "Segoe Ui"; shape = "plain" } }
                                     }
                                 }
                                 if ($SOBROBJ.Archive) {
                                     SubGraph "$($SubGraphName)Archive" -Attributes @{Label = "Archive Extent"; fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = "dashed,rounded" } {
 
-                                        $SOBROBJ.Archive | ForEach-Object { Node $_.Name @{Label = Get-NodeIcon -Name $_.Name -Type $_.Icon -Align "Center" -Rows $_.Rows; fontname = "Segoe Ui"; shape = "plain" } }
+                                        $SOBROBJ.Archive | ForEach-Object { Node $_.Name @{Label = Get-NodeIcon -Name $_.Name -IconType $_.Icon -Align "Center" -Rows $_.Rows; fontname = "Segoe Ui"; shape = "plain" } }
                                     }
                                 }
 
@@ -75,7 +80,7 @@ function Get-DiagBackupToSobr {
                             Edge -From DummySOBREPO -To $SOBROBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                     }
-                    Edge -From $BackupServerInfo.Name -To DummySOBREPO @{minlen = 3 }
+                    Edge -From $BackupServerInfo.Name -To DummySOBREPO @{minlen = 3; lhead = "clusterMainSubGraph"}
 
                 }
             }

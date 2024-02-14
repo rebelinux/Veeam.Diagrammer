@@ -5,7 +5,7 @@ function Get-VbrBackupWanAccelInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.1.0
+        Version:        0.5.9
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -40,7 +40,7 @@ function Get-VbrBackupWanAccelInfo {
 
                     $TempWANACCELInfo = [PSCustomObject]@{
                         Name = "$($WANACCEL.Name.toUpper().split(".")[0])  ";
-                        Label = Get-NodeIcon -Name "$($WANACCEL.Name.toUpper().split(".")[0])" -Type "VBR_Wan_Accel" -Align "Center" -Rows $Rows
+                        Label = Get-NodeIcon -Name "$($WANACCEL.Name.toUpper().split(".")[0])" -IconType "VBR_Wan_Accel" -Align "Center" -Rows $Rows
                         TrafficPort = "$($WANAccel.GetWaTrafficPort())/TCP"
                     }
                     $WANACCELInfo += $TempWANACCELInfo

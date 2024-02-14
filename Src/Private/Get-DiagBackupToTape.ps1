@@ -18,9 +18,14 @@ function Get-DiagBackupToTape {
     (
 
     )
+
+    begin {
+        # Get Veeam Backup Server Object
+        Get-DiagBackupServer
+    }
+
     process {
         try {
-
             $BackupTapeServers = Get-VbrBackupTapeServerInfo
             $BackupTapeLibrary = Get-VbrBackupTapeLibraryInfo
             $BackupTapeDrives = Get-VbrBackupTapeDrivesInfo
