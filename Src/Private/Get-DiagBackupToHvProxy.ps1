@@ -63,9 +63,9 @@ function Get-DiagBackupToHvProxy {
                 }
 
                 if ($Dir -eq 'LR') {
-                    Edge $BackupServerInfo.Name -To DummyHyperVProxy @{minlen = 3; lhead = "clusterMainSubGraph" }
+                    Edge $BackupServerInfo.Name -To DummyHyperVProxy @{minlen = 3 }
                 } else {
-                    Edge $BackupServerInfo.Name -To DummyHyperVProxy @{minlen = 3; lhead = "clusterMainSubGraph" }
+                    Edge $BackupServerInfo.Name -To DummyHyperVProxy @{minlen = 3 }
                 }
             }
         } catch {

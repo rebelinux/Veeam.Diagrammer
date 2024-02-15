@@ -80,7 +80,7 @@ function Get-DiagBackupToSobr {
                             Edge -From DummySOBREPO -To $SOBROBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                     }
-                    Edge -From $BackupServerInfo.Name -To DummySOBREPO @{minlen = 3; lhead = "clusterMainSubGraph"}
+                    Edge -From $BackupServerInfo.Name -To DummySOBREPO @{minlen = 3}
 
                 }
             }

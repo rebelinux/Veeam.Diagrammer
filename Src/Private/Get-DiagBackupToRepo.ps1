@@ -209,7 +209,7 @@ function Get-DiagBackupToRepo {
                         }
                     }
 
-                    Edge -From $BackupServerInfo.Name -To BackupRepository @{minlen = 3; lhead = "clusterMainSubGraph" }
+                    Edge -From $BackupServerInfo.Name -To BackupRepository @{minlen = 3 }
                 }
             }
         } catch {

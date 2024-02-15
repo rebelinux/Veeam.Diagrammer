@@ -64,9 +64,9 @@ function Get-DiagBackupToFileProxy {
                     }
 
                     if ($Dir -eq 'LR') {
-                        Edge $BackupServerInfo.Name -To DummyFileProxy @{minlen = 3; lhead = "clusterMainSubGraph"}
+                        Edge $BackupServerInfo.Name -To DummyFileProxy @{minlen = 3}
                     } else {
-                        Edge $BackupServerInfo.Name -To DummyFileProxy @{minlen = 3; lhead = "clusterMainSubGraph"}
+                        Edge $BackupServerInfo.Name -To DummyFileProxy @{minlen = 3}
                     }
                 }
             }

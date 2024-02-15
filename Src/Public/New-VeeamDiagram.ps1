@@ -393,71 +393,71 @@ function New-VeeamDiagram {
                         if ($DiagramType -eq 'Backup-to-HyperV-Proxy') {
                             $BackuptoHyperVProxy = Get-DiagBackupToHvProxy
                             if ($BackuptoHyperVProxy) {
-                                $BackuptoHyperVProxy
+                                $BackuptoHyperVProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             } else {
                                 Write-Warning "No HyperV Proxy Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-vSphere-Proxy') {
                             $BackuptovSphereProxy = Get-DiagBackupToViProxy
                             if ($BackuptovSphereProxy) {
-                                $BackuptovSphereProxy
+                                $BackuptovSphereProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             } else {
                                 Write-Warning "No vSphere Proxy Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-File-Proxy') {
                             $BackuptoFileProxy = Get-DiagBackupToFileProxy
                             if ($BackuptoFileProxy) {
-                                $BackuptoFileProxy
+                                $BackuptoFileProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             } else {
                                 Write-Warning "No File Proxy Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-WanAccelerator') {
                             $BackuptoWanAccelerator = Get-DiagBackupToWanAccel
                             if ($BackuptoWanAccelerator) {
-                                $BackuptoWanAccelerator
+                                $BackuptoWanAccelerator | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             } else {
                                 Write-Warning "No Wan Accelerators available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-Repository') {
                             $BackuptoRepository = Get-DiagBackupToRepo
                             if ($BackuptoRepository) {
-                                $BackuptoRepository
+                                $BackuptoRepository | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             } else {
                                 throw "No Backup Repository available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-ProtectedGroup') {
                             $BackuptoProtectedGroup = Get-DiagBackupToProtectedGroup
                             if ($BackuptoProtectedGroup) {
-                                $BackuptoProtectedGroup
+                                $BackuptoProtectedGroup | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             } else {
                                 throw "No Backup Protected Group available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-Tape') {
                             $BackupToTape = Get-DiagBackupToTape
                             if ($BackupToTape) {
-                                $BackupToTape
+                                $BackupToTape | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             } else {
                                 Write-Warning "No Tape Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-Sobr') {
                             $BackuptoSobr = Get-DiagBackupToSobr
                             if ($BackuptoSobr) {
-                                $BackuptoSobr
+                                $BackuptoSobr | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             } else {
                                 throw "No Scale-Out Backup Repository available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-All') {
                             if (Get-DiagBackupToHvProxy) {
-                                Get-DiagBackupToHvProxy
+                                Get-DiagBackupToHvProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             } else { Write-Warning "No HyperV Proxy Infrastructure available to diagram" }
                             if (Get-DiagBackupToViProxy) {
-                                Get-DiagBackupToViProxy
+                                Get-DiagBackupToViProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             } else { Write-Warning "No vSphere Proxy Infrastructure available to diagram" }
 
-                            Get-DiagBackupToWanAccel
-                            Get-DiagBackupToRepo
-                            Get-DiagBackupToSobr
-                            Get-DiagBackupToTape
+                            Get-DiagBackupToWanAccel | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            Get-DiagBackupToRepo | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            Get-DiagBackupToSobr | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            Get-DiagBackupToTape | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                         }
                     }
                 }
