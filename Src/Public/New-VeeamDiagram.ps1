@@ -391,58 +391,58 @@ function New-VeeamDiagram {
                     SubGraph MainGraph -Attributes @{Label = (Get-HTMLLabel -Label $MainGraphLabel -IconType $CustomLogo); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
 
                         if ($DiagramType -eq 'Backup-to-HyperV-Proxy') {
-                            $BackuptoHyperVProxy = Get-DiagBackupToHvProxy
+                            $BackuptoHyperVProxy = Get-DiagBackupToHvProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoHyperVProxy) {
-                                $BackuptoHyperVProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                                $BackuptoHyperVProxy
                             } else {
                                 Write-Warning "No HyperV Proxy Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-vSphere-Proxy') {
-                            $BackuptovSphereProxy = Get-DiagBackupToViProxy
+                            $BackuptovSphereProxy = Get-DiagBackupToViProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptovSphereProxy) {
-                                $BackuptovSphereProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                                $BackuptovSphereProxy
                             } else {
                                 Write-Warning "No vSphere Proxy Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-File-Proxy') {
-                            $BackuptoFileProxy = Get-DiagBackupToFileProxy
+                            $BackuptoFileProxy = Get-DiagBackupToFileProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoFileProxy) {
-                                $BackuptoFileProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                                $BackuptoFileProxy
                             } else {
                                 Write-Warning "No File Proxy Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-WanAccelerator') {
-                            $BackuptoWanAccelerator = Get-DiagBackupToWanAccel
+                            $BackuptoWanAccelerator = Get-DiagBackupToWanAccel | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoWanAccelerator) {
-                                $BackuptoWanAccelerator | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                                $BackuptoWanAccelerator
                             } else {
                                 Write-Warning "No Wan Accelerators available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-Repository') {
-                            $BackuptoRepository = Get-DiagBackupToRepo
+                            $BackuptoRepository = Get-DiagBackupToRepo | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoRepository) {
-                                $BackuptoRepository | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                                $BackuptoRepository
                             } else {
                                 throw "No Backup Repository available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-ProtectedGroup') {
-                            $BackuptoProtectedGroup = Get-DiagBackupToProtectedGroup
+                            $BackuptoProtectedGroup = Get-DiagBackupToProtectedGroup | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoProtectedGroup) {
-                                $BackuptoProtectedGroup | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                                $BackuptoProtectedGroup
                             } else {
                                 throw "No Backup Protected Group available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-Tape') {
-                            $BackupToTape = Get-DiagBackupToTape
+                            $BackupToTape = Get-DiagBackupToTape | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackupToTape) {
-                                $BackupToTape | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                                $BackupToTape
                             } else {
                                 Write-Warning "No Tape Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-Sobr') {
-                            $BackuptoSobr = Get-DiagBackupToSobr
+                            $BackuptoSobr = Get-DiagBackupToSobr | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoSobr) {
-                                $BackuptoSobr | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                                $BackuptoSobr
                             } else {
                                 throw "No Scale-Out Backup Repository available to diagram"
                             }
@@ -466,6 +466,6 @@ function New-VeeamDiagram {
     }
     end {
         #Export Diagram
-        Out-VbrDiagram -GraphObj $Graph -ErrorDebug $EnableErrorDebug -Rotate $Rotate
+        Out-VbrDiagram -GraphObj ($Graph | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch) -ErrorDebug $EnableErrorDebug -Rotate $Rotate
     }
 }
