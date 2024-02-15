@@ -67,7 +67,7 @@ function New-VeeamDiagram {
         Allow the creation of footer signature.
         AuthorName and CompanyName must be set to use this property.
     .NOTES
-        Version:        0.5.8
+        Version:        0.5.9
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -154,12 +154,12 @@ function New-VeeamDiagram {
             HelpMessage = 'Please provide the path to the diagram output file'
         )]
         [ValidateScript( {
-            if (Test-Path -Path $_) {
-                $true
-            } else {
-                throw "Path $_ not found!"
-            }
-        })]
+                if (Test-Path -Path $_) {
+                    $true
+                } else {
+                    throw "Path $_ not found!"
+                }
+            })]
         [string] $OutputFolderPath = [System.IO.Path]::GetTempPath(),
 
         [Parameter(
@@ -167,12 +167,12 @@ function New-VeeamDiagram {
             HelpMessage = 'Please provide the path to the custom logo used for Signature'
         )]
         [ValidateScript( {
-            if (Test-Path -Path $_) {
-                $true
-            } else {
-                throw "File $_ not found!"
-            }
-        })]
+                if (Test-Path -Path $_) {
+                    $true
+                } else {
+                    throw "File $_ not found!"
+                }
+            })]
         [string] $SignatureLogo,
 
         [Parameter(
@@ -180,12 +180,12 @@ function New-VeeamDiagram {
             HelpMessage = 'Please provide the path to the custom logo'
         )]
         [ValidateScript( {
-            if (Test-Path -Path $_) {
-                $true
-            } else {
-                throw "File $_ not found!"
-            }
-        })]
+                if (Test-Path -Path $_) {
+                    $true
+                } else {
+                    throw "File $_ not found!"
+                }
+            })]
         [string] $Logo,
 
         [Parameter(
@@ -194,12 +194,12 @@ function New-VeeamDiagram {
         )]
         [ValidateNotNullOrEmpty()]
         [ValidateScript({
-            if ($Format.count -lt 2) {
-                $true
-            } else {
-                throw "Format value must be unique if Filename is especified."
-            }
-        })]
+                if ($Format.count -lt 2) {
+                    $true
+                } else {
+                    throw "Format value must be unique if Filename is especified."
+                }
+            })]
         [String] $Filename,
 
         [Parameter(
@@ -227,7 +227,7 @@ function New-VeeamDiagram {
             Mandatory = $true,
             HelpMessage = 'Controls type of Veeam VBR generated diagram'
         )]
-        [ValidateSet('Backup-to-Tape', 'Backup-to-File-Proxy', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator','Backup-to-ProtectedGroup', 'Backup-to-All')]
+        [ValidateSet('Backup-to-Tape', 'Backup-to-File-Proxy', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-ProtectedGroup', 'Backup-to-All')]
         [string] $DiagramType,
 
         [Parameter(
@@ -264,7 +264,7 @@ function New-VeeamDiagram {
             HelpMessage = 'Allow the creation of footer signature'
         )]
         [Switch] $Signature = $false
-        )
+    )
 
 
     begin {
@@ -276,7 +276,7 @@ function New-VeeamDiagram {
             $Credential = New-Object System.Management.Automation.PSCredential ($Username, $SecurePassword)
         }
 
-        if (($Format -ne "base64") -and  !(Test-Path $OutputFolderPath)) {
+        if (($Format -ne "base64") -and !(Test-Path $OutputFolderPath)) {
             Write-Error "OutputFolderPath '$OutputFolderPath' is not a valid folder path."
             break
         }
@@ -286,35 +286,35 @@ function New-VeeamDiagram {
         }
 
         $MainGraphLabel = Switch ($DiagramType) {
-            'Backup-to-Sobr' {'Scale-Out Backup Repository Diagram'}
-            'Backup-to-File-Proxy' {'File Backup Proxy Diagram'}
-            'Backup-to-vSphere-Proxy' {'VMware Backup Proxy Diagram'}
-            'Backup-to-HyperV-Proxy' {'HyperV Backup Proxy Diagram'}
-            'Backup-to-Repository' {'Backup Repository Diagram'}
-            'Backup-to-WanAccelerator' {'Wan Accelerators Diagram'}
-            'Backup-to-Tape' {'Tape Infrastructure Diagram'}
-            'Backup-to-ProtectedGroup' {'Physical Infrastructure Diagram'}
-            'Backup-to-All' {'Backup Infrastructure Diagram'}
+            'Backup-to-Sobr' { 'Scale-Out Backup Repository Diagram' }
+            'Backup-to-File-Proxy' { 'File Backup Proxy Diagram' }
+            'Backup-to-vSphere-Proxy' { 'VMware Backup Proxy Diagram' }
+            'Backup-to-HyperV-Proxy' { 'HyperV Backup Proxy Diagram' }
+            'Backup-to-Repository' { 'Backup Repository Diagram' }
+            'Backup-to-WanAccelerator' { 'Wan Accelerators Diagram' }
+            'Backup-to-Tape' { 'Tape Infrastructure Diagram' }
+            'Backup-to-ProtectedGroup' { 'Physical Infrastructure Diagram' }
+            'Backup-to-All' { 'Backup Infrastructure Diagram' }
         }
 
         $URLIcon = $false
 
         if ($EnableEdgeDebug) {
-            $EdgeDebug = @{style='filled'; color='red'}
+            $script:EdgeDebug = @{style = 'filled'; color = 'red' }
             $URLIcon = $true
-        } else {$EdgeDebug = @{style='invis'; color='red'}}
+        } else { $script:EdgeDebug = @{style = 'invis'; color = 'red' } }
 
         if ($EnableSubGraphDebug) {
-            $SubGraphDebug = @{style='dashed'; color='red'}
+            $script:SubGraphDebug = @{style = 'dashed'; color = 'red' }
             $URLIcon = $true
-        } else {$SubGraphDebug = @{style='invis'; color='gray'}}
+        } else { $script:SubGraphDebug = @{style = 'invis'; color = 'gray' } }
 
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
         $IconPath = Join-Path $RootPath 'icons'
         $script:GraphvizPath = Join-Path $RootPath 'Graphviz\bin\dot.exe'
         $Dir = switch ($Direction) {
-            'top-to-bottom' {'TB'}
-            'left-to-right' {'LR'}
+            'top-to-bottom' { 'TB' }
+            'left-to-right' { 'LR' }
         }
 
         # Validate Custom logo
@@ -327,13 +327,13 @@ function New-VeeamDiagram {
 
         $MainGraphAttributes = @{
             pad = 1.0
-            rankdir   = $Dir
-            overlap   = 'false'
-            splines   = $EdgeType
-            penwidth  = 1.5
-            fontname  = "Segoe Ui Black"
+            rankdir = $Dir
+            overlap = 'false'
+            splines = $EdgeType
+            penwidth = 1.5
+            fontname = "Segoe Ui Black"
             fontcolor = '#005f4b'
-            fontsize  = 32
+            fontsize = 32
             style = "dashed"
             labelloc = 't'
             imagepath = $IconPath
@@ -352,13 +352,13 @@ function New-VeeamDiagram {
 
                 $script:VBRServer = Get-VBRServer -Type Local
 
-            } Catch {throw "Unable to get Veeam B&R Server"}
+            } Catch { throw "Unable to get Veeam B&R Server" }
 
-            Get-VbrBackupServerInfo
+            Get-VBRBackupServerInfo
 
             $script:Graph = Graph -Name VeeamVBR -Attributes $MainGraphAttributes {
                 # Node default theme
-                node @{
+                Node @{
                     label = ''
                     shape = 'none'
                     labelloc = 't'
@@ -368,7 +368,7 @@ function New-VeeamDiagram {
                     imagescale = $true
                 }
                 # Edge default theme
-                edge @{
+                Edge @{
                     style = 'dashed'
                     dir = 'both'
                     arrowtail = 'dot'
@@ -377,177 +377,95 @@ function New-VeeamDiagram {
                     arrowsize = 1
                 }
 
-                SubGraph MainGraph -Attributes @{Label=(Get-HTMLLabel -Label $MainGraphLabel -Type $CustomLogo); fontsize=24; penwidth=0} {
-
-                    SubGraph BackupServer -Attributes @{Label='Backup Server'; style="rounded"; bgcolor="#ceedc4"; fontsize=18; penwidth=2} {
-                        if (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and $EMServerInfo) {
-                            Write-Verbose -Message "Collecting Backup Server, Database Server and Enterprise Manager Information."
-                            $BSHASHTABLE = @{}
-                            $DBHASHTABLE = @{}
-                            $EMHASHTABLE = @{}
-
-                            $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-                            $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
-                            $EMServerInfo.psobject.properties | ForEach-Object { $EMHASHTABLE[$_.Name] = $_.Value }
-
-                            node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
-                            node $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
-                            node $EMServerInfo.Name -Attributes @{Label=$EMHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
-
-                            if ($Dir -eq 'LR') {
-                                rank $EMServerInfo.Name,$DatabaseServerInfo.Name
-                                edge -from $EMServerInfo.Name -to $BackupServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3;}
-                                edge -from $DatabaseServerInfo.Name -to $BackupServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; xlabel=$DatabaseServerInfo.DBPort}
-                            } else {
-                                rank $EMServerInfo.Name,$BackupServerInfo.Name,$DatabaseServerInfo.Name
-                                edge -from $EMServerInfo.Name -to $BackupServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3;}
-                                edge -from $BackupServerInfo.Name -to $DatabaseServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; xlabel=$DatabaseServerInfo.DBPort}
-                            }
-                        }
-                        elseif (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and (-Not $EMServerInfo)) {
-                            Write-Verbose -Message "Not Enterprise Manager Found: Collecting Backup Server and Database server Information."
-                            $BSHASHTABLE = @{}
-                            $DBHASHTABLE = @{}
-
-                            $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-                            $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
-
-                            node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
-                            node $DatabaseServerInfo.Name -Attributes @{Label=$DBHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
-
-                            if ($Dir -eq 'LR') {
-                                rank $BackupServerInfo.Name,$DatabaseServerInfo.Name
-                                edge -from $DatabaseServerInfo.Name -to $BackupServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; xlabel=$DatabaseServerInfo.DBPort}
-                            } else {
-                                rank $BackupServerInfo.Name,$DatabaseServerInfo.Name
-                                edge -from $BackupServerInfo.Name -to $DatabaseServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3; xlabel=$DatabaseServerInfo.DBPort}
-                            }
-                        }
-                        elseif ($EMServerInfo -and ($DatabaseServerInfo.Name -eq $BackupServerInfo.Name)) {
-                            Write-Verbose -Message "Database server colocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
-                            $BSHASHTABLE = @{}
-                            $EMHASHTABLE = @{}
-
-                            $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-                            $EMServerInfo.psobject.properties | ForEach-Object { $EMHASHTABLE[$_.Name] = $_.Value }
-
-                            node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
-                            node $EMServerInfo.Name -Attributes @{Label=$EMHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
-
-                            if ($Dir -eq 'LR') {
-                                rank $EMServerInfo.Name,$BackupServerInfo.Name
-                                edge -from $EMServerInfo.Name -to $BackupServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3;}
-                            } else {
-                                rank $EMServerInfo.Name,$BackupServerInfo.Name
-                                edge -from $BackupServerInfo.Name -to $EMServerInfo.Name @{arrowtail="normal"; arrowhead="normal"; minlen=3;}
-                            }
-                        } else {
-                            Write-Verbose -Message "Database server colocated with Backup Server and no Enterprise Manager found: Collecting Backup Server Information."
-                            $BSHASHTABLE = @{}
-                            $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-                            node Left @{Label='Left'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            node Leftt @{Label='Leftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            node Right @{Label='Right'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            node $BackupServerInfo.Name -Attributes @{Label=$BSHASHTABLE.Label; fillColor='#ceedc4'; shape='plain'}
-                            edge Left,Leftt,$BackupServerInfo.Name,Right @{style=$EdgeDebug.style; color=$EdgeDebug.color}
-                            rank Left,Leftt,$BackupServerInfo.Name,Right
-                        }
-                    }
-
-                    if ($DiagramType -eq 'Backup-to-HyperV-Proxy') {
-                        $BackuptoHyperVProxy = Get-DiagBackupToHvProxy
-                        if ($BackuptoHyperVProxy) {
-                            $BackuptoHyperVProxy
-                        } else {
-                            Write-Warning "No HyperV Proxy Infrastructure available to diagram"
-                        }
-                    }
-                    elseif ($DiagramType -eq 'Backup-to-vSphere-Proxy') {
-                        $BackuptovSphereProxy = Get-DiagBackupToViProxy
-                        if ($BackuptovSphereProxy) {
-                            $BackuptovSphereProxy
-                        } else {
-                            Write-Warning "No vSphere Proxy Infrastructure available to diagram"
-                        }
-                    }
-                    elseif ($DiagramType -eq 'Backup-to-File-Proxy') {
-                        $BackuptoFileProxy = Get-DiagBackupToFileProxy
-                        if ($BackuptoFileProxy) {
-                            $BackuptoFileProxy
-                        } else {
-                            Write-Warning "No File Proxy Infrastructure available to diagram"
-                        }
-                    }
-                    elseif ($DiagramType -eq 'Backup-to-WanAccelerator') {
-                        $BackuptoWanAccelerator = Get-DiagBackupToWanAccel
-                        if ($BackuptoWanAccelerator) {
-                            $BackuptoWanAccelerator
-                        } else {
-                            Write-Warning "No Wan Accelerators available to diagram"
-                        }
-                    }
-                    elseif ($DiagramType -eq 'Backup-to-Repository') {
-                        $BackuptoRepository = Get-DiagBackupToRepo
-                        if ($BackuptoRepository) {
-                            $BackuptoRepository
-                        } else {
-                            throw "No Backup Repository available to diagram"
-                        }
-                    }
-                    elseif ($DiagramType -eq 'Backup-to-ProtectedGroup') {
-                        $BackuptoProtectedGroup = Get-DiagBackupToProtectedGroup
-                        if ($BackuptoProtectedGroup) {
-                            $BackuptoProtectedGroup
-                        } else {
-                            throw "No Backup Protected Group available to diagram"
-                        }
-                    }
-                    elseif ($DiagramType -eq 'Backup-to-Tape') {
-                        $BackupToTape = Get-DiagBackupToTape
-                        if ($BackupToTape) {
-                            $BackupToTape
-                        } else {
-                            Write-Warning "No Tape Infrastructure available to diagram"
-                        }
-                    }
-                    elseif ($DiagramType -eq 'Backup-to-Sobr') {
-                        $BackuptoSobr = Get-DiagBackupToSobr
-                        if ($BackuptoSobr) {
-                            $BackuptoSobr
-                        } else {
-                            throw "No Scale-Out Backup Repository available to diagram"
-                        }
-                    }
-                    elseif ($DiagramType -eq 'Backup-to-All') {
-                        if (Get-DiagBackupToHvProxy) {
-                            Get-DiagBackupToHvProxy
-                        } else {Write-Warning "No HyperV Proxy Infrastructure available to diagram"}
-                        if (Get-DiagBackupToViProxy) {
-                            Get-DiagBackupToViProxy
-                        } else {Write-Warning "No vSphere Proxy Infrastructure available to diagram"}
-
-                        Get-DiagBackupToWanAccel
-                        Get-DiagBackupToRepo
-                        Get-DiagBackupToSobr
-                        Get-DiagBackupToTape
-                    }
-                }
                 if ($Signature) {
-                    SubGraph Legend @{Label=" "; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=1} {
-                        if ($CustomSignatureLogo) {
-                            node LegendTable -Attributes @{Label=(Get-HTMLTable -Rows "Author: $($AuthorName)","Company: $($CompanyName)" -TableBorder 0 -CellBorder 0 -align 'left' -Logo $CustomSignatureLogo); shape='plain'}
-                        } else {
-                            node LegendTable -Attributes @{Label=(Get-HTMLTable -Rows "Author: $($AuthorName)","Company: $($CompanyName)" -TableBorder 0 -CellBorder 0 -align 'left' -Logo "VBR_LOGO_Footer"); shape='plain'}
+                    if ($CustomSignatureLogo) {
+                        $Signature = (Get-HtmlTable -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -align 'left' -Logo $CustomSignatureLogo)
+                    } else {
+                        $Signature = (Get-HtmlTable -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -align 'left' -Logo "VBR_LOGO_Footer")
+                    }
+                } else {
+                    $Signature = " "
+                }
+
+                SubGraph OUTERDRAWBOARD1 -Attributes @{Label = $Signature; fontsize = 24; penwidth = 1.5; labelloc = 'b'; labeljust = "r"; style = $SubGraphDebug.style; color = $SubGraphDebug.color } {
+                    SubGraph MainGraph -Attributes @{Label = (Get-HTMLLabel -Label $MainGraphLabel -IconType $CustomLogo); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
+
+                        if ($DiagramType -eq 'Backup-to-HyperV-Proxy') {
+                            $BackuptoHyperVProxy = Get-DiagBackupToHvProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            if ($BackuptoHyperVProxy) {
+                                $BackuptoHyperVProxy
+                            } else {
+                                Write-Warning "No HyperV Proxy Infrastructure available to diagram"
+                            }
+                        } elseif ($DiagramType -eq 'Backup-to-vSphere-Proxy') {
+                            $BackuptovSphereProxy = Get-DiagBackupToViProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            if ($BackuptovSphereProxy) {
+                                $BackuptovSphereProxy
+                            } else {
+                                Write-Warning "No vSphere Proxy Infrastructure available to diagram"
+                            }
+                        } elseif ($DiagramType -eq 'Backup-to-File-Proxy') {
+                            $BackuptoFileProxy = Get-DiagBackupToFileProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            if ($BackuptoFileProxy) {
+                                $BackuptoFileProxy
+                            } else {
+                                Write-Warning "No File Proxy Infrastructure available to diagram"
+                            }
+                        } elseif ($DiagramType -eq 'Backup-to-WanAccelerator') {
+                            $BackuptoWanAccelerator = Get-DiagBackupToWanAccel | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            if ($BackuptoWanAccelerator) {
+                                $BackuptoWanAccelerator
+                            } else {
+                                Write-Warning "No Wan Accelerators available to diagram"
+                            }
+                        } elseif ($DiagramType -eq 'Backup-to-Repository') {
+                            $BackuptoRepository = Get-DiagBackupToRepo | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            if ($BackuptoRepository) {
+                                $BackuptoRepository
+                            } else {
+                                throw "No Backup Repository available to diagram"
+                            }
+                        } elseif ($DiagramType -eq 'Backup-to-ProtectedGroup') {
+                            $BackuptoProtectedGroup = Get-DiagBackupToProtectedGroup | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            if ($BackuptoProtectedGroup) {
+                                $BackuptoProtectedGroup
+                            } else {
+                                throw "No Backup Protected Group available to diagram"
+                            }
+                        } elseif ($DiagramType -eq 'Backup-to-Tape') {
+                            $BackupToTape = Get-DiagBackupToTape | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            if ($BackupToTape) {
+                                $BackupToTape
+                            } else {
+                                Write-Warning "No Tape Infrastructure available to diagram"
+                            }
+                        } elseif ($DiagramType -eq 'Backup-to-Sobr') {
+                            $BackuptoSobr = Get-DiagBackupToSobr | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            if ($BackuptoSobr) {
+                                $BackuptoSobr
+                            } else {
+                                throw "No Scale-Out Backup Repository available to diagram"
+                            }
+                        } elseif ($DiagramType -eq 'Backup-to-All') {
+                            if (Get-DiagBackupToHvProxy) {
+                                Get-DiagBackupToHvProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            } else { Write-Warning "No HyperV Proxy Infrastructure available to diagram" }
+                            if (Get-DiagBackupToViProxy) {
+                                Get-DiagBackupToViProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            } else { Write-Warning "No vSphere Proxy Infrastructure available to diagram" }
+
+                            Get-DiagBackupToWanAccel | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            Get-DiagBackupToRepo | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            Get-DiagBackupToSobr | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            Get-DiagBackupToTape | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                         }
                     }
-                    inline {rank="sink"; "Legend"; "LegendTable";}
-                    edge -from MainSubGraph:s -to LegendTable @{minlen=5; constrains='false'; style=$EdgeDebug.style; color=$EdgeDebug.color}
                 }
             }
         }
     }
     end {
         #Export Diagram
-        Out-VbrDiagram -GraphObj $Graph -ErrorDebug $EnableErrorDebug -Rotate $Rotate
+        Out-VbrDiagram -GraphObj ($Graph | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch) -ErrorDebug $EnableErrorDebug -Rotate $Rotate
     }
 }

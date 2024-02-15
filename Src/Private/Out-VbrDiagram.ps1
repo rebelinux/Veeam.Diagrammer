@@ -44,14 +44,14 @@ function Out-VbrDiagram {
                 if ($Filename) {
                     Try {
                         if ($OutputFormat -ne "base64") {
-                            if($OutputFormat -ne "svg") {
+                            if ($OutputFormat -ne "svg") {
                                 $Document = Export-PSGraph -Source $GraphObj -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat $OutputFormat -GraphVizPath $GraphvizPath
                                 Write-ColorOutput -Color green  "Diagram '$FileName' has been saved to '$OutputFolderPath'."
                             } else {
                                 $Document = Export-PSGraph -Source $GraphObj -DestinationPath "$($OutputFolderPath)$($FileName)" -OutputFormat $OutputFormat -GraphVizPath $GraphvizPath
                                 #Fix icon path issue with svg output
                                 $images = Select-String -Path $($Document.fullname) -Pattern '<image xlink:href=".*png".*>' -AllMatches
-                                foreach($match in $images) {
+                                foreach ($match in $images) {
                                     $matchFound = $match -Match '"(.*png)"'
                                     if ($matchFound -eq $false) {
                                         continue
@@ -73,23 +73,23 @@ function Out-VbrDiagram {
                                 # Code used to allow rotating image!
                                 if ($Rotate) {
                                     Add-Type -AssemblyName System.Windows.Forms
-                                    $RotatedIMG = new-object System.Drawing.Bitmap $Document.FullName
+                                    $RotatedIMG = New-Object System.Drawing.Bitmap $Document.FullName
                                     $RotatedIMG.RotateFlip("Rotate$($Rotate)FlipNone")
-                                    $RotatedIMG.Save($Document.FullName,"png")
+                                    $RotatedIMG.Save($Document.FullName, "png")
                                     if ($RotatedIMG) {
-                                        $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
+                                        $Base64 = [convert]::ToBase64String((Get-Content $Document -Encoding byte))
                                         if ($Base64) {
                                             Remove-Item -Path $Document.FullName
                                             $Base64
-                                        } else {Remove-Item -Path $Document.FullName}
+                                        } else { Remove-Item -Path $Document.FullName }
                                     }
                                 } else {
                                     # Code used to output image to base64 format
-                                    $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
+                                    $Base64 = [convert]::ToBase64String((Get-Content $Document -Encoding byte))
                                     if ($Base64) {
                                         Remove-Item -Path $Document.FullName
                                         $Base64
-                                    } else {Remove-Item -Path $Document.FullName}
+                                    } else { Remove-Item -Path $Document.FullName }
 
                                 }
                             }
@@ -98,20 +98,19 @@ function Out-VbrDiagram {
                         $Err = $_
                         Write-Error $Err
                     }
-                }
-                elseif (!$Filename) {
+                } elseif (!$Filename) {
                     if ($OutputFormat -ne "base64") {
                         $File = "Output.$OutputFormat"
-                    } else {$File = "Output.png"}
+                    } else { $File = "Output.png" }
                     Try {
                         if ($OutputFormat -ne "base64") {
-                            if($OutputFormat -ne "svg") {
+                            if ($OutputFormat -ne "svg") {
                                 $Document = Export-PSGraph -Source $GraphObj -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat $OutputFormat -GraphVizPath $GraphvizPath
                                 Write-ColorOutput -Color green  "Diagram '$File' has been saved to '$OutputFolderPath'."
                             } else {
                                 $Document = Export-PSGraph -Source $GraphObj -DestinationPath "$($OutputFolderPath)$($File)" -OutputFormat $OutputFormat -GraphVizPath $GraphvizPath
                                 $images = Select-String -Path $($Document.fullname) -Pattern '<image xlink:href=".*png".*>' -AllMatches
-                                foreach($match in $images) {
+                                foreach ($match in $images) {
                                     $matchFound = $match -Match '"(.*png)"'
                                     if ($matchFound -eq $false) {
                                         continue
@@ -132,23 +131,23 @@ function Out-VbrDiagram {
                                 # Code used to allow rotating image!
                                 if ($Rotate) {
                                     Add-Type -AssemblyName System.Windows.Forms
-                                    $RotatedIMG = new-object System.Drawing.Bitmap $Document.FullName
+                                    $RotatedIMG = New-Object System.Drawing.Bitmap $Document.FullName
                                     $RotatedIMG.RotateFlip("Rotate$($Rotate)FlipNone")
-                                    $RotatedIMG.Save($Document.FullName,"png")
+                                    $RotatedIMG.Save($Document.FullName, "png")
                                     if ($RotatedIMG) {
-                                        $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
+                                        $Base64 = [convert]::ToBase64String((Get-Content $Document -Encoding byte))
                                         if ($Base64) {
                                             Remove-Item -Path $Document.FullName
                                             $Base64
-                                        } else {Remove-Item -Path $Document.FullName}
+                                        } else { Remove-Item -Path $Document.FullName }
                                     }
                                 } else {
                                     # Code used to output image to base64 format
-                                    $Base64 = [convert]::ToBase64String((get-content $Document -encoding byte))
+                                    $Base64 = [convert]::ToBase64String((Get-Content $Document -Encoding byte))
                                     if ($Base64) {
                                         Remove-Item -Path $Document.FullName
                                         $Base64
-                                    } else {Remove-Item -Path $Document.FullName}
+                                    } else { Remove-Item -Path $Document.FullName }
                                 }
                             }
                         }

@@ -5,7 +5,7 @@ function Get-VbrBackupProtectedGroupInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.7
+        Version:        0.5.9
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -29,19 +29,19 @@ function Get-VbrBackupProtectedGroupInfo {
 
                     $Rows = @{
                         'Type' = $ProtectedGroup.Type
-                        'Status' =  Switch ($ProtectedGroup.Enabled) {
-                            $true {'Enabled'}
-                            $false {'Disabled'}
-                            default {'Unknown'}
+                        'Status' = Switch ($ProtectedGroup.Enabled) {
+                            $true { 'Enabled' }
+                            $false { 'Disabled' }
+                            default { 'Unknown' }
                         }
-                        'Schedule' =  $ProtectedGroup.ScheduleOptions.PolicyType
+                        'Schedule' = $ProtectedGroup.ScheduleOptions.PolicyType
                     }
 
                     $Type = Get-IconType -String $ProtectedGroup.Container.Type
 
                     $TempProtectedGroupInfo = [PSCustomObject]@{
                         Name = "$((Remove-SpecialChar -String $ProtectedGroup.Name -SpecialChars '\').toUpper()) "
-                        Label = Get-NodeIcon -Name "$((Remove-SpecialChar -String $ProtectedGroup.Name -SpecialChars '\').toUpper())" -Type $Type -Align "Center" -Rows $Rows
+                        Label = Get-NodeIcon -Name "$((Remove-SpecialChar -String $ProtectedGroup.Name -SpecialChars '\').toUpper())" -IconType $Type -Align "Center" -Rows $Rows
                         Container = $ProtectedGroup.Container.Type
                         Object = $ProtectedGroup
                     }
@@ -51,8 +51,7 @@ function Get-VbrBackupProtectedGroupInfo {
             }
 
             return $ProtectedGroupInfo
-        }
-        catch {
+        } catch {
             $_
         }
     }

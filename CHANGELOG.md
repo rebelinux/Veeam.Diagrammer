@@ -5,9 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.9] - 2024-02-15
+
+### Added
+
+- Added Get-HTMLNodeTable cmdlet
+
+### Changed
+
+- Improved diagram layout
+- Improved Get-HTMLTable cmdlet (Now allow MultiColumn table)
+
+### Fixed
+
+- Fixed CodeQL security alerts
+- Fix for PSGraph hidden node interfering in edge calculation
+
+
 ## [0.5.8] - 2024-01-25
 
-### Chaged
+### Changed
 
 - Added Graphviz libraries to local module folder. (No need to manually install Graphviz)
 - Code improvements

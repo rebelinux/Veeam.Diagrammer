@@ -5,7 +5,7 @@ function Get-DiagBackupToViProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.6
+        Version:        0.5.9
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -18,6 +18,12 @@ function Get-DiagBackupToViProxy {
     (
 
     )
+
+    begin {
+        # Get Veeam Backup Server Object
+        Get-DiagBackupServer
+    }
+
     process {
         try {
             $VMwareBackupProxy = Get-VbrBackupProxyInfo -Type 'vmware'
@@ -35,32 +41,32 @@ function Get-DiagBackupToViProxy {
                         fontsize = 18
                         penwidth = 1.5
                         labelloc = 't'
-                        color=$SubGraphDebug.color
-                        style='dashed,rounded'
+                        color = $SubGraphDebug.color
+                        style = 'dashed,rounded'
                     }
                     SubGraph MainSubGraph -Attributes $ProxiesAttr -ScriptBlock {
                         # Dummy Node used for subgraph centering
-                        node DummyVMwareProxy @{Label=$DiagramDummyLabel; fontsize=18; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
+                        Node DummyVMwareProxy @{Label = $DiagramDummyLabel; fontsize = 18; fontname = "Segoe Ui Black"; fontcolor = '#005f4b'; shape = 'plain' }
                         if ($Dir -eq "TB") {
-                            node ViLeft @{Label='ViLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            node ViLeftt @{Label='ViLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            node ViRight @{Label='ViRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            edge ViLeft,ViLeftt,DummyVMwareProxy,ViRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
-                            rank ViLeft,ViLeftt,DummyVMwareProxy,ViRight
+                            Node ViLeft @{Label = 'ViLeft'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                            Node ViLeftt @{Label = 'ViLeftt'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                            Node ViRight @{Label = 'ViRight'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                            Edge ViLeft, ViLeftt, DummyVMwareProxy, ViRight @{style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Rank ViLeft, ViLeftt, DummyVMwareProxy, ViRight
                         }
                         foreach ($ProxyObj in $VMwareBackupProxy) {
                             $PROXYHASHTABLE = @{}
                             $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
-                            node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label; fontname="Segoe Ui"}
-                            edge -From DummyVMwareProxy -To $ProxyObj.Name @{constraint="true"; minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                            Node $ProxyObj -NodeScript { $_.Name } @{Label = $PROXYHASHTABLE.Label; fontname = "Segoe Ui" }
+                            Edge -From DummyVMwareProxy -To $ProxyObj.Name @{constraint = "true"; minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         Rank $VMwareBackupProxy.Name
                     }
 
                     if ($Dir -eq 'LR') {
-                        edge $BackupServerInfo.Name -to DummyVMwareProxy @{minlen=3;}
+                        Edge $BackupServerInfo.Name -To DummyVMwareProxy @{minlen = 3 }
                     } else {
-                        edge $BackupServerInfo.Name -to DummyVMwareProxy @{minlen=3;}
+                        Edge $BackupServerInfo.Name -To DummyVMwareProxy @{minlen = 3 }
                     }
                     # $VirtObjs = Get-VBRServer | Where-Object {$_.Type -eq 'VC'}
                     # $EsxiObjs = Get-VBRServer | Where-Object {$_.Type -eq 'Esxi' -and $_.IsStandaloneEsx() -eq 'True'}
@@ -92,7 +98,7 @@ function Get-DiagBackupToViProxy {
                     #                             Version = $ESxiHost.Info.ViVersion.ToString()
                     #                             IP = try {$ESxiHost.getManagmentAddresses().IPAddressToString} catch {"Unknown"}
                     #                         }
-                    #                         node $ESxiHost.Name @{Label=(Get-NodeIcon -Name $ESxiHost.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows $ESXiInfo)}
+                    #                         node $ESxiHost.Name @{Label=(Get-NodeIcon -Name $ESxiHost.Name -IconType 'VBR_ESXi_Server' -Align "Center" -Rows $ESXiInfo)}
                     #                         edge -From ESXiBackupProxy:s -To $ESxiHost.Name @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                     #                     }
                     #                 }
@@ -102,7 +108,7 @@ function Get-DiagBackupToViProxy {
                     #                     while ($Number -ne $Group.Length) {
                     #                         $Random = Get-Random
                     #                         SubGraph "SAESXiGroup$($Number)_$Random" -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
-                    #                             $Group[$Number] | ForEach-Object { node $_.Name @{Label=(Get-NodeIcon -Name $_.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows ($ESXiInfo = @{Version = $_.Info.ViVersion.ToString(); IP = try {$_.getManagmentAddresses().IPAddressToString} catch {"Unknown"}})) }}
+                    #                             $Group[$Number] | ForEach-Object { node $_.Name @{Label=(Get-NodeIcon -Name $_.Name -IconType 'VBR_ESXi_Server' -Align "Center" -Rows ($ESXiInfo = @{Version = $_.Info.ViVersion.ToString(); IP = try {$_.getManagmentAddresses().IPAddressToString} catch {"Unknown"}})) }}
                     #                         }
                     #                         $Number++
                     #                     }
@@ -136,7 +142,7 @@ function Get-DiagBackupToViProxy {
                     #                     }
                     #                     $vCenterSubGraphName = Remove-SpecialChar -String $VirtManager.Name -SpecialChars '\-. '
                     #                     SubGraph $vCenterSubGraphName -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
-                    #                         node $VirtManager.Name @{Label=(Get-NodeIcon -Name $VirtManager.Name -Type 'VBR_vCenter_Server' -Align "Center" -Rows $VCInfo)}
+                    #                         node $VirtManager.Name @{Label=(Get-NodeIcon -Name $VirtManager.Name -IconType 'VBR_vCenter_Server' -Align "Center" -Rows $VCInfo)}
                     #                         # foreach ($ESXi in $VirtManager.getchilds()) {
                     #                         if ($VirtManager.getchilds().Length -le 4) {
                     #                             # Dummy Node used for subgraph centering
@@ -145,7 +151,7 @@ function Get-DiagBackupToViProxy {
                     #                                     Version = $ESxi.Info.ViVersion.ToString()
                     #                                     IP = try {$ESxi.getManagmentAddresses().IPAddressToString} catch {"Unknown"}
                     #                                 }
-                    #                                 node $ESXi.Name @{Label=(Get-NodeIcon -Name $ESXi.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows $ESXiInfo)}
+                    #                                 node $ESXi.Name @{Label=(Get-NodeIcon -Name $ESXi.Name -IconType 'VBR_ESXi_Server' -Align "Center" -Rows $ESXiInfo)}
                     #                                 edge -From "$($VirtManager.Name):s" -To $ESXi.Name @{style='dashed'}
                     #                             }
                     #                         }
@@ -156,7 +162,7 @@ function Get-DiagBackupToViProxy {
                     #                             while ($Number -ne $Group.Length) {
                     #                                 $Random = Get-Random
                     #                                 SubGraph "ESXiGroup$($Number)_$Random" -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
-                    #                                     $Group[$Number] | ForEach-Object { node $_.Name @{Label=(Get-NodeIcon -Name $_.Name -Type 'VBR_ESXi_Server' -Align "Center" -Rows ($ESXiInfo = @{Version = $_.Info.ViVersion.ToString(); IP = try {$_.getManagmentAddresses().IPAddressToString} catch {"Unknown"}}))}}
+                    #                                     $Group[$Number] | ForEach-Object { node $_.Name @{Label=(Get-NodeIcon -Name $_.Name -IconType 'VBR_ESXi_Server' -Align "Center" -Rows ($ESXiInfo = @{Version = $_.Info.ViVersion.ToString(); IP = try {$_.getManagmentAddresses().IPAddressToString} catch {"Unknown"}}))}}
                     #                                 }
                     #                                 $Number++
                     #                             }
@@ -186,8 +192,7 @@ function Get-DiagBackupToViProxy {
                 #     edge -from DummyBackupProxy -to VMwareProxyMain @{style=$EdgeDebug.style; color=$EdgeDebug.color}
                 # }
             }
-        }
-        catch {
+        } catch {
             $_
         }
     }

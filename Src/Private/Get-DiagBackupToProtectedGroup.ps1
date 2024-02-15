@@ -5,7 +5,7 @@ function Get-DiagBackupToProtectedGroup {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.7
+        Version:        0.5.9
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -18,14 +18,19 @@ function Get-DiagBackupToProtectedGroup {
     (
 
     )
+
+    begin {
+        # Get Veeam Backup Server Object
+        Get-DiagBackupServer
+    }
+
     process {
         try {
-
             $ProtectedGroups = Get-VbrBackupProtectedGroupInfo
-            $ADContainer = $ProtectedGroups | Where-Object {$_.Container -eq 'ActiveDirectory'}
-            $ManualContainer = $ProtectedGroups | Where-Object {$_.Container -eq 'ManuallyDeployed'}
-            $IndividualContainer = $ProtectedGroups | Where-Object {$_.Container -eq 'IndividualComputers'}
-            $CSVContainer = $ProtectedGroups | Where-Object {$_.Container -eq 'CSV'}
+            $ADContainer = $ProtectedGroups | Where-Object { $_.Container -eq 'ActiveDirectory' }
+            $ManualContainer = $ProtectedGroups | Where-Object { $_.Container -eq 'ManuallyDeployed' }
+            $IndividualContainer = $ProtectedGroups | Where-Object { $_.Container -eq 'IndividualComputers' }
+            $CSVContainer = $ProtectedGroups | Where-Object { $_.Container -eq 'CSV' }
 
             try {
                 $FileBackupProxy = Get-VbrBackupProxyInfo -Type 'nas'
@@ -43,40 +48,39 @@ function Get-DiagBackupToProtectedGroup {
                             fontsize = 18
                             penwidth = 1.5
                             labelloc = 't'
-                            color=$SubGraphDebug.color
-                            style='dashed,rounded'
+                            color = $SubGraphDebug.color
+                            style = 'dashed,rounded'
                         }
                         SubGraph MainSubGraphFileProxy -Attributes $ProxiesAttr -ScriptBlock {
                             # Dummy Node used for subgraph centering
-                            node DummyFileProxy @{Label=$DiagramDummyLabel; fontsize=18; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
-                            node DummyFileProxyToPG @{Label="DummyFileProxyToPG"; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
+                            Node DummyFileProxy @{Label = $DiagramDummyLabel; fontsize = 18; fontname = "Segoe Ui Black"; fontcolor = '#005f4b'; shape = 'plain' }
+                            Node DummyFileProxyToPG @{Label = "DummyFileProxyToPG"; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
                             if ($Dir -eq "TB") {
-                                node FileLeft @{Label='FileLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                                node FileLeftt @{Label='FileLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                                node FileRight @{Label='FileRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                                edge FileLeft,FileLeftt,DummyFileProxy,FileRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
-                                rank FileLeft,FileLeftt,DummyFileProxy,FileRight
+                                Node FileLeft @{Label = 'FileLeft'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                                Node FileLeftt @{Label = 'FileLeftt'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                                Node FileRight @{Label = 'FileRight'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                                Edge FileLeft, FileLeftt, DummyFileProxy, FileRight @{style = $EdgeDebug.style; color = $EdgeDebug.color }
+                                Rank FileLeft, FileLeftt, DummyFileProxy, FileRight
                             }
                             foreach ($ProxyObj in $FileBackupProxy) {
                                 $PROXYHASHTABLE = @{}
                                 $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
-                                node $ProxyObj -NodeScript {$_.Name} @{Label=$PROXYHASHTABLE.Label; fontname="Segoe Ui"}
-                                edge -From DummyFileProxy -To $ProxyObj.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
-                                edge -from $ProxyObj.Name -to DummyFileProxyToPG @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                Node $ProxyObj -NodeScript { $_.Name } @{Label = $PROXYHASHTABLE.Label; fontname = "Segoe Ui" }
+                                Edge -From DummyFileProxy -To $ProxyObj.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                                Edge -From $ProxyObj.Name -To DummyFileProxyToPG @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
 
                             }
                             Rank $FileBackupProxy.Name
                         }
 
                         if ($Dir -eq 'LR') {
-                            edge $BackupServerInfo.Name -to DummyFileProxy @{minlen=3;}
+                            Edge $BackupServerInfo.Name -To DummyFileProxy @{minlen = 3; }
                         } else {
-                            edge $BackupServerInfo.Name -to DummyFileProxy @{minlen=3;}
+                            Edge $BackupServerInfo.Name -To DummyFileProxy @{minlen = 3; }
                         }
                     }
                 }
-            }
-            catch {
+            } catch {
                 $_
             }
 
@@ -90,31 +94,31 @@ function Get-DiagBackupToProtectedGroup {
                 }
 
                 if ($ProtectedGroups) {
-                    SubGraph MainSubGraph -Attributes @{Label=$DiagramLabel; fontsize=22; penwidth=1; labelloc='t'; style='dashed,rounded'; color=$SubGraphDebug.color} {
+                    SubGraph MainSubGraph -Attributes @{Label = $DiagramLabel; fontsize = 22; penwidth = 1; labelloc = 't'; style = 'dashed,rounded'; color = $SubGraphDebug.color } {
                         # Node used for subgraph centering
-                        node ProtectedGroup @{Label=$DiagramDummyLabel; fontsize=22; fontname="Segoe Ui Black"; fontcolor='#005f4b'; shape='plain'}
+                        Node ProtectedGroup @{Label = $DiagramDummyLabel; fontsize = 22; fontname = "Segoe Ui Black"; fontcolor = '#005f4b'; shape = 'plain' }
                         if ($Dir -eq "TB") {
-                            node DummyPGLeft @{Label='DummyPGLeft'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            node DummyPGLeftt @{Label='DummyPGLeftt'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            node DummyPGRight @{Label='DummyPGRight'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'; fillColor='transparent'}
-                            edge DummyPGLeft,DummyPGLeftt,ProtectedGroup,DummyPGRight @{style=$EdgeDebug.style; color=$EdgeDebug.color}
-                            rank DummyPGLeft,DummyPGLeftt,ProtectedGroup,DummyPGRight
+                            Node DummyPGLeft @{Label = 'DummyPGLeft'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                            Node DummyPGLeftt @{Label = 'DummyPGLeftt'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                            Node DummyPGRight @{Label = 'DummyPGRight'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                            Edge DummyPGLeft, DummyPGLeftt, ProtectedGroup, DummyPGRight @{style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Rank DummyPGLeft, DummyPGLeftt, ProtectedGroup, DummyPGRight
                         }
                         if ($ADContainer) {
-                            SubGraph ADContainer -Attributes @{Label=(Get-HTMLLabel -Label 'Active Directory Computers' -Type "VBR_AGENT_AD_Logo" -SubgraphLabel); fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
+                            SubGraph ADContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Active Directory Computers' -IconType "VBR_AGENT_AD_Logo" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
-                                node DummyADContainer @{Label='DummyADC'; style=$SubGraphDebug.style; color=$SubGraphDebug.color; shape='plain'}
+                                Node DummyADContainer @{Label = 'DummyADC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
                                 if ($ADContainer.count -le 2) {
                                     foreach ($PGOBJ in ($ADContainer | Sort-Object -Property Name)) {
                                         $PGHASHTABLE = @{}
-                                        $PGOBJ.psobject.properties | ForEach-Object {$PGHASHTABLE[$_.Name] = $_.Value }
+                                        $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
 
                                         $Ous = @()
 
-                                        $Status =  Switch ($PGOBJ.Object.Enabled) {
-                                            $true {'Enabled'}
-                                            $false {'Disabled'}
-                                            default {'Unknown'}
+                                        $Status = Switch ($PGOBJ.Object.Enabled) {
+                                            $true { 'Enabled' }
+                                            $false { 'Disabled' }
+                                            default { 'Unknown' }
                                         }
 
                                         $Ous += $PGOBJ.Object.Container.Entity | ForEach-Object {
@@ -128,23 +132,22 @@ function Get-DiagBackupToProtectedGroup {
 
                                         Convert-TableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
 
-                                        edge -from DummyADContainer -to $PGOBJ.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                        Edge -From DummyADContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     }
-                                }
-                                else {
-                                    $Group = Split-array -inArray ($ADContainer | Sort-Object -Property Name) -size 2
+                                } else {
+                                    $Group = Split-Array -inArray ($ADContainer | Sort-Object -Property Name) -size 2
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random
-                                        SubGraph "ADGroup$($Number)_$Random" -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
+                                        SubGraph "ADGroup$($Number)_$Random" -Attributes @{Label = ' '; style = $SubGraphDebug.style; color = $SubGraphDebug.color; fontsize = 18; penwidth = 1 } {
                                             $Group[$Number] | ForEach-Object {
                                                 $PGHASHTABLE = @{}
-                                                $_.psobject.properties | ForEach-Object {$PGHASHTABLE[$_.Name] = $_.Value }
+                                                $_.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
 
-                                                $Status =  Switch ($_.Object.Enabled) {
-                                                    $true {'Enabled'}
-                                                    $false {'Disabled'}
-                                                    default {'Unknown'}
+                                                $Status = Switch ($_.Object.Enabled) {
+                                                    $true { 'Enabled' }
+                                                    $false { 'Disabled' }
+                                                    default { 'Unknown' }
                                                 }
 
                                                 $Ous = @()
@@ -163,31 +166,31 @@ function Get-DiagBackupToProtectedGroup {
                                         $Number++
                                     }
 
-                                    edge -From DummyADContainer -To $Group[0].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                    Edge -From DummyADContainer -To $Group[0].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     $Start = 0
                                     $LocalPGNum = 1
                                     while ($LocalPGNum -ne $Group.Length) {
-                                        edge -From $Group[$Start].Name -To $Group[$LocalPGNum].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                        Edge -From $Group[$Start].Name -To $Group[$LocalPGNum].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                         $Start++
                                         $LocalPGNum++
                                     }
                                 }
                             }
-                            edge -from ProtectedGroup -to DummyADContainer @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                            Edge -From ProtectedGroup -To DummyADContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($ManualContainer) {
-                            SubGraph MCContainer -Attributes @{Label=(Get-HTMLLabel -Label 'Manual Computers' -Type "VBR_AGENT_MC" -SubgraphLabel); fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
+                            SubGraph MCContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Manual Computers' -IconType "VBR_AGENT_MC" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
-                                node DummyMCContainer @{Label='DummyMC'; style=$SubGraphDebug.style; color=$SubGraphDebug.color; shape='plain'}
+                                Node DummyMCContainer @{Label = 'DummyMC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
                                 if ($ManualContainer.count -le 2) {
                                     foreach ($PGOBJ in ($ManualContainer | Sort-Object -Property Name)) {
                                         $PGHASHTABLE = @{}
-                                        $PGOBJ.psobject.properties | ForEach-Object {$PGHASHTABLE[$_.Name] = $_.Value }
+                                        $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
 
-                                        $Status =  Switch ($PGOBJ.Enabled) {
-                                            $true {'Enabled'}
-                                            $false {'Disabled'}
-                                            default {'Unknown'}
+                                        $Status = Switch ($PGOBJ.Enabled) {
+                                            $true { 'Enabled' }
+                                            $false { 'Disabled' }
+                                            default { 'Unknown' }
                                         }
 
                                         $Rows = @(
@@ -196,24 +199,23 @@ function Get-DiagBackupToProtectedGroup {
 
                                         Convert-TableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
 
-                                        edge -from DummyMCContainer -to $PGOBJ.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                        Edge -From DummyMCContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     }
 
-                                }
-                                else {
-                                    $Group = Split-array -inArray ($ManualContainer | Sort-Object -Property Name) -size 2
+                                } else {
+                                    $Group = Split-Array -inArray ($ManualContainer | Sort-Object -Property Name) -size 2
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random
-                                        SubGraph "MCGroup$($Number)_$Random" -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
+                                        SubGraph "MCGroup$($Number)_$Random" -Attributes @{Label = ' '; style = $SubGraphDebug.style; color = $SubGraphDebug.color; fontsize = 18; penwidth = 1 } {
                                             $Group[$Number] | ForEach-Object {
                                                 $PGHASHTABLE = @{}
-                                                $_.psobject.properties | ForEach-Object {$PGHASHTABLE[$_.Name] = $_.Value }
+                                                $_.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
 
-                                                $Status =  Switch ($_.Object.Enabled) {
-                                                    $true {'Enabled'}
-                                                    $false {'Disabled'}
-                                                    default {'Unknown'}
+                                                $Status = Switch ($_.Object.Enabled) {
+                                                    $true { 'Enabled' }
+                                                    $false { 'Disabled' }
+                                                    default { 'Unknown' }
                                                 }
 
                                                 $Rows = @(
@@ -226,31 +228,31 @@ function Get-DiagBackupToProtectedGroup {
                                         $Number++
                                     }
 
-                                    edge -From DummyMCContainer -To $Group[0].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                    Edge -From DummyMCContainer -To $Group[0].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     $Start = 0
                                     $LocalPGNum = 1
                                     while ($LocalPGNum -ne $Group.Length) {
-                                        edge -From $Group[$Start].Name -To $Group[$LocalPGNum].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                        Edge -From $Group[$Start].Name -To $Group[$LocalPGNum].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                         $Start++
                                         $LocalPGNum++
                                     }
                                 }
                             }
-                            edge -from ProtectedGroup -to DummyMCContainer @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                            Edge -From ProtectedGroup -To DummyMCContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($IndividualContainer) {
-                            SubGraph ICContainer -Attributes @{Label=(Get-HTMLLabel -Label 'Individual Computers' -Type "VBR_AGENT_IC" -SubgraphLabel); fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
+                            SubGraph ICContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Individual Computers' -IconType "VBR_AGENT_IC" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
-                                node DummyICContainer @{Label='DummyIC'; style=$SubGraphDebug.style; color=$SubGraphDebug.color; shape='plain'}
+                                Node DummyICContainer @{Label = 'DummyIC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
                                 if ($IndividualContainer.count -le 2) {
                                     foreach ($PGOBJ in ($IndividualContainer | Sort-Object -Property Name)) {
                                         $PGHASHTABLE = @{}
-                                        $PGOBJ.psobject.properties | ForEach-Object {$PGHASHTABLE[$_.Name] = $_.Value }
+                                        $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
 
-                                        $Status =  Switch ($PGOBJ.Enabled) {
-                                            $true {'Enabled'}
-                                            $false {'Disabled'}
-                                            default {'Unknown'}
+                                        $Status = Switch ($PGOBJ.Enabled) {
+                                            $true { 'Enabled' }
+                                            $false { 'Disabled' }
+                                            default { 'Unknown' }
                                         }
 
 
@@ -267,23 +269,22 @@ function Get-DiagBackupToProtectedGroup {
 
                                         Convert-TableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
 
-                                        edge -from DummyICContainer -to $PGOBJ.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                        Edge -From DummyICContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     }
-                                }
-                                else {
-                                    $Group = Split-array -inArray ($IndividualContainer | Sort-Object -Property Name) -size 2
+                                } else {
+                                    $Group = Split-Array -inArray ($IndividualContainer | Sort-Object -Property Name) -size 2
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random
-                                        SubGraph "ICGroup$($Number)_$Random" -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
+                                        SubGraph "ICGroup$($Number)_$Random" -Attributes @{Label = ' '; style = $SubGraphDebug.style; color = $SubGraphDebug.color; fontsize = 18; penwidth = 1 } {
                                             $Group[$Number] | ForEach-Object {
                                                 $PGHASHTABLE = @{}
-                                                $_.psobject.properties | ForEach-Object {$PGHASHTABLE[$_.Name] = $_.Value }
+                                                $_.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
 
-                                                $Status =  Switch ($_.Object.Enabled) {
-                                                    $true {'Enabled'}
-                                                    $false {'Disabled'}
-                                                    default {'Unknown'}
+                                                $Status = Switch ($_.Object.Enabled) {
+                                                    $true { 'Enabled' }
+                                                    $false { 'Disabled' }
+                                                    default { 'Unknown' }
                                                 }
 
                                                 $Entities = @()
@@ -304,48 +305,47 @@ function Get-DiagBackupToProtectedGroup {
                                         $Number++
                                     }
 
-                                    edge -From DummyICContainer -To $Group[0].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                    Edge -From DummyICContainer -To $Group[0].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     $Start = 0
                                     $LocalPGNum = 1
                                     while ($LocalPGNum -ne $Group.Length) {
-                                        edge -From $Group[$Start].Name -To $Group[$LocalPGNum].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                        Edge -From $Group[$Start].Name -To $Group[$LocalPGNum].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                         $Start++
                                         $LocalPGNum++
                                     }
                                 }
                             }
-                            edge -from ProtectedGroup -to DummyICContainer @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                            Edge -From ProtectedGroup -To DummyICContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($CSVContainer) {
-                            SubGraph CSVContainer -Attributes @{Label=(Get-HTMLLabel -Label 'CSV Computers' -Type "VBR_AGENT_CSV_Logo" -SubgraphLabel); fontsize=18; penwidth=1.5; labelloc='t'; style='dashed,rounded'} {
+                            SubGraph CSVContainer -Attributes @{Label = (Get-HTMLLabel -Label 'CSV Computers' -IconType "VBR_AGENT_CSV_Logo" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
-                                node DummyCSVContainer @{Label='DummyCSVC'; style=$SubGraphDebug.style; color=$SubGraphDebug.color; shape='plain'}
+                                Node DummyCSVContainer @{Label = 'DummyCSVC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
                                 if ($CSVContainer.count -le 2) {
                                     foreach ($PGOBJ in ($CSVContainer | Sort-Object -Property Name)) {
                                         $PGHASHTABLE = @{}
-                                        $PGOBJ.psobject.properties | ForEach-Object {$PGHASHTABLE[$_.Name] = $_.Value }
+                                        $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
                                         $Rows = @(
                                             "<B>Type</B>: $($PGOBJ.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($PGOBJ.Object.ScheduleOptions.PolicyType)"
                                             "<B>Distribution Server</B> : $($PGOBJ.Object.DeploymentOptions.DistributionServer.Name)"
                                             "<B>CSV File</B> : $($PGOBJ.Object.Container.Path)"
                                             "<B>Credential</B> : $($PGOBJ.Object.Container.MasterCredentials.Name)"
-                                            )
+                                        )
 
                                         Convert-TableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
 
-                                        edge -from DummyCSVContainer -to $PGOBJ.Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                        Edge -From DummyCSVContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     }
 
-                                }
-                                else {
-                                    $Group = Split-array -inArray ($CSVContainer | Sort-Object -Property Name) -size 2
+                                } else {
+                                    $Group = Split-Array -inArray ($CSVContainer | Sort-Object -Property Name) -size 2
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random
-                                        SubGraph "CSVGroup$($Number)_$Random" -Attributes @{Label=' '; style=$SubGraphDebug.style; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
+                                        SubGraph "CSVGroup$($Number)_$Random" -Attributes @{Label = ' '; style = $SubGraphDebug.style; color = $SubGraphDebug.color; fontsize = 18; penwidth = 1 } {
                                             $Group[$Number] | ForEach-Object {
                                                 $PGHASHTABLE = @{}
-                                                $_.psobject.properties | ForEach-Object {$PGHASHTABLE[$_.Name] = $_.Value }
+                                                $_.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
                                                 $Rows = @(
                                                     "<B>Type</B>: $($_.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($_.Object.ScheduleOptions.PolicyType)"
                                                     "<B>Distribution Server</B> : $($_.Object.DeploymentOptions.DistributionServer.Name)"
@@ -359,25 +359,24 @@ function Get-DiagBackupToProtectedGroup {
                                         $Number++
                                     }
 
-                                    edge -From DummyCSVContainer -To $Group[0].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                    Edge -From DummyCSVContainer -To $Group[0].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     $Start = 0
                                     $LocalPGNum = 1
                                     while ($LocalPGNum -ne $Group.Length) {
-                                        edge -From $Group[$Start].Name -To $Group[$LocalPGNum].Name @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                                        Edge -From $Group[$Start].Name -To $Group[$LocalPGNum].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                         $Start++
                                         $LocalPGNum++
                                     }
                                 }
                             }
-                            edge -from ProtectedGroup -to DummyCSVContainer @{minlen=1; style=$EdgeDebug.style; color=$EdgeDebug.color}
+                            Edge -From ProtectedGroup -To DummyCSVContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                     }
 
-                    edge -from DummyFileProxyToPG -to ProtectedGroup @{minlen=3}
+                    Edge -From DummyFileProxyToPG -To ProtectedGroup @{minlen = 3 }
                 }
             }
-        }
-        catch {
+        } catch {
             $_
         }
     }

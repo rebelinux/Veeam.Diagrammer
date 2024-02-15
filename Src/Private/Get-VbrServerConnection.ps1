@@ -32,28 +32,24 @@ function Get-VbrServerConnection {
         Write-Verbose -Message "Looking for veeam existing server connection."
         #Code taken from @vMarkus_K
         $OpenConnection = (Get-VBRServerSession).Server
-        if($OpenConnection -eq $System) {
+        if ($OpenConnection -eq $System) {
             Write-Verbose -Message "Existing veeam server connection found"
-        }
-        elseif ($null -eq $OpenConnection) {
+        } elseif ($null -eq $OpenConnection) {
             Write-Verbose -Message "No existing veeam server connection found"
             try {
                 Write-Verbose -Message "Connecting to $($System) with $($Credential.USERNAME) credentials"
                 Connect-VBRServer -Server $System -Credential $Credential -Port $Port
-            }
-            catch {
+            } catch {
                 Write-Verbose "$($_.Exception.Message)"
                 Throw "Failed to connect to Veeam Backup Server Host $($System):$($Port) with username $($Credential.USERNAME)"
             }
-        }
-        else {
+        } else {
             Write-Verbose -Message "Actual veeam server connection not equal to $($System). Disconecting connection."
             Disconnect-VBRServer
             try {
                 Write-Verbose -Message "Trying to open a new connection to $($System)"
                 Connect-VBRServer -Server $System -Credential $Credential -Port $Port
-            }
-            catch {
+            } catch {
                 Write-Verbose $_.Exception.Message
                 Throw "Failed to connect to Veeam Backup Server Host $($System):$($Port) with username $($Credential.USERNAME)"
             }
@@ -63,8 +59,7 @@ function Get-VbrServerConnection {
         if ($null -eq $NewConnection) {
             Write-Verbose $_.Exception.Message
             Throw "Failed to connect to Veeam Backup Server Host $($System):$($Port) with username $($Credential.USERNAME)"
-        }
-        elseif ($NewConnection) {
+        } elseif ($NewConnection) {
             Write-Verbose -Message "Successfully connected to $($System):$($Port) Backup Server."
         }
     }

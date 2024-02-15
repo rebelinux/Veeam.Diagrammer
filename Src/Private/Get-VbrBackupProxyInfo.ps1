@@ -5,7 +5,7 @@ function Get-VbrBackupProxyInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.8
+        Version:        0.5.9
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -27,9 +27,9 @@ function Get-VbrBackupProxyInfo {
         Write-Verbose -Message "Collecting Backup Proxy information from $($VBRServer.Name)."
         try {
             $BPType = switch ($Type) {
-                'vmware' {Get-VBRViProxy}
-                'hyperv' {Get-VBRHvProxy}
-                'nas' {Get-VBRNASProxyServer}
+                'vmware' { Get-VBRViProxy }
+                'hyperv' { Get-VBRHvProxy }
+                'nas' { Get-VBRNASProxyServer }
 
             }
             $BackupProxies = $BPType
@@ -40,28 +40,28 @@ function Get-VbrBackupProxyInfo {
                     # $Role = Get-RoleType -String $Type
 
                     $Hostname = Switch ($Type) {
-                        'vmware' {$BackupProxy.Host.Name}
-                        'hyperv' {$BackupProxy.Host.Name}
-                        'nas' {$BackupProxy.Server.Name}
+                        'vmware' { $BackupProxy.Host.Name }
+                        'hyperv' { $BackupProxy.Host.Name }
+                        'nas' { $BackupProxy.Server.Name }
                     }
 
                     $Status = Switch ($Type) {
                         'vmware' {
                             Switch ($BackupProxy.isDisabled) {
-                                $false {'Enabled'}
-                                $true {'Disabled'}
+                                $false { 'Enabled' }
+                                $true { 'Disabled' }
                             }
                         }
                         'hyperv' {
                             Switch ($BackupProxy.isDisabled) {
-                                $false {'Enabled'}
-                                $true {'Disabled'}
+                                $false { 'Enabled' }
+                                $true { 'Disabled' }
                             }
                         }
                         'nas' {
                             Switch ($BackupProxy.IsEnabled) {
-                                $false {'Disabled'}
-                                $true {'Enabled'}
+                                $false { 'Disabled' }
+                                $true { 'Enabled' }
                             }
                         }
                     }
@@ -70,31 +70,31 @@ function Get-VbrBackupProxyInfo {
                         IP = Get-NodeIP -HostName $Hostname
                         Status = $Status
                         Type = Switch ($Type) {
-                            'vmware' {$BackupProxy.Host.Type}
+                            'vmware' { $BackupProxy.Host.Type }
                             'hyperv' {
                                 Switch ($BackupProxy.Info.Type) {
-                                    'HvOffhost' {"Off-Host Backup"}
-                                    'HvOnhost' {"On-Host Backup"}
+                                    'HvOffhost' { "Off-Host Backup" }
+                                    'HvOnhost' { "On-Host Backup" }
                                 }
                             }
-                            'nas' {"File Backup"}
+                            'nas' { "File Backup" }
                         }
                         Concurrent_Tasks = Switch ($Type) {
-                            'vmware' {$BackupProxy.MaxTasksCount}
-                            'hyperv' {$BackupProxy.MaxTasksCount}
-                            'nas' {$BackupProxy.ConcurrentTaskNumber}
+                            'vmware' { $BackupProxy.MaxTasksCount }
+                            'hyperv' { $BackupProxy.MaxTasksCount }
+                            'nas' { $BackupProxy.ConcurrentTaskNumber }
                         }
                     }
 
                     $IconType = Switch ($Type) {
-                        'vmware' {"VBR_Proxy_Server"}
-                        'hyperv' {"VBR_Proxy_Server"}
-                        'nas' {"VBR_AGENT_Server"}
+                        'vmware' { "VBR_Proxy_Server" }
+                        'hyperv' { "VBR_Proxy_Server" }
+                        'nas' { "VBR_AGENT_Server" }
                     }
 
                     $TempBackupProxyInfo = [PSCustomObject]@{
                         Name = "$($Hostname.toUpper().split(".")[0]) "
-                        Label = Get-NodeIcon -Name "$($Hostname.toUpper().split(".")[0])" -Type $IconType -Align "Center" -Rows $BPRows
+                        Label = Get-NodeIcon -Name "$($Hostname.toUpper().split(".")[0])" -IconType $IconType -Align "Center" -Rows $BPRows
                         Object = $BackupProxy
                     }
 
@@ -103,8 +103,7 @@ function Get-VbrBackupProxyInfo {
             }
 
             return $BackupProxyInfo
-        }
-        catch {
+        } catch {
             $_
         }
     }

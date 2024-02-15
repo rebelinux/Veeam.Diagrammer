@@ -5,7 +5,7 @@ function Get-VbrBackupObjectRepoInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.3
+        Version:        0.5.9
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -29,32 +29,31 @@ function Get-VbrBackupObjectRepoInfo {
 
                     if ($ObjStorage.AmazonS3Folder) {
                         $Folder = $ObjStorage.AmazonS3Folder
-                    }
-                    elseif ($ObjStorage.AzureBlobFolder) {
+                    } elseif ($ObjStorage.AzureBlobFolder) {
                         $Folder = $ObjStorage.AzureBlobFolder
-                    } else {$Folder = 'Unknown'}
+                    } else { $Folder = 'Unknown' }
 
                     $Rows = @{
                         Type = $ObjStorage.Type
                         Folder = $Folder
-                        Gateway = &{
+                        Gateway = & {
                             if (-Not $ObjStorage.UseGatewayServer) {
                                 Switch ($ObjStorage.ConnectionType) {
                                     'Gateway' {
                                         switch ($ObjStorage.GatewayServer.count) {
-                                            0 {"Disable"}
-                                            1 {$ObjStorage.GatewayServer.Name.Split('.')[0]}
-                                            Default {'Automatic'}
+                                            0 { "Disable" }
+                                            1 { $ObjStorage.GatewayServer.Name.Split('.')[0] }
+                                            Default { 'Automatic' }
                                         }
                                     }
-                                    'Direct' {'Direct'}
-                                    default {'Unknown'}
+                                    'Direct' { 'Direct' }
+                                    default { 'Unknown' }
                                 }
                             } else {
                                 switch ($ObjStorage.GatewayServer.count) {
-                                    0 {"Disable"}
-                                    1 {$ObjStorage.GatewayServer.Name.Split('.')[0]}
-                                    Default {'Automatic'}
+                                    0 { "Disable" }
+                                    1 { $ObjStorage.GatewayServer.Name.Split('.')[0] }
+                                    Default { 'Automatic' }
                                 }
                             }
                         }
@@ -62,15 +61,14 @@ function Get-VbrBackupObjectRepoInfo {
 
                     $TempObjStorageInfo = [PSCustomObject]@{
                         Name = "$($ObjStorage.Name) "
-                        Label = Get-NodeIcon -Name $($ObjStorage.Name) -Type "VBR_Cloud_Repository" -Align "Center" -Rows $Rows
+                        Label = Get-NodeIcon -Name $($ObjStorage.Name) -IconType "VBR_Cloud_Repository" -Align "Center" -Rows $Rows
                     }
                     $ObjStorageInfo += $TempObjStorageInfo
                 }
             }
 
             return $ObjStorageInfo
-        }
-        catch {
+        } catch {
             $_
         }
     }

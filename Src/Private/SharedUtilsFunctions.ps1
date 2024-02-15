@@ -18,8 +18,7 @@ function Remove-SpecialChar {
         [string]$SpecialChars = "()[]{}&."
     )
 
-    if ($PSCmdlet.ShouldProcess($String, ("Remove {0} chars" -f $SpecialChars,$String)))
-    {
+    if ($PSCmdlet.ShouldProcess($String, ("Remove {0} chars" -f $SpecialChars, $String))) {
         $String -replace $($SpecialChars.ToCharArray().ForEach( { [regex]::Escape($_) }) -join "|"), ""
     }
 }
@@ -41,25 +40,25 @@ function Get-IconType {
     )
 
     $IconType = Switch ($String) {
-        'LinuxLocal' {'VBR_Linux_Repository'}
-        'WinLocal' {'VBR_Windows_Repository'}
-        'Cloud' {'VBR_Cloud_Repository'}
-        'AzureBlob' {'VBR_Cloud_Repository'}
-        'AmazonS3' {'VBR_Cloud_Repository'}
-        'AmazonS3Compatible' {'VBR_Cloud_Repository'}
-        'AmazonS3Glacier' {'VBR_Cloud_Repository'}
-        'AzureArchive' {'VBR_Cloud_Repository'}
-        'DDBoost' {'VBR_Deduplicating_Storage'}
-        'HPStoreOnceIntegration' {'VBR_Deduplicating_Storage'}
-        'SanSnapshotOnly' {'VBR_Storage_NetApp'}
-        'Proxy' {'VBR_Repository'}
-        'ESXi' {'VBR_ESXi_Server'}
-        'HyperVHost' {'Hyper-V_host'}
-        'ManuallyDeployed' {'VBR_AGENT_MC'}
-        'IndividualComputers' {'VBR_AGENT_IC'}
-        'ActiveDirectory' {'VBR_AGENT_AD'}
-        'CSV' {'VBR_AGENT_CSV'}
-        default {'VBR_No_Icon'}
+        'LinuxLocal' { 'VBR_Linux_Repository' }
+        'WinLocal' { 'VBR_Windows_Repository' }
+        'Cloud' { 'VBR_Cloud_Repository' }
+        'AzureBlob' { 'VBR_Cloud_Repository' }
+        'AmazonS3' { 'VBR_Cloud_Repository' }
+        'AmazonS3Compatible' { 'VBR_Cloud_Repository' }
+        'AmazonS3Glacier' { 'VBR_Cloud_Repository' }
+        'AzureArchive' { 'VBR_Cloud_Repository' }
+        'DDBoost' { 'VBR_Deduplicating_Storage' }
+        'HPStoreOnceIntegration' { 'VBR_Deduplicating_Storage' }
+        'SanSnapshotOnly' { 'VBR_Storage_NetApp' }
+        'Proxy' { 'VBR_Repository' }
+        'ESXi' { 'VBR_ESXi_Server' }
+        'HyperVHost' { 'Hyper-V_host' }
+        'ManuallyDeployed' { 'VBR_AGENT_MC' }
+        'IndividualComputers' { 'VBR_AGENT_IC' }
+        'ActiveDirectory' { 'VBR_AGENT_AD' }
+        'CSV' { 'VBR_AGENT_CSV' }
+        default { 'VBR_No_Icon' }
     }
 
     return $IconType
@@ -81,17 +80,17 @@ function Get-RoleType {
     )
 
     $RoleType = Switch ($String) {
-        'LinuxLocal' {'Linux Local'}
-        'WinLocal' {'Windows Local'}
-        'DDBoost' {'Dedup Appliances'}
-        'HPStoreOnceIntegration' {'Dedup Appliances'}
-        'Cloud' {'Cloud'}
-        'SanSnapshotOnly' {'SAN'}
-        "vmware" {'VMware Backup Proxy'}
-        "hyperv" {'HyperV Backup Proxy'}
-        "agent" {'Agent & Files Backup Proxy'}
-        "nas" {'NAS Backup Proxy'}
-        default {'Backup Repository'}
+        'LinuxLocal' { 'Linux Local' }
+        'WinLocal' { 'Windows Local' }
+        'DDBoost' { 'Dedup Appliances' }
+        'HPStoreOnceIntegration' { 'Dedup Appliances' }
+        'Cloud' { 'Cloud' }
+        'SanSnapshotOnly' { 'SAN' }
+        "vmware" { 'VMware Backup Proxy' }
+        "hyperv" { 'HyperV Backup Proxy' }
+        "agent" { 'Agent & Files Backup Proxy' }
+        "nas" { 'NAS Backup Proxy' }
+        default { 'Backup Repository' }
     }
 
     return $RoleType
@@ -115,20 +114,19 @@ function Get-NodeIP {
     try {
         try {
             if ("InterNetwork" -in [System.Net.Dns]::GetHostAddresses($Hostname).AddressFamily) {
-                $IPADDR = ([System.Net.Dns]::GetHostAddresses($Hostname) | Where-Object {$_.AddressFamily -eq 'InterNetwork'}).IPAddressToString
+                $IPADDR = ([System.Net.Dns]::GetHostAddresses($Hostname) | Where-Object { $_.AddressFamily -eq 'InterNetwork' }).IPAddressToString
             } elseif ("InterNetworkV6" -in [System.Net.Dns]::GetHostAddresses($Hostname).AddressFamily) {
-                $IPADDR = ([System.Net.Dns]::GetHostAddresses($Hostname) | Where-Object {$_.AddressFamily -eq 'InterNetworkV6'}).IPAddressToString
+                $IPADDR = ([System.Net.Dns]::GetHostAddresses($Hostname) | Where-Object { $_.AddressFamily -eq 'InterNetworkV6' }).IPAddressToString
             } else {
                 $IPADDR = 127.0.0.1
             }
         } catch { $null }
         $NodeIP = Switch ([string]::IsNullOrEmpty($IPADDR)) {
-            $true {'Unknown'}
-            $false {$IPADDR}
-            default {$Hostname}
+            $true { 'Unknown' }
+            $false { $IPADDR }
+            default { $Hostname }
         }
-    }
-    catch {
+    } catch {
         $_
     }
 
@@ -150,26 +148,26 @@ function ConvertTo-TextYN {
     [OutputType([String])]
 
     Param
-        (
+    (
         [Parameter (
             Position = 0,
             Mandatory)]
-            [AllowEmptyString()]
-            [string]
-            $TEXT
-        )
+        [AllowEmptyString()]
+        [string]
+        $TEXT
+    )
 
     switch ($TEXT) {
-        "" {"-"}
-        $Null {"-"}
-        "True" {"Yes"; break}
-        "False" {"No"; break}
-        default {$TEXT}
+        "" { "-" }
+        $Null { "-" }
+        "True" { "Yes"; break }
+        "False" { "No"; break }
+        default { $TEXT }
     }
 } # end
 
 function Write-ColorOutput {
-        <#
+    <#
     .SYNOPSIS
         Used by Veeam.Diagrammer to output colored text.
     .DESCRIPTION
@@ -184,21 +182,21 @@ function Write-ColorOutput {
     [OutputType([String])]
 
     Param
-        (
-            [Parameter(
-                Position = 0,
-                Mandatory = $true
-            )]
-            [ValidateNotNullOrEmpty()]
-            [String] $Color,
+    (
+        [Parameter(
+            Position = 0,
+            Mandatory = $true
+        )]
+        [ValidateNotNullOrEmpty()]
+        [String] $Color,
 
-            [Parameter(
-                Position = 1,
-                Mandatory = $true
-            )]
-            [ValidateNotNullOrEmpty()]
-            [String] $String
-        )
+        [Parameter(
+            Position = 1,
+            Mandatory = $true
+        )]
+        [ValidateNotNullOrEmpty()]
+        [String] $String
+    )
     # save the current color
     $ForegroundColor = $Host.UI.RawUI.ForegroundColor
 
@@ -230,20 +228,20 @@ function Split-array {
     }
 
     $outArray = @()
-    for ($i=1; $i -le $parts; $i++) {
-        $start = (($i-1)*$PartSize)
-        $end = (($i)*$PartSize) - 1
+    for ($i = 1; $i -le $parts; $i++) {
+        $start = (($i - 1) * $PartSize)
+        $end = (($i) * $PartSize) - 1
         if ($end -ge $inArray.count) {
             $end = $inArray.count
         }
-        $outArray+=,@($inArray[$start..$end])
+        $outArray += , @($inArray[$start..$end])
     }
-    return ,$outArray
+    return , $outArray
 
 }
 
 function Test-Image {
-        <#
+    <#
     .SYNOPSIS
         Used by Veeam.Diagrammer to validate supported logo image extension.
     .DESCRIPTION
@@ -259,7 +257,7 @@ function Test-Image {
     [CmdletBinding()]
     param(
 
-        [parameter(Mandatory=$true, Position=0, ValueFromPipeline=$true)]
+        [parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]
         [Alias('PSPath')]
         $Path
@@ -289,7 +287,7 @@ function Test-Logo {
     [OutputType([String])]
     param(
 
-        [parameter(Mandatory=$true, Position=0, ValueFromPipeline=$true)]
+        [parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         $LogoPath,
         [Switch] $Signature
     )
@@ -305,7 +303,7 @@ function Test-Logo {
             if (Test-Image -Path $LogoPath) {
                 # Add logo path to the Image variable
                 Copy-Item -Path $LogoPath -Destination $IconPath
-                $outputLogoFile = Split-Path $LogoPath -leaf
+                $outputLogoFile = Split-Path $LogoPath -Leaf
                 if ($outputLogoFile) {
                     $Images.Add("Custom", $outputLogoFile)
                     return "Custom"
