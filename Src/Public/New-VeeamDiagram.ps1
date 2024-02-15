@@ -300,14 +300,14 @@ function New-VeeamDiagram {
         $URLIcon = $false
 
         if ($EnableEdgeDebug) {
-            $EdgeDebug = @{style = 'filled'; color = 'red' }
+            $script:EdgeDebug = @{style = 'filled'; color = 'red' }
             $URLIcon = $true
-        } else { $EdgeDebug = @{style = 'invis'; color = 'red' } }
+        } else { $script:EdgeDebug = @{style = 'invis'; color = 'red' } }
 
         if ($EnableSubGraphDebug) {
-            $SubGraphDebug = @{style = 'dashed'; color = 'red' }
+            $script:SubGraphDebug = @{style = 'dashed'; color = 'red' }
             $URLIcon = $true
-        } else { $SubGraphDebug = @{style = 'invis'; color = 'gray' } }
+        } else { $script:SubGraphDebug = @{style = 'invis'; color = 'gray' } }
 
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
         $IconPath = Join-Path $RootPath 'icons'
