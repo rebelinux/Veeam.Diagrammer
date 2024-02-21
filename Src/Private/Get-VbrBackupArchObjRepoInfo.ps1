@@ -41,7 +41,7 @@ function Get-VbrBackupArchObjRepoInfo {
                             if (-Not $ArchObjStorage.UseGatewayServer) {
                                 Switch ($ArchObjStorage.GatewayMode) {
                                     'Gateway' {
-                                        switch ($ArchObjStorage.GatewayServer.count) {
+                                        switch (($ArchObjStorage.GatewayServer | Measure-Object).count) {
                                             0 { "Disable" }
                                             1 { $ArchObjStorage.GatewayServer.Name.Split('.')[0] }
                                             Default { 'Automatic' }
@@ -51,7 +51,7 @@ function Get-VbrBackupArchObjRepoInfo {
                                     default { 'Unknown' }
                                 }
                             } else {
-                                switch ($ArchObjStorage.GatewayServer.count) {
+                                switch (($ArchObjStorage.GatewayServer | Measure-Object).count) {
                                     0 { "Disable" }
                                     1 { $ArchObjStorage.GatewayServer.Name.Split('.')[0] }
                                     Default { 'Automatic' }

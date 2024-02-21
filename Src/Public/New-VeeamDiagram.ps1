@@ -194,7 +194,7 @@ function New-VeeamDiagram {
         )]
         [ValidateNotNullOrEmpty()]
         [ValidateScript({
-                if ($Format.count -lt 2) {
+                if (($Format | Measure-Object).count -lt 2) {
                     $true
                 } else {
                     throw "Format value must be unique if Filename is especified."

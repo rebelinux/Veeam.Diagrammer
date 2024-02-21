@@ -63,7 +63,7 @@ function Get-VbrBackupSobrInfo {
                             if (-Not $Sobr.CapacityExtent.Repository.UseGatewayServer) {
                                 Switch ($Sobr.CapacityExtent.Repository.ConnectionType) {
                                     'Gateway' {
-                                        switch ($Sobr.CapacityExtent.Repository.GatewayServer.count) {
+                                        switch (($Sobr.CapacityExtent.Repository.GatewayServer | Measure-Object).count) {
                                             0 { "Disable" }
                                             1 { $Sobr.CapacityExtent.Repository.GatewayServer.Name.Split('.')[0] }
                                             Default { 'Automatic' }
@@ -73,7 +73,7 @@ function Get-VbrBackupSobrInfo {
                                     default { 'Unknown' }
                                 }
                             } else {
-                                switch ($Sobr.CapacityExtent.Repository.GatewayServer.count) {
+                                switch (($Sobr.CapacityExtent.Repository.GatewayServer | Measure-Object).count) {
                                     0 { "Disable" }
                                     1 { $Sobr.CapacityExtent.Repository.GatewayServer.Name.Split('.')[0] }
                                     Default { 'Automatic' }
@@ -88,7 +88,7 @@ function Get-VbrBackupSobrInfo {
                             if (-Not $Sobr.ArchiveExtent.Repository.UseGatewayServer) {
                                 Switch ($Sobr.ArchiveExtent.Repository.GatewayMode) {
                                     'Gateway' {
-                                        switch ($Sobr.ArchiveExtent.Repository.GatewayServer.count) {
+                                        switch (($Sobr.ArchiveExtent.Repository.GatewayServer | Measure-Object).count) {
                                             0 { "Disable" }
                                             1 { $Sobr.ArchiveExtent.Repository.GatewayServer.Name.Split('.')[0] }
                                             Default { 'Automatic' }
@@ -98,7 +98,7 @@ function Get-VbrBackupSobrInfo {
                                     default { 'Unknown' }
                                 }
                             } else {
-                                switch ($Sobr.ArchiveExtent.Repository.GatewayServer.count) {
+                                switch (($Sobr.ArchiveExtent.Repository.GatewayServer | Measure-Object).count) {
                                     0 { "Disable" }
                                     1 { $Sobr.ArchiveExtent.Repository.GatewayServer.Name.Split('.')[0] }
                                     Default { 'Automatic' }

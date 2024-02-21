@@ -220,19 +220,19 @@ function Split-array {
         [int]$size)
 
     if ($parts) {
-        $PartSize = [Math]::Ceiling($inArray.count / $parts)
+        $PartSize = [Math]::Ceiling(($inArray | Measure-Object).count / $parts)
     }
     if ($size) {
         $PartSize = $size
-        $parts = [Math]::Ceiling($inArray.count / $size)
+        $parts = [Math]::Ceiling(($inArray | Measure-Object).count / $size)
     }
 
     $outArray = @()
     for ($i = 1; $i -le $parts; $i++) {
         $start = (($i - 1) * $PartSize)
         $end = (($i) * $PartSize) - 1
-        if ($end -ge $inArray.count) {
-            $end = $inArray.count
+        if ($end -ge ($inArray | Measure-Object).count) {
+            $end = ($inArray | Measure-Object).count
         }
         $outArray += , @($inArray[$start..$end])
     }

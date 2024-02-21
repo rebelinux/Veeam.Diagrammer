@@ -108,7 +108,7 @@ function Get-DiagBackupToProtectedGroup {
                             SubGraph ADContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Active Directory Computers' -IconType "VBR_AGENT_AD_Logo" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node DummyADContainer @{Label = 'DummyADC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if ($ADContainer.count -le 2) {
+                                if (($ADContainer | Measure-Object).count -le 2) {
                                     foreach ($PGOBJ in ($ADContainer | Sort-Object -Property Name)) {
                                         $PGHASHTABLE = @{}
                                         $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
@@ -135,7 +135,7 @@ function Get-DiagBackupToProtectedGroup {
                                         Edge -From DummyADContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     }
                                 } else {
-                                    $Group = Split-Array -inArray ($ADContainer | Sort-Object -Property Name) -size 2
+                                    $Group = Split-array -inArray ($ADContainer | Sort-Object -Property Name) -size 2
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random
@@ -182,7 +182,7 @@ function Get-DiagBackupToProtectedGroup {
                             SubGraph MCContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Manual Computers' -IconType "VBR_AGENT_MC" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node DummyMCContainer @{Label = 'DummyMC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if ($ManualContainer.count -le 2) {
+                                if (($ManualContainer | Measure-Object).count -le 2) {
                                     foreach ($PGOBJ in ($ManualContainer | Sort-Object -Property Name)) {
                                         $PGHASHTABLE = @{}
                                         $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
@@ -203,7 +203,7 @@ function Get-DiagBackupToProtectedGroup {
                                     }
 
                                 } else {
-                                    $Group = Split-Array -inArray ($ManualContainer | Sort-Object -Property Name) -size 2
+                                    $Group = Split-array -inArray ($ManualContainer | Sort-Object -Property Name) -size 2
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random
@@ -244,7 +244,7 @@ function Get-DiagBackupToProtectedGroup {
                             SubGraph ICContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Individual Computers' -IconType "VBR_AGENT_IC" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node DummyICContainer @{Label = 'DummyIC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if ($IndividualContainer.count -le 2) {
+                                if (($IndividualContainer | Measure-Object).count -le 2) {
                                     foreach ($PGOBJ in ($IndividualContainer | Sort-Object -Property Name)) {
                                         $PGHASHTABLE = @{}
                                         $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
@@ -272,7 +272,7 @@ function Get-DiagBackupToProtectedGroup {
                                         Edge -From DummyICContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     }
                                 } else {
-                                    $Group = Split-Array -inArray ($IndividualContainer | Sort-Object -Property Name) -size 2
+                                    $Group = Split-array -inArray ($IndividualContainer | Sort-Object -Property Name) -size 2
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random
@@ -321,7 +321,7 @@ function Get-DiagBackupToProtectedGroup {
                             SubGraph CSVContainer -Attributes @{Label = (Get-HTMLLabel -Label 'CSV Computers' -IconType "VBR_AGENT_CSV_Logo" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node DummyCSVContainer @{Label = 'DummyCSVC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if ($CSVContainer.count -le 2) {
+                                if (($CSVContainer | Measure-Object).count -le 2) {
                                     foreach ($PGOBJ in ($CSVContainer | Sort-Object -Property Name)) {
                                         $PGHASHTABLE = @{}
                                         $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
@@ -338,7 +338,7 @@ function Get-DiagBackupToProtectedGroup {
                                     }
 
                                 } else {
-                                    $Group = Split-Array -inArray ($CSVContainer | Sort-Object -Property Name) -size 2
+                                    $Group = Split-array -inArray ($CSVContainer | Sort-Object -Property Name) -size 2
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random

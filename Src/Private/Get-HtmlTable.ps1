@@ -64,17 +64,17 @@ Function Get-HTMLTable {
     )
 
     if ($MultiColunms) {
-        if ($Rows.Count -le 1) {
+        if (($Rows | Measure-Object).Count -le 1) {
             $Group = $Rows
         } else {
-            $Group = Split-Array -inArray $Rows -size $ColumnSize
+            $Group = Split-array -inArray $Rows -size $ColumnSize
         }
 
         $Number = 0
 
         $TD = ''
         $TR = ''
-        while ($Number -ne $Group.Count) {
+        while ($Number -ne ($Group | Measure-Object).Count) {
             foreach ($Element in $Group[$Number]) {
                 $TD += '<TD align="{0}" colspan="1"><FONT POINT-SIZE="{1}">{2}</FONT></TD>' -f $Align, $FontSize, $Element
             }

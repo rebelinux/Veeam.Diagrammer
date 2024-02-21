@@ -92,7 +92,7 @@ function Get-DiagBackupToViProxy {
                     #             SubGraph ESXiMAIN -Attributes @{Label='Standalone Servers'; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=18; penwidth=1} {
                     #                 # Dummy Node used for subgraph centering
                     #                 node ESXiBackupProxy @{Label='ESXiBackupProxy'; style=$EdgeDebug.style; color=$EdgeDebug.color; shape='plain'}
-                    #                 if ($EsxiObjs.count -le 4) {
+                    #                 if (($EsxiObjs | Measure-Object).count -le 4) {
                     #                     foreach ($ESxiHost in $EsxiObjs) {
                     #                         $ESXiInfo = @{
                     #                             Version = $ESxiHost.Info.ViVersion.ToString()

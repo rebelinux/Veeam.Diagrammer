@@ -69,7 +69,7 @@ function Get-DiagBackupToTape {
                                                     Node $TSLibraryOBJ -NodeScript { $_.Id } @{Label = $TSLHASHTABLE.Label; fontname = "Segoe Ui" }
                                                     if ($BackupTapeDrives) {
                                                         $TapeLibraryDrives = ($BackupTapeDrives | Where-Object { $_.LibraryId -eq $TSLibraryOBJ.Id } | Sort-Object -Property Name)
-                                                        if ($TapeLibraryDrives.count -le 3) {
+                                                        if (($TapeLibraryDrives | Measure-Object).count -le 3) {
                                                             foreach ($TSDriveOBJ in $TapeLibraryDrives) {
                                                                 $TSDHASHTABLE = @{}
                                                                 $TSDriveOBJ.psobject.properties | ForEach-Object { $TSDHASHTABLE[$_.Name] = $_.Value }

@@ -40,7 +40,7 @@ function Get-VbrBackupObjectRepoInfo {
                             if (-Not $ObjStorage.UseGatewayServer) {
                                 Switch ($ObjStorage.ConnectionType) {
                                     'Gateway' {
-                                        switch ($ObjStorage.GatewayServer.count) {
+                                        switch (($ObjStorage.GatewayServer | Measure-Object).count) {
                                             0 { "Disable" }
                                             1 { $ObjStorage.GatewayServer.Name.Split('.')[0] }
                                             Default { 'Automatic' }
@@ -50,7 +50,7 @@ function Get-VbrBackupObjectRepoInfo {
                                     default { 'Unknown' }
                                 }
                             } else {
-                                switch ($ObjStorage.GatewayServer.count) {
+                                switch (($ObjStorage.GatewayServer | Measure-Object).count) {
                                     0 { "Disable" }
                                     1 { $ObjStorage.GatewayServer.Name.Split('.')[0] }
                                     Default { 'Automatic' }
