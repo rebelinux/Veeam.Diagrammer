@@ -105,7 +105,7 @@ function Get-DiagBackupToProtectedGroup {
                             Rank DummyPGLeft, DummyPGLeftt, ProtectedGroup, DummyPGRight
                         }
                         if ($ADContainer) {
-                            SubGraph ADContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Active Directory Computers' -IconType "VBR_AGENT_AD_Logo" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
+                            SubGraph ADContainer -Attributes @{Label = (Get-DiaHTMLLabel -Label 'Active Directory Computers' -IconType "VBR_AGENT_AD_Logo" -ImagesObj $Images -IconDebug $IconDebug -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node DummyADContainer @{Label = 'DummyADC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
                                 if (($ADContainer | Measure-Object).count -le 2) {
@@ -130,7 +130,7 @@ function Get-DiagBackupToProtectedGroup {
                                             $Ous
                                         )
 
-                                        Convert-TableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
 
                                         Edge -From DummyADContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     }
@@ -160,7 +160,7 @@ function Get-DiagBackupToProtectedGroup {
                                                     $Ous
                                                 )
 
-                                                Convert-TableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
                                             }
                                         }
                                         $Number++
@@ -179,7 +179,7 @@ function Get-DiagBackupToProtectedGroup {
                             Edge -From ProtectedGroup -To DummyADContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($ManualContainer) {
-                            SubGraph MCContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Manual Computers' -IconType "VBR_AGENT_MC" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
+                            SubGraph MCContainer -Attributes @{Label = (Get-DiaHTMLLabel -Label 'Manual Computers' -IconType "VBR_AGENT_MC" -ImagesObj $Images -IconDebug $IconDebug -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node DummyMCContainer @{Label = 'DummyMC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
                                 if (($ManualContainer | Measure-Object).count -le 2) {
@@ -197,7 +197,7 @@ function Get-DiagBackupToProtectedGroup {
                                             "<B>Type</B>: $($PGOBJ.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($PGOBJ.Object.ScheduleOptions.PolicyType)"
                                         )
 
-                                        Convert-TableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
 
                                         Edge -From DummyMCContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     }
@@ -222,7 +222,7 @@ function Get-DiagBackupToProtectedGroup {
                                                     "<B>Type</B>: $($_.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($_.Object.ScheduleOptions.PolicyType)"
                                                 )
 
-                                                Convert-TableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
                                             }
                                         }
                                         $Number++
@@ -241,7 +241,7 @@ function Get-DiagBackupToProtectedGroup {
                             Edge -From ProtectedGroup -To DummyMCContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($IndividualContainer) {
-                            SubGraph ICContainer -Attributes @{Label = (Get-HTMLLabel -Label 'Individual Computers' -IconType "VBR_AGENT_IC" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
+                            SubGraph ICContainer -Attributes @{Label = (Get-DiaHTMLLabel -Label 'Individual Computers' -IconType "VBR_AGENT_IC" -ImagesObj $Images -IconDebug $IconDebug -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node DummyICContainer @{Label = 'DummyIC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
                                 if (($IndividualContainer | Measure-Object).count -le 2) {
@@ -267,7 +267,7 @@ function Get-DiagBackupToProtectedGroup {
                                             $Entities
                                         )
 
-                                        Convert-TableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
 
                                         Edge -From DummyICContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     }
@@ -299,7 +299,7 @@ function Get-DiagBackupToProtectedGroup {
                                                     <br /> $Entities"
                                                 )
 
-                                                Convert-TableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
                                             }
                                         }
                                         $Number++
@@ -318,7 +318,7 @@ function Get-DiagBackupToProtectedGroup {
                             Edge -From ProtectedGroup -To DummyICContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($CSVContainer) {
-                            SubGraph CSVContainer -Attributes @{Label = (Get-HTMLLabel -Label 'CSV Computers' -IconType "VBR_AGENT_CSV_Logo" -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
+                            SubGraph CSVContainer -Attributes @{Label = (Get-DiaHTMLLabel -Label 'CSV Computers' -IconType "VBR_AGENT_CSV_Logo" -ImagesObj $Images -IconDebug $IconDebug -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node DummyCSVContainer @{Label = 'DummyCSVC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
                                 if (($CSVContainer | Measure-Object).count -le 2) {
@@ -332,7 +332,7 @@ function Get-DiagBackupToProtectedGroup {
                                             "<B>Credential</B> : $($PGOBJ.Object.Container.MasterCredentials.Name)"
                                         )
 
-                                        Convert-TableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
 
                                         Edge -From DummyCSVContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     }
@@ -353,7 +353,7 @@ function Get-DiagBackupToProtectedGroup {
                                                     "<B>Credential</B> : $($_.Object.Container.MasterCredentials.Name)"
                                                 )
 
-                                                Convert-TableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
                                             }
                                         }
                                         $Number++

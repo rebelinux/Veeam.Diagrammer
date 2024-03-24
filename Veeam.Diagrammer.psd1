@@ -51,7 +51,16 @@
     # ProcessorArchitecture = ''
 
     # Modules that must be imported into the global environment prior to importing this module
-    RequiredModules = @(@{ModuleName = 'PSGraph'; ModuleVersion = '2.1.38.27'; })
+    RequiredModules = @(
+        @{
+            ModuleName = 'PSGraph';
+            ModuleVersion = '2.1.38.27';
+        },
+        @{
+            ModuleName = 'Diagrammer.Core';
+            ModuleVersion = '0.1.8';
+        }
+    )
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()

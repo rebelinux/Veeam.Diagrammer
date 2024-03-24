@@ -66,7 +66,7 @@ function Get-VbrBackupArchObjRepoInfo {
 
                     $TempObjStorageInfo = [PSCustomObject]@{
                         Name = "$($ArchObjStorage.Name) "
-                        Label = Get-NodeIcon -Name $($ArchObjStorage.Name) -IconType "VBR_Cloud_Repository" -Align "Center" -Rows $Rows
+                        Label = Get-DiaNodeIcon -Name $($ArchObjStorage.Name) -IconType "VBR_Cloud_Repository" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
                     }
                     $ArchObjStorageInfo += $TempObjStorageInfo
                 }

@@ -94,7 +94,7 @@ function Get-VbrBackupProxyInfo {
 
                     $TempBackupProxyInfo = [PSCustomObject]@{
                         Name = "$($Hostname.toUpper().split(".")[0]) "
-                        Label = Get-NodeIcon -Name "$($Hostname.toUpper().split(".")[0])" -IconType $IconType -Align "Center" -Rows $BPRows
+                        Label = Get-DiaNodeIcon -Name "$($Hostname.toUpper().split(".")[0])" -IconType $IconType -Align "Center" -Rows $BPRows -ImagesObj $Images -IconDebug $IconDebug
                         Object = $BackupProxy
                     }
 

@@ -77,7 +77,7 @@ function Get-DiagBackupToTape {
                                                                 $TSDriveOBJ | ForEach-Object { Edge -From $TSLibraryOBJ.id -To $_.id }
                                                             }
                                                         } else {
-                                                            $Group = Split-Array -inArray $TapeLibraryDrives -size 3
+                                                            $Group = Split-array -inArray $TapeLibraryDrives -size 3
                                                             $Number = 0
                                                             while ($Number -ne $Group.Length) {
                                                                 $Random = Get-Random

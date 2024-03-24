@@ -269,6 +269,12 @@ function New-VeeamDiagram {
 
     begin {
 
+        $Verbose = if ($PSBoundParameters.ContainsKey('Verbose')) {
+            $PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent
+        } else {
+            $false
+        }
+
         # If Username and Password parameters used, convert specified Password to secure string and store in $Credential
         #@tpcarman
         if (($Username -and $Password)) {
@@ -297,16 +303,16 @@ function New-VeeamDiagram {
             'Backup-to-All' { 'Backup Infrastructure Diagram' }
         }
 
-        $URLIcon = $false
+        $IconDebug = $false
 
         if ($EnableEdgeDebug) {
             $script:EdgeDebug = @{style = 'filled'; color = 'red' }
-            $URLIcon = $true
+            $IconDebug = $true
         } else { $script:EdgeDebug = @{style = 'invis'; color = 'red' } }
 
         if ($EnableSubGraphDebug) {
             $script:SubGraphDebug = @{style = 'dashed'; color = 'red' }
-            $URLIcon = $true
+            $IconDebug = $true
         } else { $script:SubGraphDebug = @{style = 'invis'; color = 'gray' } }
 
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
@@ -318,9 +324,15 @@ function New-VeeamDiagram {
         }
 
         # Validate Custom logo
-        $CustomLogo = Test-Logo -LogoPath $Logo
+        if ($Logo) {
+            $CustomLogo = Test-Logo -LogoPath (Get-ChildItem -Path $Logo).FullName -IconPath $IconPath -ImagesObj $Images
+        } else {
+            $CustomLogo = "VBR_Logo"
+        }
         # Validate Custom Signature Logo
-        $CustomSignatureLogo = Test-Logo -LogoPath $SignatureLogo -Signature
+        if ($SignatureLogo) {
+            $CustomSignatureLogo = Test-Logo -LogoPath (Get-ChildItem -Path $SignatureLogo).FullName -IconPath $IconPath -ImagesObj $Images
+        }
 
         # Validate Veeam Powershell Module
         Get-VbrRequiredModule -Name 'Veeam.Backup.PowerShell' -Version '1.0'
@@ -379,16 +391,16 @@ function New-VeeamDiagram {
 
                 if ($Signature) {
                     if ($CustomSignatureLogo) {
-                        $Signature = (Get-HtmlTable -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -align 'left' -Logo $CustomSignatureLogo)
+                        $Signature = (Get-DiaHtmlTable -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -align 'left' -Logo $CustomSignatureLogo)
                     } else {
-                        $Signature = (Get-HtmlTable -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -align 'left' -Logo "VBR_LOGO_Footer")
+                        $Signature = (Get-DiaHtmlTable -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -align 'left' -Logo "VBR_LOGO_Footer")
                     }
                 } else {
                     $Signature = " "
                 }
 
                 SubGraph OUTERDRAWBOARD1 -Attributes @{Label = $Signature; fontsize = 24; penwidth = 1.5; labelloc = 'b'; labeljust = "r"; style = $SubGraphDebug.style; color = $SubGraphDebug.color } {
-                    SubGraph MainGraph -Attributes @{Label = (Get-HTMLLabel -Label $MainGraphLabel -IconType $CustomLogo); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
+                    SubGraph MainGraph -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label $MainGraphLabel -IconType $CustomLogo -IconDebug $IconDebug -IconWidth 300 -IconHeight 54); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
 
                         if ($DiagramType -eq 'Backup-to-HyperV-Proxy') {
                             $BackuptoHyperVProxy = Get-DiagBackupToHvProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
@@ -466,6 +478,20 @@ function New-VeeamDiagram {
     }
     end {
         #Export Diagram
-        Out-VbrDiagram -GraphObj ($Graph | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch) -ErrorDebug $EnableErrorDebug -Rotate $Rotate
+        foreach ($OutputFormat in $Format) {
+
+            $OutputDiagram = Export-Diagrammer -GraphObj ($Graph | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch) -ErrorDebug $EnableErrorDebug -Format $OutputFormat -Filename $Filename -OutputFolderPath $OutputFolderPath -WaterMarkText $WaterMarkText -WaterMarkColor $WaterMarkColor -IconPath $IconPath -Verbose:$Verbose -Rotate $Rotate
+
+            if ($OutputDiagram) {
+                if ($OutputFormat -ne 'Base64') {
+                    # If not Base64 format return image path
+                    Write-ColorOutput -Color 'Green' -String ("Diagrammer diagram {0} has been saved to {1}" -f $OutputDiagram.Name, $OutputDiagram.Directory)
+                } else {
+                    Write-Verbose "Displaying Base64 string"
+                    # Return Base64 string
+                    $OutputDiagram
+                }
+            }
+        }
     }
 }

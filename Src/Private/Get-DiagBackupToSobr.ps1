@@ -56,19 +56,19 @@ function Get-DiagBackupToSobr {
                                 if ($SOBROBJ.Performance) {
                                     SubGraph "$($SubGraphName)Performance" -Attributes @{Label = "Performance Extent"; fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = "dashed,rounded"; } {
 
-                                        $SOBROBJ.Performance | ForEach-Object { Node $_.Name @{Label = Get-NodeIcon -Name $_.Name -IconType $_.Icon -Align "Center" -Rows $_.Rows; fontname = "Segoe Ui"; shape = "plain" } }
+                                        $SOBROBJ.Performance | ForEach-Object { Node $_.Name @{Label = Get-DiaNodeIcon -Name $_.Name -IconType $_.Icon -Align "Center" -Rows $_.Rows -ImagesObj $Images -IconDebug $IconDebug; fontname = "Segoe Ui"; shape = "plain" } }
                                     }
                                 }
                                 if ($SOBROBJ.Capacity) {
                                     SubGraph "$($SubGraphName)Capacity" -Attributes @{Label = "Capacity Extent"; fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = "dashed,rounded" } {
 
-                                        $SOBROBJ.Capacity | ForEach-Object { Node $_.Name @{Label = Get-NodeIcon -Name $_.Name -IconType $_.Icon -Align "Center" -Rows $_.Rows; fontname = "Segoe Ui"; shape = "plain" } }
+                                        $SOBROBJ.Capacity | ForEach-Object { Node $_.Name @{Label = Get-DiaNodeIcon -Name $_.Name -IconType $_.Icon -Align "Center" -Rows $_.Rows -ImagesObj $Images -IconDebug $IconDebug; fontname = "Segoe Ui"; shape = "plain" } }
                                     }
                                 }
                                 if ($SOBROBJ.Archive) {
                                     SubGraph "$($SubGraphName)Archive" -Attributes @{Label = "Archive Extent"; fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = "dashed,rounded" } {
 
-                                        $SOBROBJ.Archive | ForEach-Object { Node $_.Name @{Label = Get-NodeIcon -Name $_.Name -IconType $_.Icon -Align "Center" -Rows $_.Rows; fontname = "Segoe Ui"; shape = "plain" } }
+                                        $SOBROBJ.Archive | ForEach-Object { Node $_.Name @{Label = Get-DiaNodeIcon -Name $_.Name -IconType $_.Icon -Align "Center" -Rows $_.Rows -ImagesObj $Images -IconDebug $IconDebug; fontname = "Segoe Ui"; shape = "plain" } }
                                     }
                                 }
 

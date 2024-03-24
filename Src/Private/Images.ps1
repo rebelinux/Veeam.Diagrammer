@@ -1,4 +1,4 @@
-$Images = @{
+$script:Images = @{
     "VBR_Server" = "VBR_server.png"
     "VBR_Repository" = "VBR_Repository.png"
     "VBR_Deduplicating_Storage" = "Deduplicating_Storage.png"
