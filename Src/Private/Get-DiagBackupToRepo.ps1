@@ -5,7 +5,7 @@ function Get-DiagBackupToRepo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.9
+        Version:        0.6.0
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -65,7 +65,7 @@ function Get-DiagBackupToRepo {
 
                                     Edge -From LocalReposDummy -To $LocalBackupRepo.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                 } else {
-                                    $Group = Split-Array -inArray ($LocalBackupRepo | Sort-Object -Property Name) -size 3
+                                    $Group = Split-array -inArray ($LocalBackupRepo | Sort-Object -Property Name) -size 3
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random
@@ -103,7 +103,7 @@ function Get-DiagBackupToRepo {
 
                                     Edge -From RemoteReposDummy -To $RemoteBackupRepo.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                 } else {
-                                    $Group = Split-Array -inArray ($RemoteBackupRepo | Sort-Object -Property Name) -size 3
+                                    $Group = Split-array -inArray ($RemoteBackupRepo | Sort-Object -Property Name) -size 3
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random
@@ -142,7 +142,7 @@ function Get-DiagBackupToRepo {
 
                                     Edge -From ObjectStorageDummy -To $ObjStorage.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                 } else {
-                                    $Group = Split-Array -inArray ($ObjStorage | Sort-Object -Property Name) -size 3
+                                    $Group = Split-array -inArray ($ObjStorage | Sort-Object -Property Name) -size 3
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random
@@ -180,7 +180,7 @@ function Get-DiagBackupToRepo {
 
                                     Edge -From ArchiveObjectStorageDummy -To $ArchiveObjStorage.Name @{constraint = "true"; minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                 } else {
-                                    $Group = Split-Array -inArray ($ArchiveObjStorage | Sort-Object -Property Name) -size 3
+                                    $Group = Split-array -inArray ($ArchiveObjStorage | Sort-Object -Property Name) -size 3
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random

@@ -66,8 +66,12 @@ function New-VeeamDiagram {
     .PARAMETER Signature
         Allow the creation of footer signature.
         AuthorName and CompanyName must be set to use this property.
+    .PARAMETER WatermarkText
+        Allow to add a watermark to the output image (Not supported in svg format).
+    .PARAMETER WatermarkColor
+        Allow to specified the color used for the watermark text. Default: Green.
     .NOTES
-        Version:        0.5.9
+        Version:        0.6.0
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -263,7 +267,19 @@ function New-VeeamDiagram {
             Mandatory = $false,
             HelpMessage = 'Allow the creation of footer signature'
         )]
-        [Switch] $Signature = $false
+        [Switch] $Signature = $false,
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Allow to add a watermark to the output image (Not supported in svg format)'
+        )]
+        [string] $WaterMarkText,
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Allow to specified the color used for the watermark text'
+        )]
+        [string] $WaterMarkColor = 'Green'
     )
 
 
@@ -390,12 +406,14 @@ function New-VeeamDiagram {
                 }
 
                 if ($Signature) {
+                    Write-Verbose "Generating diagram signature"
                     if ($CustomSignatureLogo) {
-                        $Signature = (Get-DiaHtmlTable -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -align 'left' -Logo $CustomSignatureLogo)
+                        $Signature = (Get-DiaHTMLTable -ImagesObj $Images -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -Align 'left' -Logo $CustomSignatureLogo -IconDebug $IconDebug)
                     } else {
-                        $Signature = (Get-DiaHtmlTable -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -align 'left' -Logo "VBR_LOGO_Footer")
+                        $Signature = (Get-DiaHTMLTable -ImagesObj $Images -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -Align 'left' -Logo "VBR_LOGO_Footer" -IconDebug $IconDebug)
                     }
                 } else {
+                    Write-Verbose "No diagram signature specified"
                     $Signature = " "
                 }
 
