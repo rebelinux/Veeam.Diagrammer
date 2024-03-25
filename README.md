@@ -84,6 +84,8 @@ PowerShell 5.1, and the following PowerShell modules are required for generating
 
 - [Veeam.Backup.PowerShell Module](https://helpcenter.veeam.com/docs/backup/powershell/getting_started.html?ver=110)
 - [PSGraph Module](https://github.com/KevinMarquette/PSGraph)
+- [Diagrammer.Core Module](https://github.com/rebelinux/Diagrammer.Core)
+
 
 ## What is GraphViz?
 

@@ -477,17 +477,7 @@ function New-VeeamDiagram {
                                 throw "No Scale-Out Backup Repository available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-All') {
-                            if (Get-DiagBackupToHvProxy) {
-                                Get-DiagBackupToHvProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
-                            } else { Write-Warning "No HyperV Proxy Infrastructure available to diagram" }
-                            if (Get-DiagBackupToViProxy) {
-                                Get-DiagBackupToViProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
-                            } else { Write-Warning "No vSphere Proxy Infrastructure available to diagram" }
-
-                            Get-DiagBackupToWanAccel | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
-                            Get-DiagBackupToRepo | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
-                            Get-DiagBackupToSobr | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
-                            Get-DiagBackupToTape | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            Get-DiagBackupInfrastructure| Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                         }
                     }
                 }

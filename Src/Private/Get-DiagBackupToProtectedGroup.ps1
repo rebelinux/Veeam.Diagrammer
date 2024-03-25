@@ -130,7 +130,7 @@ function Get-DiagBackupToProtectedGroup {
                                             $Ous
                                         )
 
-                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
 
                                         Edge -From DummyADContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     }
@@ -160,7 +160,7 @@ function Get-DiagBackupToProtectedGroup {
                                                     $Ous
                                                 )
 
-                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
                                             }
                                         }
                                         $Number++
@@ -197,7 +197,7 @@ function Get-DiagBackupToProtectedGroup {
                                             "<B>Type</B>: $($PGOBJ.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($PGOBJ.Object.ScheduleOptions.PolicyType)"
                                         )
 
-                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
 
                                         Edge -From DummyMCContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     }
@@ -222,7 +222,7 @@ function Get-DiagBackupToProtectedGroup {
                                                     "<B>Type</B>: $($_.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($_.Object.ScheduleOptions.PolicyType)"
                                                 )
 
-                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
                                             }
                                         }
                                         $Number++
@@ -267,7 +267,7 @@ function Get-DiagBackupToProtectedGroup {
                                             $Entities
                                         )
 
-                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
 
                                         Edge -From DummyICContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     }
@@ -299,7 +299,7 @@ function Get-DiagBackupToProtectedGroup {
                                                     <br /> $Entities"
                                                 )
 
-                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
                                             }
                                         }
                                         $Number++
@@ -332,7 +332,7 @@ function Get-DiagBackupToProtectedGroup {
                                             "<B>Credential</B> : $($PGOBJ.Object.Container.MasterCredentials.Name)"
                                         )
 
-                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
 
                                         Edge -From DummyCSVContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                     }
@@ -353,7 +353,7 @@ function Get-DiagBackupToProtectedGroup {
                                                     "<B>Credential</B> : $($_.Object.Container.MasterCredentials.Name)"
                                                 )
 
-                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14
+                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
                                             }
                                         }
                                         $Number++
