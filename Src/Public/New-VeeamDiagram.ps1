@@ -9,7 +9,7 @@ function New-VeeamDiagram {
         The supported output diagrams are:
             'Backup-to-Sobr', 'Backup-to-vSphere-Proxy', 'Backup-to-HyperV-Proxy',
             'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-Tape',
-            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup', 'Backup-to-All'
+            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup'
     .PARAMETER Target
         Specifies the IP/FQDN of the system to connect.
         Multiple targets may be specified, separated by a comma.
@@ -231,7 +231,7 @@ function New-VeeamDiagram {
             Mandatory = $true,
             HelpMessage = 'Controls type of Veeam VBR generated diagram'
         )]
-        [ValidateSet('Backup-to-Tape', 'Backup-to-File-Proxy', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-ProtectedGroup', 'Backup-to-All')]
+        [ValidateSet('Backup-to-Tape', 'Backup-to-File-Proxy', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-ProtectedGroup')]
         [string] $DiagramType,
 
         [Parameter(
@@ -316,7 +316,6 @@ function New-VeeamDiagram {
             'Backup-to-WanAccelerator' { 'Wan Accelerators Diagram' }
             'Backup-to-Tape' { 'Tape Infrastructure Diagram' }
             'Backup-to-ProtectedGroup' { 'Physical Infrastructure Diagram' }
-            'Backup-to-All' { 'Backup Infrastructure Diagram' }
         }
 
         $IconDebug = $false
@@ -333,7 +332,6 @@ function New-VeeamDiagram {
 
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
         $IconPath = Join-Path $RootPath 'icons'
-        $script:GraphvizPath = Join-Path $RootPath 'Graphviz\bin\dot.exe'
         $Dir = switch ($Direction) {
             'top-to-bottom' { 'TB' }
             'left-to-right' { 'LR' }
@@ -476,8 +474,6 @@ function New-VeeamDiagram {
                             } else {
                                 throw "No Scale-Out Backup Repository available to diagram"
                             }
-                        } elseif ($DiagramType -eq 'Backup-to-All') {
-                            Get-DiagBackupInfrastructure| Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                         }
                     }
                 }
