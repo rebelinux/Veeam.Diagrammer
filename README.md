@@ -62,7 +62,6 @@ Below are the instructions on how to install, configure and generate a Veeam.Dia
 <!-- ********** Update supported Veeam versions ********** -->
 The Veeam.Diagrammer supports the following Veeam Backup & Replication version;
 
-- Veeam Backup & Replication V11 (Standard, Enterprise & Enterprise Plus Edition)
 - Veeam Backup & Replication v12+ (Standard, Enterprise & Enterprise Plus Edition)
 
 ### :closed_lock_with_key: Required Privileges
