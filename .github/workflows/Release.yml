@@ -17,6 +17,10 @@ jobs:
         shell: pwsh
         run: |
           Install-Module -Name PSGraph -Repository PSGallery -Force
+      - name: Install Diagrammer.Core module
+        shell: pwsh
+        run: |
+          Install-Module -Name Diagrammer.Core -Repository PSGallery -Force
       - name: Test Module Manifest
         shell: pwsh
         run: |
