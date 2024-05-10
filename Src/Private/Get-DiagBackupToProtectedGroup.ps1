@@ -84,7 +84,7 @@ function Get-DiagBackupToProtectedGroup {
                 $_
             }
 
-            if ($ProtectedGroups) {
+            if ($ProtectedGroups.Container) {
                 if ($Dir -eq 'LR') {
                     $DiagramLabel = 'Protected Groups'
                     $DiagramDummyLabel = ' '
@@ -182,7 +182,7 @@ function Get-DiagBackupToProtectedGroup {
                             SubGraph MCContainer -Attributes @{Label = (Get-DiaHTMLLabel -Label 'Manual Computers' -IconType "VBR_AGENT_MC" -ImagesObj $Images -IconDebug $IconDebug -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node DummyMCContainer @{Label = 'DummyMC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if (($ManualContainer | Measure-Object).count -le 2) {
+                                if (($ManualContainer | Measure-Object).count -le 2) {'Backup-to-All'
                                     foreach ($PGOBJ in ($ManualContainer | Sort-Object -Property Name)) {
                                         $PGHASHTABLE = @{}
                                         $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
