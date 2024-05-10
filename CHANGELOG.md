@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed Graphviz binaries (Now part of Diagrammer.Core module)
 - Removed Backup-to-All diagram
 
+### Fixed
+
+- Fix for empty ProtectedGroup condition
 
 ## [0.5.9] - 2024-02-15
 
