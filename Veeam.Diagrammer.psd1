@@ -12,7 +12,7 @@
     RootModule = 'Veeam.Diagrammer.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.5.9'
+    ModuleVersion = '0.6.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -51,7 +51,16 @@
     # ProcessorArchitecture = ''
 
     # Modules that must be imported into the global environment prior to importing this module
-    RequiredModules = @(@{ModuleName = 'PSGraph'; ModuleVersion = '2.1.38.27'; })
+    RequiredModules = @(
+        @{
+            ModuleName = 'PSGraph';
+            ModuleVersion = '2.1.38.27';
+        },
+        @{
+            ModuleName = 'Diagrammer.Core';
+            ModuleVersion = '0.2.0';
+        }
+    )
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()

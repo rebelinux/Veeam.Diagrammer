@@ -9,7 +9,7 @@ function New-VeeamDiagram {
         The supported output diagrams are:
             'Backup-to-Sobr', 'Backup-to-vSphere-Proxy', 'Backup-to-HyperV-Proxy',
             'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-Tape',
-            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup', 'Backup-to-All'
+            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup'
     .PARAMETER Target
         Specifies the IP/FQDN of the system to connect.
         Multiple targets may be specified, separated by a comma.
@@ -66,8 +66,12 @@ function New-VeeamDiagram {
     .PARAMETER Signature
         Allow the creation of footer signature.
         AuthorName and CompanyName must be set to use this property.
+    .PARAMETER WatermarkText
+        Allow to add a watermark to the output image (Not supported in svg format).
+    .PARAMETER WatermarkColor
+        Allow to specified the color used for the watermark text. Default: Green.
     .NOTES
-        Version:        0.5.9
+        Version:        0.6.0
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -194,7 +198,7 @@ function New-VeeamDiagram {
         )]
         [ValidateNotNullOrEmpty()]
         [ValidateScript({
-                if ($Format.count -lt 2) {
+                if (($Format | Measure-Object).count -lt 2) {
                     $true
                 } else {
                     throw "Format value must be unique if Filename is especified."
@@ -227,7 +231,7 @@ function New-VeeamDiagram {
             Mandatory = $true,
             HelpMessage = 'Controls type of Veeam VBR generated diagram'
         )]
-        [ValidateSet('Backup-to-Tape', 'Backup-to-File-Proxy', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-ProtectedGroup', 'Backup-to-All')]
+        [ValidateSet('Backup-to-Tape', 'Backup-to-File-Proxy', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-ProtectedGroup')]
         [string] $DiagramType,
 
         [Parameter(
@@ -263,11 +267,29 @@ function New-VeeamDiagram {
             Mandatory = $false,
             HelpMessage = 'Allow the creation of footer signature'
         )]
-        [Switch] $Signature = $false
+        [Switch] $Signature = $false,
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Allow to add a watermark to the output image (Not supported in svg format)'
+        )]
+        [string] $WaterMarkText,
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Allow to specified the color used for the watermark text'
+        )]
+        [string] $WaterMarkColor = 'Green'
     )
 
 
     begin {
+
+        $Verbose = if ($PSBoundParameters.ContainsKey('Verbose')) {
+            $PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent
+        } else {
+            $false
+        }
 
         # If Username and Password parameters used, convert specified Password to secure string and store in $Credential
         #@tpcarman
@@ -294,33 +316,37 @@ function New-VeeamDiagram {
             'Backup-to-WanAccelerator' { 'Wan Accelerators Diagram' }
             'Backup-to-Tape' { 'Tape Infrastructure Diagram' }
             'Backup-to-ProtectedGroup' { 'Physical Infrastructure Diagram' }
-            'Backup-to-All' { 'Backup Infrastructure Diagram' }
         }
 
-        $URLIcon = $false
+        $IconDebug = $false
 
         if ($EnableEdgeDebug) {
             $script:EdgeDebug = @{style = 'filled'; color = 'red' }
-            $URLIcon = $true
+            $IconDebug = $true
         } else { $script:EdgeDebug = @{style = 'invis'; color = 'red' } }
 
         if ($EnableSubGraphDebug) {
             $script:SubGraphDebug = @{style = 'dashed'; color = 'red' }
-            $URLIcon = $true
+            $IconDebug = $true
         } else { $script:SubGraphDebug = @{style = 'invis'; color = 'gray' } }
 
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
         $IconPath = Join-Path $RootPath 'icons'
-        $script:GraphvizPath = Join-Path $RootPath 'Graphviz\bin\dot.exe'
         $Dir = switch ($Direction) {
             'top-to-bottom' { 'TB' }
             'left-to-right' { 'LR' }
         }
 
         # Validate Custom logo
-        $CustomLogo = Test-Logo -LogoPath $Logo
+        if ($Logo) {
+            $CustomLogo = Test-Logo -LogoPath (Get-ChildItem -Path $Logo).FullName -IconPath $IconPath -ImagesObj $Images
+        } else {
+            $CustomLogo = "VBR_Logo"
+        }
         # Validate Custom Signature Logo
-        $CustomSignatureLogo = Test-Logo -LogoPath $SignatureLogo -Signature
+        if ($SignatureLogo) {
+            $CustomSignatureLogo = Test-Logo -LogoPath (Get-ChildItem -Path $SignatureLogo).FullName -IconPath $IconPath -ImagesObj $Images
+        }
 
         # Validate Veeam Powershell Module
         Get-VbrRequiredModule -Name 'Veeam.Backup.PowerShell' -Version '1.0'
@@ -378,17 +404,19 @@ function New-VeeamDiagram {
                 }
 
                 if ($Signature) {
+                    Write-Verbose "Generating diagram signature"
                     if ($CustomSignatureLogo) {
-                        $Signature = (Get-HtmlTable -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -align 'left' -Logo $CustomSignatureLogo)
+                        $Signature = (Get-DiaHTMLTable -ImagesObj $Images -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -Align 'left' -Logo $CustomSignatureLogo -IconDebug $IconDebug)
                     } else {
-                        $Signature = (Get-HtmlTable -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -align 'left' -Logo "VBR_LOGO_Footer")
+                        $Signature = (Get-DiaHTMLTable -ImagesObj $Images -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -Align 'left' -Logo "VBR_LOGO_Footer" -IconDebug $IconDebug)
                     }
                 } else {
+                    Write-Verbose "No diagram signature specified"
                     $Signature = " "
                 }
 
                 SubGraph OUTERDRAWBOARD1 -Attributes @{Label = $Signature; fontsize = 24; penwidth = 1.5; labelloc = 'b'; labeljust = "r"; style = $SubGraphDebug.style; color = $SubGraphDebug.color } {
-                    SubGraph MainGraph -Attributes @{Label = (Get-HTMLLabel -Label $MainGraphLabel -IconType $CustomLogo); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
+                    SubGraph MainGraph -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label $MainGraphLabel -IconType $CustomLogo -IconDebug $IconDebug -IconWidth 300 -IconHeight 54); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
 
                         if ($DiagramType -eq 'Backup-to-HyperV-Proxy') {
                             $BackuptoHyperVProxy = Get-DiagBackupToHvProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
@@ -446,18 +474,6 @@ function New-VeeamDiagram {
                             } else {
                                 throw "No Scale-Out Backup Repository available to diagram"
                             }
-                        } elseif ($DiagramType -eq 'Backup-to-All') {
-                            if (Get-DiagBackupToHvProxy) {
-                                Get-DiagBackupToHvProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
-                            } else { Write-Warning "No HyperV Proxy Infrastructure available to diagram" }
-                            if (Get-DiagBackupToViProxy) {
-                                Get-DiagBackupToViProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
-                            } else { Write-Warning "No vSphere Proxy Infrastructure available to diagram" }
-
-                            Get-DiagBackupToWanAccel | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
-                            Get-DiagBackupToRepo | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
-                            Get-DiagBackupToSobr | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
-                            Get-DiagBackupToTape | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                         }
                     }
                 }
@@ -466,6 +482,20 @@ function New-VeeamDiagram {
     }
     end {
         #Export Diagram
-        Out-VbrDiagram -GraphObj ($Graph | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch) -ErrorDebug $EnableErrorDebug -Rotate $Rotate
+        foreach ($OutputFormat in $Format) {
+
+            $OutputDiagram = Export-Diagrammer -GraphObj ($Graph | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch) -ErrorDebug $EnableErrorDebug -Format $OutputFormat -Filename $Filename -OutputFolderPath $OutputFolderPath -WaterMarkText $WaterMarkText -WaterMarkColor $WaterMarkColor -IconPath $IconPath -Verbose:$Verbose -Rotate $Rotate
+
+            if ($OutputDiagram) {
+                if ($OutputFormat -ne 'Base64') {
+                    # If not Base64 format return image path
+                    Write-ColorOutput -Color 'Green' -String ("Diagrammer diagram {0} has been saved to {1}" -f $OutputDiagram.Name, $OutputDiagram.Directory)
+                } else {
+                    Write-Verbose "Displaying Base64 string"
+                    # Return Base64 string
+                    $OutputDiagram
+                }
+            }
+        }
     }
 }

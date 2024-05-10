@@ -1,5 +1,6 @@
 name: Change Request
 description: Request a new change or an improvement
+title: "[Feature Request]"
 labels: ["change request"]
 assignees:
   - rebelinux

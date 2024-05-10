@@ -5,7 +5,7 @@ function Get-DiagBackupToRepo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.9
+        Version:        0.6.0
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -56,7 +56,7 @@ function Get-DiagBackupToRepo {
                             SubGraph LocalRepos -Attributes @{Label = 'Local Repository'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node LocalReposDummy @{Label = 'LocalReposDummy'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if ($LocalBackupRepo.count -le 3) {
+                                if (($LocalBackupRepo | Measure-Object).count -le 3) {
                                     foreach ($REPOOBJ in ($LocalBackupRepo | Sort-Object -Property Name)) {
                                         $REPOHASHTABLE = @{}
                                         $REPOOBJ.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
@@ -65,7 +65,7 @@ function Get-DiagBackupToRepo {
 
                                     Edge -From LocalReposDummy -To $LocalBackupRepo.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                 } else {
-                                    $Group = Split-Array -inArray ($LocalBackupRepo | Sort-Object -Property Name) -size 3
+                                    $Group = Split-array -inArray ($LocalBackupRepo | Sort-Object -Property Name) -size 3
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random
@@ -94,7 +94,7 @@ function Get-DiagBackupToRepo {
                         if ($RemoteBackupRepo) {
                             SubGraph RemoteRepos -Attributes @{Label = 'Deduplicating Storage Appliances'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 Node RemoteReposDummy @{Label = 'RemoteReposDummy'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain' }
-                                if ($RemoteBackupRepo.count -le 3) {
+                                if (($RemoteBackupRepo | Measure-Object).count -le 3) {
                                     foreach ($REPOOBJ in ($RemoteBackupRepo | Sort-Object -Property Name)) {
                                         $REPOHASHTABLE = @{}
                                         $REPOOBJ.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
@@ -103,7 +103,7 @@ function Get-DiagBackupToRepo {
 
                                     Edge -From RemoteReposDummy -To $RemoteBackupRepo.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                 } else {
-                                    $Group = Split-Array -inArray ($RemoteBackupRepo | Sort-Object -Property Name) -size 3
+                                    $Group = Split-array -inArray ($RemoteBackupRepo | Sort-Object -Property Name) -size 3
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random
@@ -133,7 +133,7 @@ function Get-DiagBackupToRepo {
                         if ($ObjStorage) {
                             SubGraph ObjectStorage -Attributes @{Label = 'Object Repository'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 Node ObjectStorageDummy @{Label = 'ObjectStorageDummy'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if ($ObjStorage.count -le 3) {
+                                if (($ObjStorage | Measure-Object).count -le 3) {
                                     foreach ($STORAGEOBJ in ($ObjStorage | Sort-Object -Property Name)) {
                                         $OBJHASHTABLE = @{}
                                         $STORAGEOBJ.psobject.properties | ForEach-Object { $OBJHASHTABLE[$_.Name] = $_.Value }
@@ -142,7 +142,7 @@ function Get-DiagBackupToRepo {
 
                                     Edge -From ObjectStorageDummy -To $ObjStorage.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                 } else {
-                                    $Group = Split-Array -inArray ($ObjStorage | Sort-Object -Property Name) -size 3
+                                    $Group = Split-array -inArray ($ObjStorage | Sort-Object -Property Name) -size 3
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random
@@ -171,7 +171,7 @@ function Get-DiagBackupToRepo {
                         if ($ArchiveObjStorage) {
                             SubGraph ArchiveObjectStorage -Attributes @{Label = 'Archive Object Repository'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 Node ArchiveObjectStorageDummy @{Label = 'ArchiveObjectStorageDummy'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain' }
-                                if ($ArchiveObjStorage.count -le 3) {
+                                if (($ArchiveObjStorage | Measure-Object).count -le 3) {
                                     foreach ($STORAGEArchiveOBJ in ($ArchiveObjStorage | Sort-Object -Property Name)) {
                                         $ARCHOBJHASHTABLE = @{}
                                         $STORAGEArchiveOBJ.psobject.properties | ForEach-Object { $ARCHOBJHASHTABLE[$_.Name] = $_.Value }
@@ -180,7 +180,7 @@ function Get-DiagBackupToRepo {
 
                                     Edge -From ArchiveObjectStorageDummy -To $ArchiveObjStorage.Name @{constraint = "true"; minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                 } else {
-                                    $Group = Split-Array -inArray ($ArchiveObjStorage | Sort-Object -Property Name) -size 3
+                                    $Group = Split-array -inArray ($ArchiveObjStorage | Sort-Object -Property Name) -size 3
                                     $Number = 0
                                     while ($Number -ne $Group.Length) {
                                         $Random = Get-Random

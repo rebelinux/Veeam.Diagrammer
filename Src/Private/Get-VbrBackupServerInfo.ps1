@@ -5,7 +5,7 @@ function Get-VbrBackupServerInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.9
+        Version:        0.6.0
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -74,7 +74,7 @@ function Get-VbrBackupServerInfo {
 
                     $script:BackupServerInfo = [PSCustomObject]@{
                         Name = $VBRServer.Name.split(".")[0]
-                        Label = Get-NodeIcon -Name "$($VBRServer.Name.split(".")[0])" -IconType "VBR_Server" -Align "Center" -Rows $Rows
+                        Label = Get-DiaNodeIcon -Name "$($VBRServer.Name.split(".")[0])" -IconType "VBR_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
                     }
                 }
             } catch {
@@ -111,7 +111,7 @@ function Get-VbrBackupServerInfo {
 
                     $script:DatabaseServerInfo = [PSCustomObject]@{
                         Name = $DatabaseServer.split(".")[0]
-                        Label = Get-NodeIcon -Name "$($DatabaseServer.split(".")[0])" -IconType $DBIconType -Align "Center" -Rows $Rows
+                        Label = Get-DiaNodeIcon -Name "$($DatabaseServer.split(".")[0])" -IconType $DBIconType -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
                         DBPort = $DBPort
                     }
                 }
@@ -131,7 +131,7 @@ function Get-VbrBackupServerInfo {
 
                     $script:EMServerInfo = [PSCustomObject]@{
                         Name = $EMServer.ServerName.split(".")[0]
-                        Label = Get-NodeIcon -Name "$($EMServer.ServerName.split(".")[0])" -IconType "VBR_Server_EM" -Align "Center" -Rows $Rows
+                        Label = Get-DiaNodeIcon -Name "$($EMServer.ServerName.split(".")[0])" -IconType "VBR_Server_EM" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
                     }
                 }
             } catch {

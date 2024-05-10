@@ -62,7 +62,6 @@ Below are the instructions on how to install, configure and generate a Veeam.Dia
 <!-- ********** Update supported Veeam versions ********** -->
 The Veeam.Diagrammer supports the following Veeam Backup & Replication version;
 
-- Veeam Backup & Replication V11 (Standard, Enterprise & Enterprise Plus Edition)
 - Veeam Backup & Replication v12+ (Standard, Enterprise & Enterprise Plus Edition)
 
 ### :closed_lock_with_key: Required Privileges
@@ -84,6 +83,8 @@ PowerShell 5.1, and the following PowerShell modules are required for generating
 
 - [Veeam.Backup.PowerShell Module](https://helpcenter.veeam.com/docs/backup/powershell/getting_started.html?ver=110)
 - [PSGraph Module](https://github.com/KevinMarquette/PSGraph)
+- [Diagrammer.Core Module](https://github.com/rebelinux/Diagrammer.Core)
+
 
 ## What is GraphViz?
 
@@ -132,7 +133,7 @@ The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication d
   The supported output diagrams are:
             'Backup-to-Sobr', 'Backup-to-vSphere-Proxy', 'Backup-to-HyperV-Proxy',
             'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-Tape',
-            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup', 'Backup-to-All'
+            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup'
 .PARAMETER Target
   Specifies the IP/FQDN of the system to connect.
   Multiple targets may be specified, separated by a comma.

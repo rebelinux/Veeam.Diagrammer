@@ -5,7 +5,7 @@ function Get-VbrBackupObjectRepoInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.9
+        Version:        0.6.0
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -40,7 +40,7 @@ function Get-VbrBackupObjectRepoInfo {
                             if (-Not $ObjStorage.UseGatewayServer) {
                                 Switch ($ObjStorage.ConnectionType) {
                                     'Gateway' {
-                                        switch ($ObjStorage.GatewayServer.count) {
+                                        switch (($ObjStorage.GatewayServer | Measure-Object).count) {
                                             0 { "Disable" }
                                             1 { $ObjStorage.GatewayServer.Name.Split('.')[0] }
                                             Default { 'Automatic' }
@@ -50,7 +50,7 @@ function Get-VbrBackupObjectRepoInfo {
                                     default { 'Unknown' }
                                 }
                             } else {
-                                switch ($ObjStorage.GatewayServer.count) {
+                                switch (($ObjStorage.GatewayServer | Measure-Object).count) {
                                     0 { "Disable" }
                                     1 { $ObjStorage.GatewayServer.Name.Split('.')[0] }
                                     Default { 'Automatic' }
@@ -61,7 +61,7 @@ function Get-VbrBackupObjectRepoInfo {
 
                     $TempObjStorageInfo = [PSCustomObject]@{
                         Name = "$($ObjStorage.Name) "
-                        Label = Get-NodeIcon -Name $($ObjStorage.Name) -IconType "VBR_Cloud_Repository" -Align "Center" -Rows $Rows
+                        Label = Get-DiaNodeIcon -Name $($ObjStorage.Name) -IconType "VBR_Cloud_Repository" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
                     }
                     $ObjStorageInfo += $TempObjStorageInfo
                 }

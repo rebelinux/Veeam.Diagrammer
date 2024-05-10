@@ -5,7 +5,7 @@ function Get-DiagBackupToTape {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.8
+        Version:        0.6.0
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -69,7 +69,7 @@ function Get-DiagBackupToTape {
                                                     Node $TSLibraryOBJ -NodeScript { $_.Id } @{Label = $TSLHASHTABLE.Label; fontname = "Segoe Ui" }
                                                     if ($BackupTapeDrives) {
                                                         $TapeLibraryDrives = ($BackupTapeDrives | Where-Object { $_.LibraryId -eq $TSLibraryOBJ.Id } | Sort-Object -Property Name)
-                                                        if ($TapeLibraryDrives.count -le 3) {
+                                                        if (($TapeLibraryDrives | Measure-Object).count -le 3) {
                                                             foreach ($TSDriveOBJ in $TapeLibraryDrives) {
                                                                 $TSDHASHTABLE = @{}
                                                                 $TSDriveOBJ.psobject.properties | ForEach-Object { $TSDHASHTABLE[$_.Name] = $_.Value }
@@ -77,7 +77,7 @@ function Get-DiagBackupToTape {
                                                                 $TSDriveOBJ | ForEach-Object { Edge -From $TSLibraryOBJ.id -To $_.id }
                                                             }
                                                         } else {
-                                                            $Group = Split-Array -inArray $TapeLibraryDrives -size 3
+                                                            $Group = Split-array -inArray $TapeLibraryDrives -size 3
                                                             $Number = 0
                                                             while ($Number -ne $Group.Length) {
                                                                 $Random = Get-Random

@@ -5,7 +5,7 @@ function Get-DiagBackupToFileProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.9
+        Version:        0.6.0
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -64,9 +64,9 @@ function Get-DiagBackupToFileProxy {
                     }
 
                     if ($Dir -eq 'LR') {
-                        Edge $BackupServerInfo.Name -To DummyFileProxy @{minlen = 3}
+                        Edge $BackupServerInfo.Name -To DummyFileProxy @{minlen = 3 }
                     } else {
-                        Edge $BackupServerInfo.Name -To DummyFileProxy @{minlen = 3}
+                        Edge $BackupServerInfo.Name -To DummyFileProxy @{minlen = 3 }
                     }
                 }
             }

@@ -5,7 +5,7 @@ function Get-VbrBackupArchObjRepoInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.5.9
+        Version:        0.6.0
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -41,7 +41,7 @@ function Get-VbrBackupArchObjRepoInfo {
                             if (-Not $ArchObjStorage.UseGatewayServer) {
                                 Switch ($ArchObjStorage.GatewayMode) {
                                     'Gateway' {
-                                        switch ($ArchObjStorage.GatewayServer.count) {
+                                        switch (($ArchObjStorage.GatewayServer | Measure-Object).count) {
                                             0 { "Disable" }
                                             1 { $ArchObjStorage.GatewayServer.Name.Split('.')[0] }
                                             Default { 'Automatic' }
@@ -51,7 +51,7 @@ function Get-VbrBackupArchObjRepoInfo {
                                     default { 'Unknown' }
                                 }
                             } else {
-                                switch ($ArchObjStorage.GatewayServer.count) {
+                                switch (($ArchObjStorage.GatewayServer | Measure-Object).count) {
                                     0 { "Disable" }
                                     1 { $ArchObjStorage.GatewayServer.Name.Split('.')[0] }
                                     Default { 'Automatic' }
@@ -66,7 +66,7 @@ function Get-VbrBackupArchObjRepoInfo {
 
                     $TempObjStorageInfo = [PSCustomObject]@{
                         Name = "$($ArchObjStorage.Name) "
-                        Label = Get-NodeIcon -Name $($ArchObjStorage.Name) -IconType "VBR_Cloud_Repository" -Align "Center" -Rows $Rows
+                        Label = Get-DiaNodeIcon -Name $($ArchObjStorage.Name) -IconType "VBR_Cloud_Repository" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
                     }
                     $ArchObjStorageInfo += $TempObjStorageInfo
                 }

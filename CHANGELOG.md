@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2024-05-09
+
+### Changed
+
+- Migrated helper modules to Diagrammer.Core
+
+### Removed
+
+- Removed Graphviz binaries (Now part of Diagrammer.Core module)
+- Removed Backup-to-All diagram
+
+### Fixed
+
+- Fix for empty ProtectedGroup condition
+
 ## [0.5.9] - 2024-02-15
 
 ### Added
