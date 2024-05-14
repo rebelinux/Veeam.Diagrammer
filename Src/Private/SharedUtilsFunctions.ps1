@@ -24,6 +24,7 @@ function Get-IconType {
         'AzureArchive' { 'VBR_Cloud_Repository' }
         'DDBoost' { 'VBR_Deduplicating_Storage' }
         'HPStoreOnceIntegration' { 'VBR_Deduplicating_Storage' }
+        'ExaGrid' { 'VBR_Deduplicating_Storage' }
         'SanSnapshotOnly' { 'VBR_Storage_NetApp' }
         'Proxy' { 'VBR_Repository' }
         'ESXi' { 'VBR_ESXi_Server' }
@@ -58,6 +59,7 @@ function Get-RoleType {
         'WinLocal' { 'Windows Local' }
         'DDBoost' { 'Dedup Appliances' }
         'HPStoreOnceIntegration' { 'Dedup Appliances' }
+        'ExaGrid' { 'Dedup Appliances' }
         'Cloud' { 'Cloud' }
         'SanSnapshotOnly' { 'SAN' }
         "vmware" { 'VMware Backup Proxy' }
