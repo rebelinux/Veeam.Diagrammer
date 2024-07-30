@@ -5,7 +5,7 @@ function Get-DiagBackupToSobr {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.0
+        Version:        0.6.1
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -29,24 +29,8 @@ function Get-DiagBackupToSobr {
             $SobrRepo = Get-VbrBackupSobrInfo
 
             if ($SobrRepo) {
-                if ($Dir -eq 'LR') {
-                    $DiagramLabel = 'SOBR Repository'
-                    $DiagramDummyLabel = ' '
-                } else {
-                    $DiagramLabel = ' '
-                    $DiagramDummyLabel = 'SOBR Repository'
-                }
                 if ($SobrRepo) {
-                    SubGraph MainSubGraph -Attributes @{Label = $DiagramLabel ; fontsize = 22; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded'; color = $SubGraphDebug.color } {
-                        # Dummy Node used for subgraph centering
-                        Node DummySOBREPO @{Label = $DiagramDummyLabel; fontsize = 22; fontname = "Segoe Ui Black"; fontcolor = '#005f4b'; shape = 'plain' }
-                        if ($Dir -eq 'TB') {
-                            Node SobrRepoLeft @{Label = 'SobrRepoLeft'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                            Node SobrRepoLeftt @{Label = 'SobrRepoLeftt'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                            Node SobrRepoRight @{Label = 'SobrRepoRight'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                            Edge SobrRepoLeft, SobrRepoLeftt, DummySOBREPO, SobrRepoRight @{style = $EdgeDebug.style; color = $EdgeDebug.color }
-                            Rank SobrRepoLeft, SobrRepoLeftt, DummySOBREPO, SobrRepoRight
-                        }
+                    SubGraph MainSubGraph -Attributes @{Label = 'SOBR Repositories' ; fontsize = 22; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded'; color = $SubGraphDebug.color } {
                         foreach ($SOBROBJ in $SobrRepo) {
                             $SubGraphName = Remove-SpecialChar -String $SOBROBJ.Name -SpecialChars '\- '
                             SubGraph $SubGraphName  -Attributes @{Label = $SOBROBJ.Name; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
@@ -77,10 +61,10 @@ function Get-DiagBackupToSobr {
 
                                 } else { $SOBROBJ.Performance | ForEach-Object { Edge -From $SOBROBJ.Name -To $SOBROBJ.Capacity.Name, $_.Name @{minlen = 2 } } | Select-Object -Unique }
                             }
-                            Edge -From DummySOBREPO -To $SOBROBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To $SOBROBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                     }
-                    Edge -From $BackupServerInfo.Name -To DummySOBREPO @{minlen = 3 }
+                    Edge -From $BackupServerInfo.Name -To MainSubGraph @{lhead='clusterMainSubGraph';minlen = 3 }
 
                 }
             }

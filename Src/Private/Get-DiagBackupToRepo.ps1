@@ -5,7 +5,7 @@ function Get-DiagBackupToRepo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.0
+        Version:        0.6.1
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -33,25 +33,8 @@ function Get-DiagBackupToRepo {
             $ArchiveObjStorage = Get-VbrBackupArchObjRepoInfo
 
             if ($BackupServerInfo) {
-                if ($Dir -eq 'LR') {
-                    $DiagramLabel = 'Backup Repositories'
-                    $DiagramDummyLabel = ' '
-                } else {
-                    $DiagramLabel = ' '
-                    $DiagramDummyLabel = 'Backup Repository'
-                }
-
                 if ($BackupRepo) {
-                    SubGraph MainSubGraph -Attributes @{Label = $DiagramLabel; fontsize = 22; penwidth = 1; labelloc = 't'; style = 'dashed,rounded'; color = $SubGraphDebug.color } {
-                        # Node used for subgraph centering
-                        Node BackupRepository @{Label = $DiagramDummyLabel; fontsize = 22; fontname = "Segoe Ui Black"; fontcolor = '#005f4b'; shape = 'plain' }
-                        if ($Dir -eq "TB") {
-                            Node RepoLeft @{Label = 'RepoLeft'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                            Node RepoLeftt @{Label = 'RepoLeftt'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                            Node RepoRight @{Label = 'RepoRight'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                            Edge RepoLeft, RepoLeftt, BackupRepository, RepoRight @{style = $EdgeDebug.style; color = $EdgeDebug.color }
-                            Rank RepoLeft, RepoLeftt, BackupRepository, RepoRight
-                        }
+                    SubGraph MainSubGraph -Attributes @{Label = 'Backup Repository'; fontsize = 22; penwidth = 1; labelloc = 't'; style = 'dashed,rounded'; color = $SubGraphDebug.color } {
                         if ($LocalBackupRepo) {
                             SubGraph LocalRepos -Attributes @{Label = 'Local Repository'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
@@ -89,7 +72,7 @@ function Get-DiagBackupToRepo {
                                     }
                                 }
                             }
-                            Edge -From BackupRepository -To LocalReposDummy @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To LocalReposDummy @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($RemoteBackupRepo) {
                             SubGraph RemoteRepos -Attributes @{Label = 'Deduplicating Storage Appliances'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
@@ -127,7 +110,7 @@ function Get-DiagBackupToRepo {
                                     }
                                 }
                             }
-                            Edge -From BackupRepository -To RemoteReposDummy @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To RemoteReposDummy @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
 
                         }
                         if ($ObjStorage) {
@@ -166,7 +149,7 @@ function Get-DiagBackupToRepo {
                                     }
                                 }
                             }
-                            Edge -From BackupRepository -To ObjectStorageDummy @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To ObjectStorageDummy @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($ArchiveObjStorage) {
                             SubGraph ArchiveObjectStorage -Attributes @{Label = 'Archive Object Repository'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
@@ -204,12 +187,12 @@ function Get-DiagBackupToRepo {
                                     }
                                 }
                             }
-                            Edge -From BackupRepository -To ArchiveObjectStorageDummy @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To ArchiveObjectStorageDummy @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
 
                         }
                     }
 
-                    Edge -From $BackupServerInfo.Name -To BackupRepository @{minlen = 3 }
+                    Edge -From $BackupServerInfo.Name -To MainSubGraph @{lhead='clusterMainSubGraph';minlen = 3 }
                 }
             }
         } catch {

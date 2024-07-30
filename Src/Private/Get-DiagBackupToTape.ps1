@@ -5,7 +5,7 @@ function Get-DiagBackupToTape {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.0
+        Version:        0.6.1
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -31,28 +31,10 @@ function Get-DiagBackupToTape {
             $BackupTapeDrives = Get-VbrBackupTapeDrivesInfo
 
             if ($BackupServerInfo) {
-                if ($Dir -eq 'LR') {
-                    $DiagramLabel = 'Tape Servers'
-                    $DiagramDummyLabel = ' '
-                } else {
-                    $DiagramLabel = ' '
-                    $DiagramDummyLabel = 'Tape Servers'
-                }
                 if ($BackupTapeServers) {
-                    SubGraph MainSubGraph -Attributes @{Label = $DiagramLabel; fontsize = 22; penwidth = 1; labelloc = 't'; style = 'dashed,rounded'; color = $SubGraphDebug.color } {
+                    SubGraph MainSubGraph -Attributes @{Label = 'Tape Servers'; fontsize = 22; penwidth = 1; labelloc = 't'; style = 'dashed,rounded'; color = $SubGraphDebug.color } {
                         if ($BackupTapeServers) {
-                            # Node used for subgraph centering
-                            Node TapeServersLabel @{Label = $DiagramDummyLabel; fontsize = 22; fontname = "Segoe Ui Black"; fontcolor = '#005f4b'; shape = 'plain' }
-                            if ($Dir -eq "TB") {
-                                Node TapeLeft @{Label = 'TapeLeft'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                                Node TapeLeftt @{Label = 'TapeLeftt'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                                Node TapeRight @{Label = 'TapeRight'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                                Edge TapeLeft, TapeLeftt, TapeServersLabel, TapeRight @{style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                Rank TapeLeft, TapeLeftt, TapeServersLabel, TapeRight
-                            }
                             SubGraph TapeServers -Attributes @{Label = ' '; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = $SubGraphDebug.style; color = $SubGraphDebug.color } {
-                                # Node used for subgraph centering
-                                Node TapeServerDummy @{Label = $DiagramDummyLabel; shape = 'plain'; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                 foreach ($TSOBJ in ($BackupTapeServers | Sort-Object -Property Name)) {
                                     $TSSubGraph = Remove-SpecialChar -String $TSOBJ.id -SpecialChars '\-'
                                     SubGraph  $TSSubGraph -Attributes @{Label = ' '; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
@@ -106,12 +88,11 @@ function Get-DiagBackupToTape {
                                         }
                                     }
                                 }
-                                ($BackupTapeServers | Sort-Object -Property Name) | ForEach-Object { Edge -From TapeServerDummy -To $_.Name @{style = $EdgeDebug.style; color = $EdgeDebug.color } }
+                                ($BackupTapeServers | Sort-Object -Property Name) | ForEach-Object { Edge -From MainSubGraph:s -To $_.Name @{style = $EdgeDebug.style; color = $EdgeDebug.color } }
                             }
-                            Edge -From TapeServersLabel -To TapeServerDummy @{style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                     }
-                    Edge -From $BackupServerInfo.Name -To TapeServersLabel @{minlen = 2 }
+                    Edge -From $BackupServerInfo.Name -To MainSubGraph @{lhead = 'clusterMainSubGraph'; minlen = 3 }
                 }
             }
         } catch {

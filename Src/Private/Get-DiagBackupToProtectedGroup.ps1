@@ -5,7 +5,7 @@ function Get-DiagBackupToProtectedGroup {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.0
+        Version:        0.6.1
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -35,16 +35,9 @@ function Get-DiagBackupToProtectedGroup {
             try {
                 $FileBackupProxy = Get-VbrBackupProxyInfo -Type 'nas'
                 if ($BackupServerInfo) {
-                    if ($Dir -eq 'LR') {
-                        $DiagramLabel = 'File Backup Proxies'
-                        $DiagramDummyLabel = ' '
-                    } else {
-                        $DiagramLabel = ' '
-                        $DiagramDummyLabel = 'File Backup Proxies'
-                    }
                     if ($FileBackupProxy) {
                         $ProxiesAttr = @{
-                            Label = $DiagramLabel
+                            Label = 'File Backup Proxies'
                             fontsize = 18
                             penwidth = 1.5
                             labelloc = 't'
@@ -53,20 +46,13 @@ function Get-DiagBackupToProtectedGroup {
                         }
                         SubGraph MainSubGraphFileProxy -Attributes $ProxiesAttr -ScriptBlock {
                             # Dummy Node used for subgraph centering
-                            Node DummyFileProxy @{Label = $DiagramDummyLabel; fontsize = 18; fontname = "Segoe Ui Black"; fontcolor = '#005f4b'; shape = 'plain' }
+                            # Node DummyFileProxy @{Label = $DiagramDummyLabel; fontsize = 18; fontname = "Segoe Ui Black"; fontcolor = '#005f4b'; shape = 'plain' }
                             Node DummyFileProxyToPG @{Label = "DummyFileProxyToPG"; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                            if ($Dir -eq "TB") {
-                                Node FileLeft @{Label = 'FileLeft'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                                Node FileLeftt @{Label = 'FileLeftt'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                                Node FileRight @{Label = 'FileRight'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                                Edge FileLeft, FileLeftt, DummyFileProxy, FileRight @{style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                Rank FileLeft, FileLeftt, DummyFileProxy, FileRight
-                            }
                             foreach ($ProxyObj in $FileBackupProxy) {
                                 $PROXYHASHTABLE = @{}
                                 $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
                                 Node $ProxyObj -NodeScript { $_.Name } @{Label = $PROXYHASHTABLE.Label; fontname = "Segoe Ui" }
-                                Edge -From DummyFileProxy -To $ProxyObj.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                                Edge -From MainSubGraphFileProxy:s -To $ProxyObj.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                                 Edge -From $ProxyObj.Name -To DummyFileProxyToPG @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
 
                             }
@@ -74,9 +60,9 @@ function Get-DiagBackupToProtectedGroup {
                         }
 
                         if ($Dir -eq 'LR') {
-                            Edge $BackupServerInfo.Name -To DummyFileProxy @{minlen = 3; }
+                            Edge $BackupServerInfo.Name -To MainSubGraphFileProxy @{lhead = 'clusterMainSubGraph'; minlen = 3 }
                         } else {
-                            Edge $BackupServerInfo.Name -To DummyFileProxy @{minlen = 3; }
+                            Edge $BackupServerInfo.Name -To MainSubGraphFileProxy @{lhead = 'clusterMainSubGraph'; minlen = 3 }
                         }
                     }
                 }
@@ -95,15 +81,6 @@ function Get-DiagBackupToProtectedGroup {
 
                 if ($ProtectedGroups) {
                     SubGraph MainSubGraph -Attributes @{Label = $DiagramLabel; fontsize = 22; penwidth = 1; labelloc = 't'; style = 'dashed,rounded'; color = $SubGraphDebug.color } {
-                        # Node used for subgraph centering
-                        Node ProtectedGroup @{Label = $DiagramDummyLabel; fontsize = 22; fontname = "Segoe Ui Black"; fontcolor = '#005f4b'; shape = 'plain' }
-                        if ($Dir -eq "TB") {
-                            Node DummyPGLeft @{Label = 'DummyPGLeft'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                            Node DummyPGLeftt @{Label = 'DummyPGLeftt'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                            Node DummyPGRight @{Label = 'DummyPGRight'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                            Edge DummyPGLeft, DummyPGLeftt, ProtectedGroup, DummyPGRight @{style = $EdgeDebug.style; color = $EdgeDebug.color }
-                            Rank DummyPGLeft, DummyPGLeftt, ProtectedGroup, DummyPGRight
-                        }
                         if ($ADContainer) {
                             SubGraph ADContainer -Attributes @{Label = (Get-DiaHTMLLabel -Label 'Active Directory Computers' -IconType "VBR_AGENT_AD_Logo" -ImagesObj $Images -IconDebug $IconDebug -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
@@ -176,7 +153,7 @@ function Get-DiagBackupToProtectedGroup {
                                     }
                                 }
                             }
-                            Edge -From ProtectedGroup -To DummyADContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To DummyADContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($ManualContainer) {
                             SubGraph MCContainer -Attributes @{Label = (Get-DiaHTMLLabel -Label 'Manual Computers' -IconType "VBR_AGENT_MC" -ImagesObj $Images -IconDebug $IconDebug -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
@@ -238,7 +215,7 @@ function Get-DiagBackupToProtectedGroup {
                                     }
                                 }
                             }
-                            Edge -From ProtectedGroup -To DummyMCContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To DummyMCContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($IndividualContainer) {
                             SubGraph ICContainer -Attributes @{Label = (Get-DiaHTMLLabel -Label 'Individual Computers' -IconType "VBR_AGENT_IC" -ImagesObj $Images -IconDebug $IconDebug -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
@@ -315,7 +292,7 @@ function Get-DiagBackupToProtectedGroup {
                                     }
                                 }
                             }
-                            Edge -From ProtectedGroup -To DummyICContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To DummyICContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($CSVContainer) {
                             SubGraph CSVContainer -Attributes @{Label = (Get-DiaHTMLLabel -Label 'CSV Computers' -IconType "VBR_AGENT_CSV_Logo" -ImagesObj $Images -IconDebug $IconDebug -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
@@ -369,11 +346,11 @@ function Get-DiagBackupToProtectedGroup {
                                     }
                                 }
                             }
-                            Edge -From ProtectedGroup -To DummyCSVContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To DummyCSVContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                     }
 
-                    Edge -From DummyFileProxyToPG -To ProtectedGroup @{minlen = 3 }
+                    Edge -From DummyFileProxyToPG -To MainSubGraph @{ltail = 'clusterMainSubGraphFileProxy'; lhead = 'clusterMainSubGraph'; minlen = 3 }
                 }
             }
         } catch {
