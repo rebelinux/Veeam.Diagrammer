@@ -51,9 +51,10 @@ function Get-VbrRequiredModule {
         if ($Module = Get-Module -ListAvailable -Name Veeam.Backup.PowerShell) {
             try {
                 Write-Verbose -Message "Identifying Veeam Powershell module version."
-                switch ($Module.Version.ToString()) {
-                    { $_ -eq "1.0" } { [int]$VbrVersion = "11" }
-                    Default { [int]$VbrVersion = "11" }
+                switch ([string]::IsNullOrEmpty($Module.Version.ToString())) {
+                    $false { $VbrVersion = $Module.Version.ToString() }
+                    $true { $VbrVersion = "Unable to get Module version" }
+                    Default { $VbrVersion = "Unknown" }
                 }
                 Write-Verbose -Message "Using Veeam Powershell module version $($VbrVersion)."
             } catch {
