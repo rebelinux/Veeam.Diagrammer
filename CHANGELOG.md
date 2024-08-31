@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Allow EDGE to connect between Subgraph Clusters
+- Update Diagrammer.Core minimum to v0.2.3
 
 ### Fixed
 
