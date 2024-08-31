@@ -4,7 +4,7 @@ function Get-IconType {
         Used by Veeam.Diagrammer to translate repository type to icon type object.
     .DESCRIPTION
     .NOTES
-        Version:        0.1.0
+        Version:        0.6.1
         Author:         Jonathan Colon
     .EXAMPLE
     .LINK
@@ -47,7 +47,7 @@ function Get-RoleType {
         Used by Veeam.Diagrammer to translate role type to function type object.
     .DESCRIPTION
     .NOTES
-        Version:        0.1.0
+        Version:        0.6.1
         Author:         Jonathan Colon
     .EXAMPLE
     .LINK
