@@ -9,6 +9,7 @@ $script:Images = @{
     "VBR_Proxy_Server" = "Proxy_Server.png"
     "VBR_Wan_Accel" = "WAN_accelerator.png"
     "VBR_SOBR" = "Scale-out_Backup_Repository.png"
+    "VBR_NAS" = "NAS.png"
     "VBR_LOGO" = "Veeam_logo.png"
     "VBR_No_Icon" = "no_icon.png"
     'VBR_Storage_NetApp' = "Storage_NetApp.png"

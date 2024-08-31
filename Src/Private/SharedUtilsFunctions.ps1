@@ -4,7 +4,7 @@ function Get-IconType {
         Used by Veeam.Diagrammer to translate repository type to icon type object.
     .DESCRIPTION
     .NOTES
-        Version:        0.1.0
+        Version:        0.6.1
         Author:         Jonathan Colon
     .EXAMPLE
     .LINK
@@ -24,6 +24,7 @@ function Get-IconType {
         'AzureArchive' { 'VBR_Cloud_Repository' }
         'DDBoost' { 'VBR_Deduplicating_Storage' }
         'HPStoreOnceIntegration' { 'VBR_Deduplicating_Storage' }
+        'ExaGrid' { 'VBR_Deduplicating_Storage' }
         'SanSnapshotOnly' { 'VBR_Storage_NetApp' }
         'Proxy' { 'VBR_Repository' }
         'ESXi' { 'VBR_ESXi_Server' }
@@ -32,6 +33,8 @@ function Get-IconType {
         'IndividualComputers' { 'VBR_AGENT_IC' }
         'ActiveDirectory' { 'VBR_AGENT_AD' }
         'CSV' { 'VBR_AGENT_CSV' }
+        'CifsShare' {'VBR_NAS'}
+        'NfsShare' {'VBR_NAS'}
         default { 'VBR_No_Icon' }
     }
 
@@ -44,7 +47,7 @@ function Get-RoleType {
         Used by Veeam.Diagrammer to translate role type to function type object.
     .DESCRIPTION
     .NOTES
-        Version:        0.1.0
+        Version:        0.6.1
         Author:         Jonathan Colon
     .EXAMPLE
     .LINK
@@ -58,15 +61,18 @@ function Get-RoleType {
         'WinLocal' { 'Windows Local' }
         'DDBoost' { 'Dedup Appliances' }
         'HPStoreOnceIntegration' { 'Dedup Appliances' }
+        'ExaGrid' { 'Dedup Appliances' }
+        'InfiniGuard' { 'Dedup Appliances' }
         'Cloud' { 'Cloud' }
         'SanSnapshotOnly' { 'SAN' }
         "vmware" { 'VMware Backup Proxy' }
         "hyperv" { 'HyperV Backup Proxy' }
         "agent" { 'Agent & Files Backup Proxy' }
         "nas" { 'NAS Backup Proxy' }
-        default { 'Backup Repository' }
+        "CifsShare" { 'SMB Share' }
+        "NfsShare" { 'NFS Share' }
+        default { 'Unknown' }
     }
-
     return $RoleType
 }
 function ConvertTo-TextYN {

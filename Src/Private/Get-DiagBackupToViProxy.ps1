@@ -5,7 +5,7 @@ function Get-DiagBackupToViProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.0
+        Version:        0.6.1
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -28,16 +28,9 @@ function Get-DiagBackupToViProxy {
         try {
             $VMwareBackupProxy = Get-VbrBackupProxyInfo -Type 'vmware'
             if ($BackupServerInfo) {
-                if ($Dir -eq 'LR') {
-                    $DiagramLabel = 'VMware Backup Proxies'
-                    $DiagramDummyLabel = ' '
-                } else {
-                    $DiagramLabel = ' '
-                    $DiagramDummyLabel = 'VMware Backup Proxies'
-                }
                 if ($VMwareBackupProxy) {
                     $ProxiesAttr = @{
-                        Label = $DiagramLabel
+                        Label = 'VMware Backup Proxies'
                         fontsize = 18
                         penwidth = 1.5
                         labelloc = 't'
@@ -45,28 +38,19 @@ function Get-DiagBackupToViProxy {
                         style = 'dashed,rounded'
                     }
                     SubGraph MainSubGraph -Attributes $ProxiesAttr -ScriptBlock {
-                        # Dummy Node used for subgraph centering
-                        Node DummyVMwareProxy @{Label = $DiagramDummyLabel; fontsize = 18; fontname = "Segoe Ui Black"; fontcolor = '#005f4b'; shape = 'plain' }
-                        if ($Dir -eq "TB") {
-                            Node ViLeft @{Label = 'ViLeft'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                            Node ViLeftt @{Label = 'ViLeftt'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                            Node ViRight @{Label = 'ViRight'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                            Edge ViLeft, ViLeftt, DummyVMwareProxy, ViRight @{style = $EdgeDebug.style; color = $EdgeDebug.color }
-                            Rank ViLeft, ViLeftt, DummyVMwareProxy, ViRight
-                        }
                         foreach ($ProxyObj in $VMwareBackupProxy) {
                             $PROXYHASHTABLE = @{}
                             $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
                             Node $ProxyObj -NodeScript { $_.Name } @{Label = $PROXYHASHTABLE.Label; fontname = "Segoe Ui" }
-                            Edge -From DummyVMwareProxy -To $ProxyObj.Name @{constraint = "true"; minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To $ProxyObj.Name @{constraint = "true"; minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         Rank $VMwareBackupProxy.Name
                     }
 
                     if ($Dir -eq 'LR') {
-                        Edge $BackupServerInfo.Name -To DummyVMwareProxy @{minlen = 3 }
+                        Edge $BackupServerInfo.Name -To 'MainSubGraph' @{minlen = 3 }
                     } else {
-                        Edge $BackupServerInfo.Name -To DummyVMwareProxy @{minlen = 3 }
+                        Edge $BackupServerInfo.Name -To 'MainSubGraph' @{minlen = 3 }
                     }
                     # $VirtObjs = Get-VBRServer | Where-Object {$_.Type -eq 'VC'}
                     # $EsxiObjs = Get-VBRServer | Where-Object {$_.Type -eq 'Esxi' -and $_.IsStandaloneEsx() -eq 'True'}
@@ -186,11 +170,6 @@ function Get-DiagBackupToViProxy {
                     #     }
                     # }
                 }
-                # # edge -from $BackupServerInfo.Name -to DummyBackupProxy:n @{minlen=2}
-
-                # if ($VMwareBackupProxy) {
-                #     edge -from DummyBackupProxy -to VMwareProxyMain @{style=$EdgeDebug.style; color=$EdgeDebug.color}
-                # }
             }
         } catch {
             $_
