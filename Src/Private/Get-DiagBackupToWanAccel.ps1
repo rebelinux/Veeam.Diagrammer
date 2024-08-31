@@ -49,9 +49,9 @@ function Get-DiagBackupToWanAccel {
                         Rank $WanAccel.Name
                     }
                     if ($Dir -eq 'LR') {
-                        Edge $BackupServerInfo.Name -To MainSubGraph @{lhead='clusterMainSubGraph'; minlen = 3; xlabel = ($WanAccel.TrafficPort[0]) }
+                        Edge $BackupServerInfo.Name -To MainSubGraph @{minlen = 3; xlabel = ($WanAccel.TrafficPort[0]) }
                     } else {
-                        Edge $BackupServerInfo.Name -To MainSubGraph @{lhead='clusterMainSubGraph'; minlen = 3; xlabel = ($WanAccel.TrafficPort[0]) }
+                        Edge $BackupServerInfo.Name -To MainSubGraph @{minlen = 3; xlabel = ($WanAccel.TrafficPort[0]) }
                     }
                 }
             }

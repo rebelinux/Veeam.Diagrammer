@@ -48,9 +48,9 @@ function Get-DiagBackupToViProxy {
                     }
 
                     if ($Dir -eq 'LR') {
-                        Edge $BackupServerInfo.Name -To 'MainSubGraph' @{lhead='clusterMainSubGraph';minlen = 3 }
+                        Edge $BackupServerInfo.Name -To 'MainSubGraph' @{minlen = 3 }
                     } else {
-                        Edge $BackupServerInfo.Name -To 'MainSubGraph' @{lhead='clusterMainSubGraph';minlen = 3 }
+                        Edge $BackupServerInfo.Name -To 'MainSubGraph' @{minlen = 3 }
                     }
                     # $VirtObjs = Get-VBRServer | Where-Object {$_.Type -eq 'VC'}
                     # $EsxiObjs = Get-VBRServer | Where-Object {$_.Type -eq 'Esxi' -and $_.IsStandaloneEsx() -eq 'True'}
