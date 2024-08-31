@@ -41,15 +41,19 @@ function Get-VbrBackupRepoInfo {
                     if ($Role -like '*Local') {
                         $Rows.add('Server', $BackupRepo.Host.Name.Split('.')[0])
                         $Rows.add('Path', $BackupRepo.FriendlyPath)
-                        $Rows.add('Total Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
-                        $Rows.add('Used Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
+                        $Rows.add('Total-Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
+                        $Rows.add('Used-Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
                     } elseif ($Role -like 'Dedup*') {
-                        $Rows.add('Dedup Type', $BackupRepo.TypeDisplay)
-                        $Rows.add('Total Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
-                        $Rows.add('Used Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
+                        $Rows.add('DedupType', $BackupRepo.TypeDisplay)
+                        $Rows.add('Total-Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
+                        $Rows.add('Used-Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
+                    } elseif ($Role -like '*Share') {
+                        $Rows.add('Path', $BackupRepo.FriendlyPath)
+                        $Rows.add('Total-Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
+                        $Rows.add('Used-Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
                     }
 
-                    if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($BackupRepo.Host.Name -in $ViBackupProxy.Host.Name -or $BackupRepo.Host.Name -in $HvBackupProxy.Host.Name)) {
+                    if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($Role -notlike '*Share') -and ($BackupRepo.Host.Name -in $ViBackupProxy.Host.Name -or $BackupRepo.Host.Name -in $HvBackupProxy.Host.Name)) {
                         $BackupType = 'Proxy'
                     } else { $BackupType = $BackupRepo.Type }
 

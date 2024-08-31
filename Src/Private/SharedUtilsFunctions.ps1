@@ -33,6 +33,8 @@ function Get-IconType {
         'IndividualComputers' { 'VBR_AGENT_IC' }
         'ActiveDirectory' { 'VBR_AGENT_AD' }
         'CSV' { 'VBR_AGENT_CSV' }
+        'CifsShare' {'VBR_NAS'}
+        'NfsShare' {'VBR_NAS'}
         default { 'VBR_No_Icon' }
     }
 
@@ -60,15 +62,17 @@ function Get-RoleType {
         'DDBoost' { 'Dedup Appliances' }
         'HPStoreOnceIntegration' { 'Dedup Appliances' }
         'ExaGrid' { 'Dedup Appliances' }
+        'InfiniGuard' { 'Dedup Appliances' }
         'Cloud' { 'Cloud' }
         'SanSnapshotOnly' { 'SAN' }
         "vmware" { 'VMware Backup Proxy' }
         "hyperv" { 'HyperV Backup Proxy' }
         "agent" { 'Agent & Files Backup Proxy' }
         "nas" { 'NAS Backup Proxy' }
-        default { 'Backup Repository' }
+        "CifsShare" { 'SMB Share' }
+        "NfsShare" { 'NFS Share' }
+        default { 'Unknown' }
     }
-
     return $RoleType
 }
 function ConvertTo-TextYN {
