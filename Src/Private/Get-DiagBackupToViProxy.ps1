@@ -33,25 +33,18 @@ function Get-DiagBackupToViProxy {
                         Label = 'VMware Backup Proxies'
                         fontsize = 18
                         penwidth = 1.5
-                        labelloc = 't'
+                        labelloc = 'b'
                         color = $SubGraphDebug.color
                         style = 'dashed,rounded'
                     }
                     SubGraph MainSubGraph -Attributes $ProxiesAttr -ScriptBlock {
-                        foreach ($ProxyObj in $VMwareBackupProxy) {
-                            $PROXYHASHTABLE = @{}
-                            $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
-                            Node $ProxyObj -NodeScript { $_.Name } @{Label = $PROXYHASHTABLE.Label; fontname = "Segoe Ui" }
-                            Edge -From MainSubGraph:s -To $ProxyObj.Name @{constraint = "true"; minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                        }
-                        Rank $VMwareBackupProxy.Name
+
+                        Node ViProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($VMwareBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($VMwareBackupProxy.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+
                     }
 
-                    if ($Dir -eq 'LR') {
-                        Edge $BackupServerInfo.Name -To 'MainSubGraph' @{minlen = 3 }
-                    } else {
-                        Edge $BackupServerInfo.Name -To 'MainSubGraph' @{minlen = 3 }
-                    }
+                    Edge $BackupServerInfo.Name -To ViProxies:n @{minlen = 3 }
+
                     # $VirtObjs = Get-VBRServer | Where-Object {$_.Type -eq 'VC'}
                     # $EsxiObjs = Get-VBRServer | Where-Object {$_.Type -eq 'Esxi' -and $_.IsStandaloneEsx() -eq 'True'}
                     # SubGraph MainVMwareProxies -Attributes @{Label=$DiagramLabel; style='dashed,rounded'; color=$SubGraphDebug.color; fontsize=18; penwidth=1.5} {

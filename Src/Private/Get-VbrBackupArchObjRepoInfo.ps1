@@ -5,7 +5,7 @@ function Get-VbrBackupArchObjRepoInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.0
+        Version:        0.6.1
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -29,6 +29,7 @@ function Get-VbrBackupArchObjRepoInfo {
 
                     if ($ArchObjStorage.AmazonS3Folder) {
                         $Folder = $ArchObjStorage.AmazonS3Folder
+                        $Container = 'N/A'
                     } elseif ($ArchObjStorage.AzureBlobFolder) {
                         $Folder = $ArchObjStorage.AzureBlobFolder.Name
                         $Container = $ArchObjStorage.AzureBlobFolder.Container
@@ -58,15 +59,13 @@ function Get-VbrBackupArchObjRepoInfo {
                                 }
                             }
                         }
-                    }
-
-                    if ($ArchObjStorage.ArchiveType -eq 'AzureArchive') {
-                        $Rows.add('Container', $Container)
+                        Container = $Container
                     }
 
                     $TempObjStorageInfo = [PSCustomObject]@{
                         Name = "$($ArchObjStorage.Name) "
                         Label = Get-DiaNodeIcon -Name $($ArchObjStorage.Name) -IconType "VBR_Cloud_Repository" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                        AditionalInfo = $Rows
                     }
                     $ArchObjStorageInfo += $TempObjStorageInfo
                 }

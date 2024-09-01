@@ -50,37 +50,13 @@ function Get-DiagBackupToTape {
                                                     $TSLibraryOBJ.psobject.properties | ForEach-Object { $TSLHASHTABLE[$_.Name] = $_.Value }
                                                     Node $TSLibraryOBJ -NodeScript { $_.Id } @{Label = $TSLHASHTABLE.Label; fontname = "Segoe Ui" }
                                                     if ($BackupTapeDrives) {
+                                                        $TSLibraryOBJName = "$((Remove-SpecialChar -String $TSLibraryOBJ.Name -SpecialChars ' \_').toUpper())"
                                                         $TapeLibraryDrives = ($BackupTapeDrives | Where-Object { $_.LibraryId -eq $TSLibraryOBJ.Id } | Sort-Object -Property Name)
-                                                        if (($TapeLibraryDrives | Measure-Object).count -le 3) {
-                                                            foreach ($TSDriveOBJ in $TapeLibraryDrives) {
-                                                                $TSDHASHTABLE = @{}
-                                                                $TSDriveOBJ.psobject.properties | ForEach-Object { $TSDHASHTABLE[$_.Name] = $_.Value }
-                                                                Node $TSDriveOBJ -NodeScript { $_.Id } @{Label = $TSDHASHTABLE.Label; fontname = "Segoe Ui" }
-                                                                $TSDriveOBJ | ForEach-Object { Edge -From $TSLibraryOBJ.id -To $_.id }
-                                                            }
-                                                        } else {
-                                                            $Group = Split-array -inArray $TapeLibraryDrives -size 3
-                                                            $Number = 0
-                                                            while ($Number -ne $Group.Length) {
-                                                                $Random = Get-Random
-                                                                SubGraph "TDGroup$($Number)_$Random" -Attributes @{Label = ' '; style = $SubGraphDebug.style; color = $SubGraphDebug.color; fontsize = 18; penwidth = 1 } {
-                                                                    $Group[$Number] | ForEach-Object {
-                                                                        $TSDHASHTABLE = @{}
-                                                                        $_.psobject.properties | ForEach-Object { $TSDHASHTABLE[$_.Name] = $_.Value }
-                                                                        Node $_.Id @{Label = $TSDHASHTABLE.Label; fontname = "Segoe Ui" }
-                                                                    }
-                                                                }
-                                                                $Number++
-                                                            }
-                                                            Edge -From $TSLibraryOBJ.id -To $Group[0].Id @{style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                                            $Start = 0
-                                                            $TSNum = 1
-                                                            while ($TSNum -ne $Group.Length) {
-                                                                Edge -From $Group[$Start].Id -To $Group[$TSNum].Id @{style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                                                $Start++
-                                                                $TSNum++
-                                                            }
-                                                        }
+
+                                                        Node "$($TSLibraryOBJName)Drives" @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($TapeLibraryDrives | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Tape_Drive" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($TapeLibraryDrives.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+
+                                                        Edge -From $TSLibraryOBJ.id -To "$($TSLibraryOBJName)Drives"
+
                                                     }
                                                 }
                                             }
@@ -92,7 +68,7 @@ function Get-DiagBackupToTape {
                             }
                         }
                     }
-                    Edge -From $BackupServerInfo.Name -To MainSubGraph @{lhead = 'clusterMainSubGraph'; minlen = 3 }
+                    Edge -From $BackupServerInfo.Name -To MainSubGraph @{minlen = 3 }
                 }
             }
         } catch {

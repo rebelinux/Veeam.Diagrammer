@@ -30,6 +30,7 @@ function Get-VbrBackupWanAccelInfo {
                     $Rows = @{
                         # Role = 'Wan Accelerator'
                         IP = Get-NodeIP -HostName $WANACCEL.Name
+                        TrafficPort = "$($WANAccel.GetWaTrafficPort())/TCP"
                     }
 
                     if ($WANAccel.FindWaHostComp().Options.CachePath) {
@@ -41,7 +42,7 @@ function Get-VbrBackupWanAccelInfo {
                     $TempWANACCELInfo = [PSCustomObject]@{
                         Name = "$($WANACCEL.Name.toUpper().split(".")[0])  ";
                         Label = Get-DiaNodeIcon -Name "$($WANACCEL.Name.toUpper().split(".")[0])" -IconType "VBR_Wan_Accel" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
-                        TrafficPort = "$($WANAccel.GetWaTrafficPort())/TCP"
+                        AditionalInfo = $Rows
                     }
                     $WANACCELInfo += $TempWANACCELInfo
                 }

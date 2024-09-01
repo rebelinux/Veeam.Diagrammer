@@ -44,6 +44,7 @@ function Get-VbrBackupTapeDrivesInfo {
                         Label = Get-DiaNodeIcon -Name "$((Remove-SpecialChar -String ("Drive $($TapeDrive.Address + 1)").split(".")[0] -SpecialChars '\').toUpper())" -IconType 'VBR_Tape_Drive' -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
                         LibraryId = $TapeDrive.LibraryId
                         Id = $TapeDrive.Id
+                        AditionalInfo = $Rows
                     }
 
                     $BackupTapeDriveInfo += $TempBackupTapeDriveInfo

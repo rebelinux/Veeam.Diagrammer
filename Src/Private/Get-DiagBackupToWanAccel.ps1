@@ -35,24 +35,18 @@ function Get-DiagBackupToWanAccel {
                         Label = 'Wan Accelerators'
                         fontsize = 18
                         penwidth = 1.5
-                        labelloc = 't'
+                        labelloc = 'b'
                         color = $SubGraphDebug.color
                         style = 'dashed,rounded'
                     }
                     SubGraph MainSubGraph -Attributes $WANAccelAttr -ScriptBlock {
-                        foreach ($WANOBJ in $WanAccel) {
-                            $WANHASHTABLE = @{}
-                            $WANOBJ.psobject.properties | ForEach-Object { $WANHASHTABLE[$_.Name] = $_.Value }
-                            Node $WANOBJ -NodeScript { $_.Name } @{Label = $WANHASHTABLE.Label; fontname = "Segoe Ui" }
-                            Edge -From MainSubGraph:s -To $WANOBJ.Name @{constraint = "true"; minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                        }
-                        Rank $WanAccel.Name
+
+                        Node WanAccelServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($WanAccel | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Wan_Accel" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($WanAccel.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+
                     }
-                    if ($Dir -eq 'LR') {
-                        Edge $BackupServerInfo.Name -To MainSubGraph @{minlen = 3; xlabel = ($WanAccel.TrafficPort[0]) }
-                    } else {
-                        Edge $BackupServerInfo.Name -To MainSubGraph @{minlen = 3; xlabel = ($WanAccel.TrafficPort[0]) }
-                    }
+
+                    Edge $BackupServerInfo.Name -To WanAccelServer @{minlen = 3; xlabel = ($WanAccel.AditionalInfo.TrafficPort[0]) }
+
                 }
             }
         } catch {
