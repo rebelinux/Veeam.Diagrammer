@@ -5,7 +5,7 @@ function Get-DiagBackupToFileProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.0
+        Version:        0.6.2
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -33,25 +33,18 @@ function Get-DiagBackupToFileProxy {
                         Label = 'File Backup Proxies'
                         fontsize = 18
                         penwidth = 1.5
-                        labelloc = 't'
+                        labelloc = 'b'
                         color = $SubGraphDebug.color
                         style = 'dashed,rounded'
                     }
                     SubGraph MainSubGraph -Attributes $ProxiesAttr -ScriptBlock {
-                        foreach ($ProxyObj in $FileBackupProxy) {
-                            $PROXYHASHTABLE = @{}
-                            $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
-                            Node $ProxyObj -NodeScript { $_.Name } @{Label = $PROXYHASHTABLE.Label; fontname = "Segoe Ui" }
-                            Edge -From MainSubGraph:s -To $ProxyObj.Name @{constraint = "true"; minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                        }
-                        Rank $FileBackupProxy.Name
+
+                        Node FileProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($FileBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($FileBackupProxy.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+
                     }
 
-                    if ($Dir -eq 'LR') {
-                        Edge $BackupServerInfo.Name -To 'MainSubGraph' @{minlen = 3 }
-                    } else {
-                        Edge $BackupServerInfo.Name -To 'MainSubGraph' @{minlen = 3 }
-                    }
+                    Edge $BackupServerInfo.Name -To FileProxies @{minlen = 3 }
+
                 }
             }
         } catch {

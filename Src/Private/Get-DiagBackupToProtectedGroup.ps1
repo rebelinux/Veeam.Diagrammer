@@ -5,7 +5,7 @@ function Get-DiagBackupToProtectedGroup {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.1
+        Version:        0.6.2
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -45,25 +45,13 @@ function Get-DiagBackupToProtectedGroup {
                             style = 'dashed,rounded'
                         }
                         SubGraph MainSubGraphFileProxy -Attributes $ProxiesAttr -ScriptBlock {
-                            # Dummy Node used for subgraph centering
-                            # Node DummyFileProxy @{Label = $DiagramDummyLabel; fontsize = 18; fontname = "Segoe Ui Black"; fontcolor = '#005f4b'; shape = 'plain' }
-                            Node DummyFileProxyToPG @{Label = "DummyFileProxyToPG"; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                            foreach ($ProxyObj in $FileBackupProxy) {
-                                $PROXYHASHTABLE = @{}
-                                $ProxyObj.psobject.properties | ForEach-Object { $PROXYHASHTABLE[$_.Name] = $_.Value }
-                                Node $ProxyObj -NodeScript { $_.Name } @{Label = $PROXYHASHTABLE.Label; fontname = "Segoe Ui" }
-                                Edge -From MainSubGraphFileProxy:s -To $ProxyObj.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                Edge -From $ProxyObj.Name -To DummyFileProxyToPG @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
 
-                            }
-                            Rank $FileBackupProxy.Name
+                            Node FileProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($FileBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($FileBackupProxy.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+
                         }
 
-                        if ($Dir -eq 'LR') {
-                            Edge $BackupServerInfo.Name -To MainSubGraphFileProxy @{lhead = 'clusterMainSubGraph'; minlen = 3 }
-                        } else {
-                            Edge $BackupServerInfo.Name -To MainSubGraphFileProxy @{lhead = 'clusterMainSubGraph'; minlen = 3 }
-                        }
+                        Edge $BackupServerInfo.Name -To FileProxies @{minlen = 3 }
+
                     }
                 }
             } catch {
@@ -159,7 +147,8 @@ function Get-DiagBackupToProtectedGroup {
                             SubGraph MCContainer -Attributes @{Label = (Get-DiaHTMLLabel -Label 'Manual Computers' -IconType "VBR_AGENT_MC" -ImagesObj $Images -IconDebug $IconDebug -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                 # Node used for subgraph centering
                                 Node DummyMCContainer @{Label = 'DummyMC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if (($ManualContainer | Measure-Object).count -le 2) {'Backup-to-All'
+                                if (($ManualContainer | Measure-Object).count -le 2) {
+                                    'Backup-to-All'
                                     foreach ($PGOBJ in ($ManualContainer | Sort-Object -Property Name)) {
                                         $PGHASHTABLE = @{}
                                         $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
@@ -350,7 +339,7 @@ function Get-DiagBackupToProtectedGroup {
                         }
                     }
 
-                    Edge -From DummyFileProxyToPG -To MainSubGraph @{ltail = 'clusterMainSubGraphFileProxy'; lhead = 'clusterMainSubGraph'; minlen = 3 }
+                    Edge -From FileProxies -To MainSubGraph @{minlen = 3 }
                 }
             }
         } catch {

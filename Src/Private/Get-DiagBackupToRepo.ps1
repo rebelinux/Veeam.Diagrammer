@@ -5,7 +5,7 @@ function Get-DiagBackupToRepo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.1
+        Version:        0.6.2
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -38,196 +38,43 @@ function Get-DiagBackupToRepo {
                     SubGraph MainSubGraph -Attributes @{Label = 'Backup Repositories'; fontsize = 22; penwidth = 1; labelloc = 't'; style = 'dashed,rounded'; color = $SubGraphDebug.color } {
                         if ($LocalBackupRepo) {
                             SubGraph LocalRepos -Attributes @{Label = 'Local Repositories'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
-                                # Node used for subgraph centering
-                                Node LocalReposDummy @{Label = 'LocalReposDummy'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if (($LocalBackupRepo | Measure-Object).count -le 3) {
-                                    foreach ($REPOOBJ in ($LocalBackupRepo | Sort-Object -Property Name)) {
-                                        $REPOHASHTABLE = @{}
-                                        $REPOOBJ.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
-                                        Node $REPOOBJ -NodeScript { $_.Name } @{Label = $REPOHASHTABLE.Label; fontname = "Segoe Ui" }
-                                    }
 
-                                    Edge -From LocalReposDummy -To $LocalBackupRepo.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                } else {
-                                    $Group = Split-array -inArray ($LocalBackupRepo | Sort-Object -Property Name) -size 3
-                                    $Number = 0
-                                    while ($Number -ne $Group.Length) {
-                                        $Random = Get-Random
-                                        SubGraph "LocalBackupGroup$($Number)_$Random" -Attributes @{Label = ' '; style = $SubGraphDebug.style; color = $SubGraphDebug.color; fontsize = 18; penwidth = 1 } {
-                                            $Group[$Number] | ForEach-Object {
-                                                $REPOHASHTABLE = @{}
-                                                $_.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
-                                                Node $_.Name @{Label = $REPOHASHTABLE.Label; fontname = "Segoe Ui" }
-                                            }
-                                        }
-                                        $Number++
-                                    }
+                                Node LocalRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($LocalBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($LocalBackupRepo.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
 
-                                    Edge -From LocalReposDummy -To $Group[0].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                    $Start = 0
-                                    $LocalRepoNum = 1
-                                    while ($LocalRepoNum -ne $Group.Length) {
-                                        Edge -From $Group[$Start].Name -To $Group[$LocalRepoNum].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                        $Start++
-                                        $LocalRepoNum++
-                                    }
-                                }
                             }
-                            Edge -From MainSubGraph:s -To LocalReposDummy @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To LocalRepo @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($NASBackupRepo) {
                             SubGraph NasRepos -Attributes @{Label = 'NAS Repositories'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
-                                # Node used for subgraph centering
-                                Node NasReposDummy @{Label = 'NasReposDummy'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if (($NASBackupRepo | Measure-Object).count -le 3) {
-                                    foreach ($REPOOBJ in ($NASBackupRepo | Sort-Object -Property Name)) {
-                                        $REPOHASHTABLE = @{}
-                                        $REPOOBJ.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
-                                        Node $REPOOBJ -NodeScript { $_.Name } @{Label = $REPOHASHTABLE.Label; fontname = "Segoe Ui" }
-                                    }
 
-                                    Edge -From NasReposDummy -To $NASBackupRepo.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                } else {
-                                    $Group = Split-array -inArray ($NASBackupRepo | Sort-Object -Property Name) -size 3
-                                    $Number = 0
-                                    while ($Number -ne $Group.Length) {
-                                        $Random = Get-Random
-                                        SubGraph "NasBackupGroup$($Number)_$Random" -Attributes @{Label = ' '; style = $SubGraphDebug.style; color = $SubGraphDebug.color; fontsize = 18; penwidth = 1 } {
-                                            $Group[$Number] | ForEach-Object {
-                                                $REPOHASHTABLE = @{}
-                                                $_.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
-                                                Node $_.Name @{Label = $REPOHASHTABLE.Label; fontname = "Segoe Ui" }
-                                            }
-                                        }
-                                        $Number++
-                                    }
-
-                                    Edge -From NasReposDummy -To $Group[0].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                    $Start = 0
-                                    $NasRepoNum = 1
-                                    while ($NasRepoNum -ne $Group.Length) {
-                                        Edge -From $Group[$Start].Name -To $Group[$NasRepoNum].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                        $Start++
-                                        $NasRepoNum++
-                                    }
-                                }
+                                Node NasRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($NASBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_NAS" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($NASBackupRepo.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                             }
-                            Edge -From MainSubGraph:s -To NasReposDummy @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To NasRepo @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($DedupBackupRepo) {
                             SubGraph RemoteRepos -Attributes @{Label = 'Deduplicating Storage Appliances'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
-                                Node RemoteReposDummy @{Label = 'RemoteReposDummy'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain' }
-                                if (($DedupBackupRepo | Measure-Object).count -le 3) {
-                                    foreach ($REPOOBJ in ($DedupBackupRepo | Sort-Object -Property Name)) {
-                                        $REPOHASHTABLE = @{}
-                                        $REPOOBJ.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
-                                        Node $REPOOBJ -NodeScript { $_.Name } @{Label = $REPOHASHTABLE.Label; fontname = "Segoe Ui" }
-                                    }
 
-                                    Edge -From RemoteReposDummy -To $DedupBackupRepo.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                } else {
-                                    $Group = Split-array -inArray ($DedupBackupRepo | Sort-Object -Property Name) -size 3
-                                    $Number = 0
-                                    while ($Number -ne $Group.Length) {
-                                        $Random = Get-Random
-                                        SubGraph "DedupBackupRepo$($Number)_$Random" -Attributes @{Label = ' '; style = $SubGraphDebug.style; color = $SubGraphDebug.color; fontsize = 18; penwidth = 1 } {
-                                            $Group[$Number] | ForEach-Object {
-                                                $REPOHASHTABLE = @{}
-                                                $_.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
-                                                Node $_.Name @{Label = $REPOHASHTABLE.Label; fontname = "Segoe Ui" }
-                                            }
-                                        }
-                                        $Number++
-                                    }
+                                Node RemoteRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($DedupBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Deduplicating_Storage" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($DedupBackupRepo.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
 
-                                    Edge -From RemoteReposDummy -To $Group[0].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                    $Start = 0
-                                    $RemoteRepoNum = 1
-                                    while ($RemoteRepoNum -ne $Group.Length) {
-                                        Edge -From $Group[$Start].Name -To $Group[$RemoteRepoNum].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                        $Start++
-                                        $RemoteRepoNum++
-                                    }
-                                }
                             }
-                            Edge -From MainSubGraph:s -To RemoteReposDummy @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To RemoteRepo @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
 
                         }
                         if ($ObjStorage) {
-                            SubGraph ObjectStorage -Attributes @{Label = 'Object Repositories'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
-                                Node ObjectStorageDummy @{Label = 'ObjectStorageDummy'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if (($ObjStorage | Measure-Object).count -le 3) {
-                                    foreach ($STORAGEOBJ in ($ObjStorage | Sort-Object -Property Name)) {
-                                        $OBJHASHTABLE = @{}
-                                        $STORAGEOBJ.psobject.properties | ForEach-Object { $OBJHASHTABLE[$_.Name] = $_.Value }
-                                        Node $STORAGEOBJ -NodeScript { $_.Name } @{Label = $OBJHASHTABLE.Label; fontname = "Segoe Ui" }
-                                    }
+                            SubGraph ObjectStorages -Attributes @{Label = 'Object Repositories'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
 
-                                    Edge -From ObjectStorageDummy -To $ObjStorage.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                } else {
-                                    $Group = Split-array -inArray ($ObjStorage | Sort-Object -Property Name) -size 3
-                                    $Number = 0
-                                    while ($Number -ne $Group.Length) {
-                                        $Random = Get-Random
-                                        SubGraph "ObjectStorage$($Number)_$Random" -Attributes @{Label = ' '; style = $SubGraphDebug.style; color = $SubGraphDebug.color; fontsize = 18; penwidth = 1 } {
-                                            $Group[$Number] | ForEach-Object {
-                                                $REPOHASHTABLE = @{}
-                                                $_.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
-                                                Node $_.Name @{Label = $REPOHASHTABLE.Label; fontname = "Segoe Ui" }
-                                            }
-                                        }
-                                        $Number++
-                                    }
+                                Node ObjectStorage @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($ObjStorage | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($ObjStorage.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
 
-                                    Edge -From ObjectStorageDummy -To $Group[0].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                    $Start = 0
-                                    $ObjectStorageNum = 1
-                                    while ($ObjectStorageNum -ne $Group.Length) {
-                                        Edge -From $Group[$Start].Name -To $Group[$ObjectStorageNum].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                        $Start++
-                                        $ObjectStorageNum++
-                                    }
-                                }
                             }
-                            Edge -From MainSubGraph:s -To ObjectStorageDummy @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To ObjectStorage @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($ArchiveObjStorage) {
-                            SubGraph ArchiveObjectStorage -Attributes @{Label = 'Archive Object Repositories'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
-                                Node ArchiveObjectStorageDummy @{Label = 'ArchiveObjectStorageDummy'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain' }
-                                if (($ArchiveObjStorage | Measure-Object).count -le 3) {
-                                    foreach ($STORAGEArchiveOBJ in ($ArchiveObjStorage | Sort-Object -Property Name)) {
-                                        $ARCHOBJHASHTABLE = @{}
-                                        $STORAGEArchiveOBJ.psobject.properties | ForEach-Object { $ARCHOBJHASHTABLE[$_.Name] = $_.Value }
-                                        Node $STORAGEArchiveOBJ -NodeScript { $_.Name } @{Label = $ARCHOBJHASHTABLE.Label; fontname = "Segoe Ui" }
-                                    }
+                            SubGraph ArchiveObjectStorages -Attributes @{Label = 'Archive Object Repositories'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
 
-                                    Edge -From ArchiveObjectStorageDummy -To $ArchiveObjStorage.Name @{constraint = "true"; minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                } else {
-                                    $Group = Split-array -inArray ($ArchiveObjStorage | Sort-Object -Property Name) -size 3
-                                    $Number = 0
-                                    while ($Number -ne $Group.Length) {
-                                        $Random = Get-Random
-                                        SubGraph "ArchiveObjectStorage$($Number)_$Random" -Attributes @{Label = ' '; style = $SubGraphDebug.style; color = $SubGraphDebug.color; fontsize = 18; penwidth = 1 } {
-                                            $Group[$Number] | ForEach-Object {
-                                                $REPOHASHTABLE = @{}
-                                                $_.psobject.properties | ForEach-Object { $REPOHASHTABLE[$_.Name] = $_.Value }
-                                                Node $_.Name @{Label = $REPOHASHTABLE.Label; fontname = "Segoe Ui" }
-                                            }
-                                        }
-                                        $Number++
-                                    }
+                                Node ArchiveObjectStorage @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($ArchiveObjStorage | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($ArchiveObjStorage.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
 
-                                    Edge -From ArchiveObjectStorageDummy -To $Group[0].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                    $Start = 0
-                                    $ArchiveObjectStorageNum = 1
-                                    while ($ArchiveObjectStorageNum -ne $Group.Length) {
-                                        Edge -From $Group[$Start].Name -To $Group[$ArchiveObjectStorageNum].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                        $Start++
-                                        $ArchiveObjectStorageNum++
-                                    }
-                                }
                             }
-                            Edge -From MainSubGraph:s -To ArchiveObjectStorageDummy @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            Edge -From MainSubGraph:s -To ArchiveObjectStorage @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
 
                         }
                     }

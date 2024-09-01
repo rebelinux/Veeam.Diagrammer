@@ -5,7 +5,7 @@ function Get-VbrBackupProxyInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.0
+        Version:        0.6.2
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -95,7 +95,7 @@ function Get-VbrBackupProxyInfo {
                     $TempBackupProxyInfo = [PSCustomObject]@{
                         Name = "$($Hostname.toUpper().split(".")[0]) "
                         Label = Get-DiaNodeIcon -Name "$($Hostname.toUpper().split(".")[0])" -IconType $IconType -Align "Center" -Rows $BPRows -ImagesObj $Images -IconDebug $IconDebug
-                        Object = $BackupProxy
+                        AditionalInfo = $BPRows
                     }
 
                     $BackupProxyInfo += $TempBackupProxyInfo
