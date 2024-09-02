@@ -21,7 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Allow EDGE to connect between Subgraph Clusters
 - Update Diagrammer.Core minimum to v0.2.3
-- Migrate diagrams to use Get-DiaHTMLNodeTable
 
 ### Fixed
 
