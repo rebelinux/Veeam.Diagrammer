@@ -339,9 +339,15 @@ function New-VeeamDiagram {
 
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
         $IconPath = Join-Path $RootPath 'icons'
-        $Dir = switch ($Direction) {
-            'top-to-bottom' { 'TB' }
-            'left-to-right' { 'LR' }
+
+        if ($DiagramType -eq 'Backup-Infrastructure') {
+            
+            $Dir = 'TB'
+        } else {
+            $Dir = switch ($Direction) {
+                'top-to-bottom' { 'TB' }
+                'left-to-right' { 'LR' }
+            }
         }
 
         # Validate Custom logo
