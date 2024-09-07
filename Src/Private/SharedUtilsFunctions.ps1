@@ -34,8 +34,8 @@ function Get-IconType {
         'IndividualComputers' { 'VBR_AGENT_IC' }
         'ActiveDirectory' { 'VBR_AGENT_AD' }
         'CSV' { 'VBR_AGENT_CSV' }
-        'CifsShare' {'VBR_NAS'}
-        'NfsShare' {'VBR_NAS'}
+        'CifsShare' { 'VBR_NAS' }
+        'NfsShare' { 'VBR_NAS' }
         default { 'VBR_No_Icon' }
     }
 

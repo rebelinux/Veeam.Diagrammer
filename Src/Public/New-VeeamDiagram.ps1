@@ -341,7 +341,7 @@ function New-VeeamDiagram {
         $IconPath = Join-Path $RootPath 'icons'
 
         if ($DiagramType -eq 'Backup-Infrastructure') {
-            
+
             $Dir = 'TB'
         } else {
             $Dir = switch ($Direction) {
