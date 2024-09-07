@@ -49,9 +49,9 @@ Veeam Diagrammer is a PowerShell module to automatically generate Veeam Backup &
 
 ![Backup Repository Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/Backup_Repository.webp "Backup Repository Diagram")
 
-### Backup Proxy Diagram
+### Backup Infrastructure Diagram
 
-![Backup Proxy Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/VBR_Backup_Proxy_with_Debug.webp "Backup Proxy Diagram")
+![Backup Infrastructure Diagram](https://raw.githubusercontent.com/rebelinux/Veeam.Diagrammer/dev/Samples/BackupInfastructure.webp "Backup Infrastructure Diagram")
 
 
 # :beginner: Getting Started
@@ -127,13 +127,13 @@ _Note: You are not limited to installing the module to those example paths, you 
 
 The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication diagram. The type of diagram to generate is specified by using the `DiagramType` parameter. The DiagramType parameter relies on additional diagram modules being created alongside the defaults module. The `Target` parameter specifies one or more Veeam VBR servers on which to connect and run the diagram. User credentials to the system are specified using the `Credential`, or the `Username` and `Password` parameters. One or more document formats, such as `PNG`, `PDF`, `SVG`, `BASE64` or `DOT` can be specified using the `Format` parameter. Additional parameters are outlined below.
 
-```powershell
+```markdown
 .PARAMETER DiagramType
   Specifies the type of veeam vbr diagram that will be generated.
   The supported output diagrams are:
             'Backup-to-Sobr', 'Backup-to-vSphere-Proxy', 'Backup-to-HyperV-Proxy',
             'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-Tape',
-            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup'
+            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup', 'Backup-Infrastructure'
 .PARAMETER Target
   Specifies the IP/FQDN of the system to connect.
   Multiple targets may be specified, separated by a comma.

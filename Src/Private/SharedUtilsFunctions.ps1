@@ -17,24 +17,25 @@ function Get-IconType {
         'LinuxLocal' { 'VBR_Linux_Repository' }
         'WinLocal' { 'VBR_Windows_Repository' }
         'Cloud' { 'VBR_Cloud_Repository' }
-        'AzureBlob' { 'VBR_Cloud_Repository' }
-        'AmazonS3' { 'VBR_Cloud_Repository' }
-        'AmazonS3Compatible' { 'VBR_Cloud_Repository' }
-        'AmazonS3Glacier' { 'VBR_Cloud_Repository' }
-        'AzureArchive' { 'VBR_Cloud_Repository' }
+        'AmazonS3Compatible' { 'VBR_Amazon_S3_Compatible' }
+        'AmazonS3Glacier' { 'VBR_Amazon_S3_Compatible' }
+        'AmazonS3' { 'VBR_Amazon_S3' }
+        'AzureArchive' { 'VBR_Azure_Blob' }
+        'AzureBlob' { 'VBR_Azure_Blob' }
         'DDBoost' { 'VBR_Deduplicating_Storage' }
         'HPStoreOnceIntegration' { 'VBR_Deduplicating_Storage' }
         'ExaGrid' { 'VBR_Deduplicating_Storage' }
         'SanSnapshotOnly' { 'VBR_Storage_NetApp' }
         'Proxy' { 'VBR_Repository' }
+        'ProxyServer' { 'VBR_Proxy_Server' }
         'ESXi' { 'VBR_ESXi_Server' }
         'HyperVHost' { 'Hyper-V_host' }
         'ManuallyDeployed' { 'VBR_AGENT_MC' }
         'IndividualComputers' { 'VBR_AGENT_IC' }
         'ActiveDirectory' { 'VBR_AGENT_AD' }
         'CSV' { 'VBR_AGENT_CSV' }
-        'CifsShare' {'VBR_NAS'}
-        'NfsShare' {'VBR_NAS'}
+        'CifsShare' { 'VBR_NAS' }
+        'NfsShare' { 'VBR_NAS' }
         default { 'VBR_No_Icon' }
     }
 
