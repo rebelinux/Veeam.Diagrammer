@@ -9,7 +9,7 @@ function New-VeeamDiagram {
         The supported output diagrams are:
             'Backup-to-Sobr', 'Backup-to-vSphere-Proxy', 'Backup-to-HyperV-Proxy',
             'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-Tape',
-            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup'
+            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup', 'Backup-Infrastructure
     .PARAMETER Target
         Specifies the IP/FQDN of the system to connect.
         Multiple targets may be specified, separated by a comma.
@@ -71,7 +71,7 @@ function New-VeeamDiagram {
     .PARAMETER WatermarkColor
         Allow to specified the color used for the watermark text. Default: Green.
     .NOTES
-        Version:        0.6.0
+        Version:        0.6.3
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -231,7 +231,7 @@ function New-VeeamDiagram {
             Mandatory = $true,
             HelpMessage = 'Controls type of Veeam VBR generated diagram'
         )]
-        [ValidateSet('Backup-to-Tape', 'Backup-to-File-Proxy', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-ProtectedGroup')]
+        [ValidateSet('Backup-to-Tape', 'Backup-to-File-Proxy', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-ProtectedGroup', 'Backup-Infrastructure')]
         [string] $DiagramType,
 
         [Parameter(
@@ -316,6 +316,7 @@ function New-VeeamDiagram {
             'Backup-to-WanAccelerator' { 'Wan Accelerators Diagram' }
             'Backup-to-Tape' { 'Tape Infrastructure Diagram' }
             'Backup-to-ProtectedGroup' { 'Physical Infrastructure Diagram' }
+            'Backup-Infrastructure' { 'Backup Infrastructure Diagram' }
         }
 
         $IconDebug = $false
@@ -327,8 +328,14 @@ function New-VeeamDiagram {
 
         if ($EnableSubGraphDebug) {
             $script:SubGraphDebug = @{style = 'dashed'; color = 'red' }
+            $script:NodeDebug = @{color = 'black'; style = 'red'; shape = 'plain' }
+            $script:NodeDebugEdge = @{color = 'black'; style = 'red'; shape = 'plain' }
             $IconDebug = $true
-        } else { $script:SubGraphDebug = @{style = 'invis'; color = 'gray' } }
+        } else {
+            $script:SubGraphDebug = @{style = 'invis'; color = 'gray' }
+            $script:NodeDebug = @{color = 'transparent'; style = 'transparent'; shape = 'point' }
+            $script:NodeDebugEdge = @{color = 'transparent'; style = 'transparent'; shape = 'none' }
+        }
 
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
         $IconPath = Join-Path $RootPath 'icons'
@@ -473,6 +480,13 @@ function New-VeeamDiagram {
                                 $BackuptoSobr
                             } else {
                                 throw "No Scale-Out Backup Repository available to diagram"
+                            }
+                        } elseif ($DiagramType -eq 'Backup-Infrastructure') {
+                            $BackupInfra = Get-VbrInfraDiagram | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            if ($BackupInfra) {
+                                $BackupInfra
+                            } else {
+                                throw "No Backup Infrastructure available to diagram"
                             }
                         }
                     }
