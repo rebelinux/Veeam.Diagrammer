@@ -5,7 +5,7 @@ function Get-VbrBackupServerObj {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.8.6
+        Version:        0.6.5
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -22,15 +22,15 @@ function Get-VbrBackupServerObj {
         try {
             # $CimSession = New-CimSession $VBRServer.Name -Credential $Credential -Authentication Negotiate
             # $PssSession = New-PSSession $VBRServer.Name -Credential $Credential -Authentication Negotiate
-            $CimSession = try { New-CimSession $VBRServer.Name -Credential $Credential -Authentication Negotiate -Name 'CIMBackupServerDiagram' -ErrorAction Stop } catch { Write-PScriboMessage -IsWarning "Backup Server Section: New-CimSession: Unable to connect to $($VBRServer.Name): $($_.Exception.MessageId)" }
+            $CimSession = try { New-CimSession $VBRServer.Name -Credential $Credential -Authentication Negotiate -Name 'CIMBackupServerDiagram' -ErrorAction Stop } catch { Write-Verbose "Backup Server Section: New-CimSession: Unable to connect to $($VBRServer.Name): $($_.Exception.MessageId)" }
 
             $PssSession = try { New-PSSession $VBRServer.Name -Credential $Credential -Authentication Negotiate -ErrorAction Stop -Name 'PSSBackupServerDiagram' } catch {
                 if (-Not $_.Exception.MessageId) {
                     $ErrorMessage = $_.FullyQualifiedErrorId
                 } else { $ErrorMessage = $_.Exception.MessageId }
-                Write-PScriboMessage -IsWarning "Backup Server Section: New-PSSession: Unable to connect to $($VBRServer.Name): $ErrorMessage"
+                Write-Verbose "Backup Server Section: New-PSSession: Unable to connect to $($VBRServer.Name): $ErrorMessage"
             }
-            Write-PScriboMessage "Collecting Backup Server information from $($VBRServer.Name)."
+            Write-Verbose "Collecting Backup Server information from $($VBRServer.Name)."
             try {
                 $VeeamVersion = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { Get-ChildItem -Recurse HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -match 'Veeam Backup & Replication Server' } | Select-Object -Property DisplayVersion }
             } catch { $_ }
@@ -162,7 +162,7 @@ function Get-VbrBackupSvrDiagramObj {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.8.6
+        Version:        0.6.5
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -179,7 +179,7 @@ function Get-VbrBackupSvrDiagramObj {
         try {
             SubGraph BackupServer -Attributes @{Label = 'Management'; labelloc = 'b'; labeljust = "r"; style = "rounded"; bgcolor = "#ceedc4"; fontcolor = '#005f4b'; fontsize = 18; penwidth = 2 } {
                 if (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and $EMServerInfo) {
-                    Write-PScriboMessage "Collecting Backup Server, Database Server and Enterprise Manager Information."
+                    Write-Verbose "Collecting Backup Server, Database Server and Enterprise Manager Information."
                     $BSHASHTABLE = @{}
                     $DBHASHTABLE = @{}
                     $EMHASHTABLE = @{}
@@ -202,7 +202,7 @@ function Get-VbrBackupSvrDiagramObj {
                         Edge -From $BackupServerInfo.Name -To $DatabaseServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; xlabel = $DatabaseServerInfo.DBPort }
                     }
                 } elseif (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and (-Not $EMServerInfo)) {
-                    Write-PScriboMessage "Not Enterprise Manager Found: Collecting Backup Server and Database server Information."
+                    Write-Verbose "Not Enterprise Manager Found: Collecting Backup Server and Database server Information."
                     $BSHASHTABLE = @{}
                     $DBHASHTABLE = @{}
 
@@ -220,7 +220,7 @@ function Get-VbrBackupSvrDiagramObj {
                         Edge -From $BackupServerInfo.Name -To $DatabaseServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; xlabel = $DatabaseServerInfo.DBPort }
                     }
                 } elseif ($EMServerInfo -and ($DatabaseServerInfo.Name -eq $BackupServerInfo.Name)) {
-                    Write-PScriboMessage "Database server colocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
+                    Write-Verbose "Database server colocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
                     $BSHASHTABLE = @{}
                     $EMHASHTABLE = @{}
 
@@ -238,7 +238,7 @@ function Get-VbrBackupSvrDiagramObj {
                         Edge -From $BackupServerInfo.Name -To $EMServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; }
                     }
                 } else {
-                    Write-PScriboMessage "Database server colocated with Backup Server and no Enterprise Manager found: Collecting Backup Server Information."
+                    Write-Verbose "Database server colocated with Backup Server and no Enterprise Manager found: Collecting Backup Server Information."
                     $BSHASHTABLE = @{}
                     $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
                     Node Left @{Label = 'Left'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
@@ -261,7 +261,7 @@ function Get-VbrProxyInfo {
     param (
     )
     try {
-        Write-PScriboMessage "Collecting Proxy information from $VeeamBackupServer."
+        Write-Verbose "Collecting Proxy information from $($VBRServer.Name)."
         $Proxies = @()
         $Proxies += Get-VBRViProxy
         $Proxies += Get-VBRHvProxy
@@ -309,7 +309,7 @@ function Get-VbrWanAccelInfo {
     param (
     )
     try {
-        Write-PScriboMessage "Collecting Wan Accel information from $VeeamBackupServer."
+        Write-Verbose "Collecting Wan Accel information from $($VBRServer.Name)."
         $WanAccels = Get-VBRWANAccelerator
 
         if ($WanAccels) {
@@ -501,7 +501,7 @@ function Get-VbrSOBRInfo {
     param (
     )
     try {
-        Write-PScriboMessage "Collecting Scale-Out Backup Repository information from $VeeamBackupServer."
+        Write-Verbose "Collecting Scale-Out Backup Repository information from $($VBRServer.Name)."
         $SOBR = Get-VBRBackupRepository -ScaleOut | Sort-Object -Property Name
 
         if ($SOBR) {
@@ -545,7 +545,7 @@ function Get-VbrTapeServersInfo {
     param (
     )
     try {
-        Write-PScriboMessage "Collecting Tape Servers information from $VeeamBackupServer."
+        Write-Verbose "Collecting Tape Servers information from $($VBRServer.Name)."
         $TapeServers = Get-VBRTapeServer | Sort-Object -Property Name
 
         if ($TapeServers) {
@@ -585,7 +585,7 @@ function Get-VbrTapeLibraryInfo {
     param (
     )
     try {
-        Write-PScriboMessage "Collecting Tape Library information from $VeeamBackupServer."
+        Write-Verbose "Collecting Tape Library information from $($VBRServer.Name)."
         $TapeLibraries = Get-VBRTapeLibrary | Sort-Object -Property Name
 
         if ($TapeLibraries) {
@@ -621,7 +621,7 @@ function Get-VbrTapeVaultInfo {
     param (
     )
     try {
-        Write-PScriboMessage "Collecting Tape Vault information from $VeeamBackupServer."
+        Write-Verbose "Collecting Tape Vault information from $($VBRServer.Name)."
         $TapeVaults = Get-VBRTapeVault | Sort-Object -Property Name
 
         if ($TapeVaults) {
@@ -658,7 +658,7 @@ function Get-VbrServiceProviderInfo {
     param (
     )
     try {
-        Write-PScriboMessage "Collecting Service Provider information from $VeeamBackupServer."
+        Write-Verbose "Collecting Service Provider information from $($VBRServer.Name)."
         $ServiceProviders = Get-VBRCloudProvider | Sort-Object -Property 'DNSName'
 
         if ($ServiceProviders) {
