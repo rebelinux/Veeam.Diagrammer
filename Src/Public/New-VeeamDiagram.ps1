@@ -71,7 +71,7 @@ function New-VeeamDiagram {
     .PARAMETER WatermarkColor
         Allow to specified the color used for the watermark text. Default: Green.
     .NOTES
-        Version:        0.6.3
+        Version:        0.6.5
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -92,6 +92,11 @@ function New-VeeamDiagram {
         PositionalBinding = $false,
         DefaultParameterSetName = 'Credential'
     )]
+
+    #Requires -Version 5.1
+    #Requires -PSEdition Desktop
+    #Requires -RunAsAdministrator
+
     param (
 
         [Parameter(
@@ -291,6 +296,14 @@ function New-VeeamDiagram {
             $false
         }
 
+        if ($EnableErrorDebug) {
+            $global:VerbosePreference = 'Continue'
+            $global:DebugPreference = 'Continue'
+        } else {
+            $global:VerbosePreference = 'SilentlyContinue'
+            $global:DebugPreference = 'SilentlyContinue'
+        }
+
         # If Username and Password parameters used, convert specified Password to secure string and store in $Credential
         #@tpcarman
         if (($Username -and $Password)) {
@@ -318,6 +331,8 @@ function New-VeeamDiagram {
             'Backup-to-ProtectedGroup' { 'Physical Infrastructure Diagram' }
             'Backup-Infrastructure' { 'Backup Infrastructure Diagram' }
         }
+
+        Write-ColorOutput -Color 'Green' -String ("Please wait while the '{0}' is being generated." -f $MainGraphLabel)
 
         $IconDebug = $false
 
@@ -371,7 +386,7 @@ function New-VeeamDiagram {
             splines = $EdgeType
             penwidth = 1.5
             fontname = "Segoe Ui Black"
-            fontcolor = '#005f4b'
+            fontcolor = '#565656'
             fontsize = 32
             style = "dashed"
             labelloc = 't'
@@ -509,13 +524,18 @@ function New-VeeamDiagram {
             if ($OutputDiagram) {
                 if ($OutputFormat -ne 'Base64') {
                     # If not Base64 format return image path
-                    Write-ColorOutput -Color 'Green' -String ("Diagrammer diagram {0} has been saved to {1}" -f $OutputDiagram.Name, $OutputDiagram.Directory)
+                    Write-ColorOutput -Color 'White' -String ("Diagrammer diagram '{0}' has been saved to '{1}'" -f $OutputDiagram.Name, $OutputDiagram.Directory)
                 } else {
                     Write-Verbose "Displaying Base64 string"
                     # Return Base64 string
                     $OutputDiagram
                 }
             }
+        }
+
+        if ($EnableErrorDebug) {
+            $global:VerbosePreference = 'SilentlyContinue'
+            $global:DebugPreference = 'SilentlyContinue'
         }
     }
 }

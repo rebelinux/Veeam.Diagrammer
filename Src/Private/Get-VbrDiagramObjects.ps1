@@ -177,76 +177,78 @@ function Get-VbrBackupSvrDiagramObj {
     )
     process {
         try {
-            SubGraph BackupServer -Attributes @{Label = 'Management'; labelloc = 'b'; labeljust = "r"; style = "rounded"; bgcolor = "#ceedc4"; fontcolor = '#005f4b'; fontsize = 18; penwidth = 2 } {
-                if (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and $EMServerInfo) {
-                    Write-Verbose "Collecting Backup Server, Database Server and Enterprise Manager Information."
-                    $BSHASHTABLE = @{}
-                    $DBHASHTABLE = @{}
-                    $EMHASHTABLE = @{}
+            SubGraph BackupServers -Attributes @{Label = 'Management'; labelloc = 'b'; labeljust = "r"; style = "rounded"; bgcolor = "#ceedc4"; fontcolor = '#005f4b'; fontsize = 18; penwidth = 2; } {
+                SubGraph BackupServer -Attributes @{Label = 'Backup Server'; style = "rounded"; bgcolor = "#ceedc4"; fontsize = 18; fontcolor = '#565656'; penwidth = 0; labelloc = 't'; labeljust = "c"; } {
+                    if (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and $EMServerInfo) {
+                        Write-Verbose "Collecting Backup Server, Database Server and Enterprise Manager Information."
+                        $BSHASHTABLE = @{}
+                        $DBHASHTABLE = @{}
+                        $EMHASHTABLE = @{}
 
-                    $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-                    $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
-                    $EMServerInfo.psobject.properties | ForEach-Object { $EMHASHTABLE[$_.Name] = $_.Value }
+                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
+                        $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
+                        $EMServerInfo.psobject.properties | ForEach-Object { $EMHASHTABLE[$_.Name] = $_.Value }
 
-                    Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
-                    Node $DatabaseServerInfo.Name -Attributes @{Label = $DBHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
-                    Node $EMServerInfo.Name -Attributes @{Label = $EMHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+                        Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+                        Node $DatabaseServerInfo.Name -Attributes @{Label = $DBHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+                        Node $EMServerInfo.Name -Attributes @{Label = $EMHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
-                    if ($Dir -eq 'LR') {
-                        Rank $EMServerInfo.Name, $DatabaseServerInfo.Name
-                        Edge -From $EMServerInfo.Name -To $BackupServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; }
-                        Edge -From $DatabaseServerInfo.Name -To $BackupServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; xlabel = $DatabaseServerInfo.DBPort }
+                        if ($Dir -eq 'LR') {
+                            Rank $EMServerInfo.Name, $DatabaseServerInfo.Name
+                            Edge -From $EMServerInfo.Name -To $BackupServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; }
+                            Edge -From $DatabaseServerInfo.Name -To $BackupServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; xlabel = $DatabaseServerInfo.DBPort }
+                        } else {
+                            Rank $EMServerInfo.Name, $BackupServerInfo.Name, $DatabaseServerInfo.Name
+                            Edge -From $EMServerInfo.Name -To $BackupServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; }
+                            Edge -From $BackupServerInfo.Name -To $DatabaseServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; xlabel = $DatabaseServerInfo.DBPort }
+                        }
+                    } elseif (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and (-Not $EMServerInfo)) {
+                        Write-Verbose "Not Enterprise Manager Found: Collecting Backup Server and Database server Information."
+                        $BSHASHTABLE = @{}
+                        $DBHASHTABLE = @{}
+
+                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
+                        $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
+
+                        Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+                        Node $DatabaseServerInfo.Name -Attributes @{Label = $DBHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+
+                        if ($Dir -eq 'LR') {
+                            Rank $BackupServerInfo.Name, $DatabaseServerInfo.Name
+                            Edge -From $DatabaseServerInfo.Name -To $BackupServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; xlabel = $DatabaseServerInfo.DBPort }
+                        } else {
+                            Rank $BackupServerInfo.Name, $DatabaseServerInfo.Name
+                            Edge -From $BackupServerInfo.Name -To $DatabaseServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; xlabel = $DatabaseServerInfo.DBPort }
+                        }
+                    } elseif ($EMServerInfo -and ($DatabaseServerInfo.Name -eq $BackupServerInfo.Name)) {
+                        Write-Verbose "Database server colocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
+                        $BSHASHTABLE = @{}
+                        $EMHASHTABLE = @{}
+
+                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
+                        $EMServerInfo.psobject.properties | ForEach-Object { $EMHASHTABLE[$_.Name] = $_.Value }
+
+                        Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+                        Node $EMServerInfo.Name -Attributes @{Label = $EMHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+
+                        if ($Dir -eq 'LR') {
+                            Rank $EMServerInfo.Name, $BackupServerInfo.Name
+                            Edge -From $EMServerInfo.Name -To $BackupServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; }
+                        } else {
+                            Rank $EMServerInfo.Name, $BackupServerInfo.Name
+                            Edge -From $BackupServerInfo.Name -To $EMServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; }
+                        }
                     } else {
-                        Rank $EMServerInfo.Name, $BackupServerInfo.Name, $DatabaseServerInfo.Name
-                        Edge -From $EMServerInfo.Name -To $BackupServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; }
-                        Edge -From $BackupServerInfo.Name -To $DatabaseServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; xlabel = $DatabaseServerInfo.DBPort }
+                        Write-Verbose "Database server colocated with Backup Server and no Enterprise Manager found: Collecting Backup Server Information."
+                        $BSHASHTABLE = @{}
+                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
+                        Node Left @{Label = 'Left'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                        Node Leftt @{Label = 'Leftt'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                        Node Right @{Label = 'Right'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                        Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+                        Edge Left, Leftt, $BackupServerInfo.Name, Right @{style = $EdgeDebug.style; color = $EdgeDebug.color }
+                        Rank Left, Leftt, $BackupServerInfo.Name, Right
                     }
-                } elseif (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and (-Not $EMServerInfo)) {
-                    Write-Verbose "Not Enterprise Manager Found: Collecting Backup Server and Database server Information."
-                    $BSHASHTABLE = @{}
-                    $DBHASHTABLE = @{}
-
-                    $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-                    $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
-
-                    Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
-                    Node $DatabaseServerInfo.Name -Attributes @{Label = $DBHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
-
-                    if ($Dir -eq 'LR') {
-                        Rank $BackupServerInfo.Name, $DatabaseServerInfo.Name
-                        Edge -From $DatabaseServerInfo.Name -To $BackupServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; xlabel = $DatabaseServerInfo.DBPort }
-                    } else {
-                        Rank $BackupServerInfo.Name, $DatabaseServerInfo.Name
-                        Edge -From $BackupServerInfo.Name -To $DatabaseServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; xlabel = $DatabaseServerInfo.DBPort }
-                    }
-                } elseif ($EMServerInfo -and ($DatabaseServerInfo.Name -eq $BackupServerInfo.Name)) {
-                    Write-Verbose "Database server colocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
-                    $BSHASHTABLE = @{}
-                    $EMHASHTABLE = @{}
-
-                    $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-                    $EMServerInfo.psobject.properties | ForEach-Object { $EMHASHTABLE[$_.Name] = $_.Value }
-
-                    Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
-                    Node $EMServerInfo.Name -Attributes @{Label = $EMHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
-
-                    if ($Dir -eq 'LR') {
-                        Rank $EMServerInfo.Name, $BackupServerInfo.Name
-                        Edge -From $EMServerInfo.Name -To $BackupServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; }
-                    } else {
-                        Rank $EMServerInfo.Name, $BackupServerInfo.Name
-                        Edge -From $BackupServerInfo.Name -To $EMServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; }
-                    }
-                } else {
-                    Write-Verbose "Database server colocated with Backup Server and no Enterprise Manager found: Collecting Backup Server Information."
-                    $BSHASHTABLE = @{}
-                    $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-                    Node Left @{Label = 'Left'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
-                    Node Leftt @{Label = 'Leftt'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
-                    Node Right @{Label = 'Right'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
-                    Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
-                    Edge Left, Leftt, $BackupServerInfo.Name, Right @{style = $EdgeDebug.style; color = $EdgeDebug.color }
-                    Rank Left, Leftt, $BackupServerInfo.Name, Right
                 }
             }
         } catch {
@@ -357,7 +359,6 @@ function Get-VbrRepositoryInfo {
         $RepositoriesInfo = @()
 
         foreach ($Repository in $Repositories) {
-            $IconType = Get-IconType
             $Role = Get-RoleType -String $Repository.Type
 
             $Rows = [ordered]@{}

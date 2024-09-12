@@ -5,7 +5,7 @@ function Get-VbrBackupRepoInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.2
+        Version:        0.6.5
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -38,7 +38,7 @@ function Get-VbrBackupRepoInfo {
 
                     $Rows = @{}
 
-                    if ($Role -like '*Local') {
+                    if ($Role -like '*Local' -or $Role -like '*Hardened') {
                         $Rows.add('Server', $BackupRepo.Host.Name.Split('.')[0])
                         $Rows.add('Path', $BackupRepo.FriendlyPath)
                         $Rows.add('Total-Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
@@ -51,6 +51,11 @@ function Get-VbrBackupRepoInfo {
                         $Rows.add('Path', $BackupRepo.FriendlyPath)
                         $Rows.add('Total-Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
                         $Rows.add('Used-Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
+                    } else {
+                        $Rows.add('Server', 'Uknown')
+                        $Rows.add('Path', 'Uknown')
+                        $Rows.add('Total-Space', "0 GB")
+                        $Rows.add('Used-Space', "0 GB")
                     }
 
                     if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($Role -notlike '*Share') -and ($BackupRepo.Host.Name -in $ViBackupProxy.Host.Name -or $BackupRepo.Host.Name -in $HvBackupProxy.Host.Name)) {
