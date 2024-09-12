@@ -71,7 +71,7 @@ function New-VeeamDiagram {
     .PARAMETER WatermarkColor
         Allow to specified the color used for the watermark text. Default: Green.
     .NOTES
-        Version:        0.6.5
+        Version:        0.6.6
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -331,8 +331,9 @@ function New-VeeamDiagram {
             'Backup-to-ProtectedGroup' { 'Physical Infrastructure Diagram' }
             'Backup-Infrastructure' { 'Backup Infrastructure Diagram' }
         }
-
-        Write-ColorOutput -Color 'Green' -String ("Please wait while the '{0}' is being generated." -f $MainGraphLabel)
+        if ($Format -ne 'Base64') {
+            Write-ColorOutput -Color 'Green' -String ("Please wait while the '{0}' is being generated." -f $MainGraphLabel)
+        }
 
         $IconDebug = $false
 
