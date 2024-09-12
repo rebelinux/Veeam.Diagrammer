@@ -4,7 +4,7 @@ function Get-IconType {
         Used by Veeam.Diagrammer to translate repository type to icon type object.
     .DESCRIPTION
     .NOTES
-        Version:        0.6.1
+        Version:        0.6.5
         Author:         Jonathan Colon
     .EXAMPLE
     .LINK
@@ -15,6 +15,8 @@ function Get-IconType {
 
     $IconType = Switch ($String) {
         'LinuxLocal' { 'VBR_Linux_Repository' }
+        'Hardened' { 'VBR_Linux_Repository' }
+        'LinuxHardened' { 'VBR_Linux_Repository' }
         'WinLocal' { 'VBR_Windows_Repository' }
         'Cloud' { 'VBR_Cloud_Repository' }
         'AmazonS3Compatible' { 'VBR_Amazon_S3_Compatible' }
@@ -35,7 +37,7 @@ function Get-IconType {
         'ActiveDirectory' { 'VBR_AGENT_AD' }
         'CSV' { 'VBR_AGENT_CSV' }
         'CifsShare' { 'VBR_NAS' }
-        'NfsShare' { 'VBR_NAS' }
+        'Nfs' { 'VBR_NAS' }
         default { 'VBR_No_Icon' }
     }
 
@@ -48,7 +50,7 @@ function Get-RoleType {
         Used by Veeam.Diagrammer to translate role type to function type object.
     .DESCRIPTION
     .NOTES
-        Version:        0.6.1
+        Version:        0.6.5
         Author:         Jonathan Colon
     .EXAMPLE
     .LINK
@@ -59,6 +61,7 @@ function Get-RoleType {
 
     $RoleType = Switch ($String) {
         'LinuxLocal' { 'Linux Local' }
+        'LinuxHardened' { 'Linux Hardened' }
         'WinLocal' { 'Windows Local' }
         'DDBoost' { 'Dedup Appliances' }
         'HPStoreOnceIntegration' { 'Dedup Appliances' }
@@ -71,7 +74,7 @@ function Get-RoleType {
         "agent" { 'Agent & Files Backup Proxy' }
         "nas" { 'NAS Backup Proxy' }
         "CifsShare" { 'SMB Share' }
-        "NfsShare" { 'NFS Share' }
+        'Nfs' { 'NFS Share' }
         default { 'Unknown' }
     }
     return $RoleType

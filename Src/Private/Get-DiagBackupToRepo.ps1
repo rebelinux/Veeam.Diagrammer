@@ -5,7 +5,7 @@ function Get-DiagBackupToRepo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.2
+        Version:        0.6.5
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -27,7 +27,7 @@ function Get-DiagBackupToRepo {
     process {
         try {
             $BackupRepo = Get-VbrBackupRepoInfo
-            $LocalBackupRepo = Get-VbrBackupRepoInfo | Where-Object { $_.Role -like '*Local' }
+            $LocalBackupRepo = Get-VbrBackupRepoInfo | Where-Object { $_.Role -like '*Local' -or $_.Role -like '*Hardened' }
             $DedupBackupRepo = Get-VbrBackupRepoInfo | Where-Object { $_.Role -like 'Dedup*' }
             $ObjStorage = Get-VbrBackupObjectRepoInfo
             $ArchiveObjStorage = Get-VbrBackupArchObjRepoInfo
