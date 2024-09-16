@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.7] - 2024-09-16
 
+### Changed
+
+- Increase Diagrammer.Core minimun version requirement
+
 ### Fixed
 
 - Fix Backup Server section if Enterprise Manager is collocated with the Backup Server
