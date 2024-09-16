@@ -35,52 +35,68 @@ function Get-VbrBackupSobrInfo {
                         $SobrRows.add('Encryption Key', $Sobr.EncryptionKey.Description)
                     }
 
-                    if ($Sobr.CapacityExtent.Repository.AmazonS3Folder) {
-                        $Folder = $Sobr.CapacityExtent.Repository.AmazonS3Folder
-                    } elseif ($Sobr.CapacityExtent.Repository.AzureBlobFolder) {
-                        $Folder = $Sobr.CapacityExtent.Repository.AzureBlobFolder
-                    } elseif ($Sobr.ArchiveExtent.Repository.AzureBlobFolder) {
-                        $Folder = $Sobr.ArchiveExtent.Repository.AzureBlobFolder
-                    } else { $Folder = 'Unknown' }
-
+                    $SobrsExtents = @()
 
                     foreach ($Extent in $Sobr.Extent) {
 
-                        $PerformanceRows = [pscustomobject]@{
+                        $PerformanceRows = @{
                             'Path' = $Extent.Repository.FriendlyPath
                             'Total Space' = "$((($Extent).Repository).GetContainer().CachedTotalSpace.InGigabytes) GB"
                             'Used Space' = "$((($Extent).Repository).GetContainer().CachedFreeSpace.InGigabytes) GB"
                         }
+
+                        $SobrsExtents += [ordered]@{
+                            Name = Remove-SpecialChar -String $Extent.Name -SpecialChars '\'
+                            IconType = Get-IconType -String $Extent.Repository.Type
+                            AditionalInfo = $PerformanceRows
+                        }
                     }
 
-                    $SOBRPERFHASHTABLE = @{}
-                    $PerformanceRows.psobject.properties | ForEach-Object { $SOBRPERFHASHTABLE[$_.Name] = $_.Value }
+                    $SobrsCapacityExtents = @()
 
-                    $CapacityRows = @{
-                        Type = $Sobr.CapacityExtent.Repository.Type
-                        Folder = "/$($Folder)"
-                        Gateway = & {
-                            if (-Not $Sobr.CapacityExtent.Repository.UseGatewayServer) {
-                                Switch ($Sobr.CapacityExtent.Repository.ConnectionType) {
-                                    'Gateway' {
-                                        switch (($Sobr.CapacityExtent.Repository.GatewayServer | Measure-Object).count) {
-                                            0 { "Disable" }
-                                            1 { $Sobr.CapacityExtent.Repository.GatewayServer.Name.Split('.')[0] }
-                                            Default { 'Automatic' }
+                    foreach ($CapacityExtent in $Sobr.CapacityExtents) {
+                        if ($CapacityExtent.Repository.AmazonS3Folder) {
+                            $CapacityFolder = $CapacityExtent.Repository.AmazonS3Folder
+                        } elseif ($CapacityExtent.Repository.AzureBlobFolder) {
+                            $CapacityFolder = $CapacityExtent.Repository.AzureBlobFolder
+                        }
+
+                        $CapacityRows = @{
+                            Type = $CapacityExtent.Repository.Type
+                            Folder = "/$($Folder)"
+                            Gateway = & {
+                                if (-Not $CapacityExtent.Repository.UseGatewayServer) {
+                                    Switch ($CapacityExtent.Repository.ConnectionType) {
+                                        'Gateway' {
+                                            switch (($CapacityExtent.Repository.GatewayServer | Measure-Object).count) {
+                                                0 { "Disable" }
+                                                1 { $CapacityExtent.Repository.GatewayServer.Name.Split('.')[0] }
+                                                Default { 'Automatic' }
+                                            }
                                         }
+                                        'Direct' { 'Direct' }
+                                        default { 'Unknown' }
                                     }
-                                    'Direct' { 'Direct' }
-                                    default { 'Unknown' }
-                                }
-                            } else {
-                                switch (($Sobr.CapacityExtent.Repository.GatewayServer | Measure-Object).count) {
-                                    0 { "Disable" }
-                                    1 { $Sobr.CapacityExtent.Repository.GatewayServer.Name.Split('.')[0] }
-                                    Default { 'Automatic' }
+                                } else {
+                                    switch (($CapacityExtent.Repository.GatewayServer | Measure-Object).count) {
+                                        0 { "Disable" }
+                                        1 { $CapacityExtent.Repository.GatewayServer.Name.Split('.')[0] }
+                                        Default { 'Automatic' }
+                                    }
                                 }
                             }
                         }
+
+                        $SobrsCapacityExtents += [ordered]@{
+                            Name = Remove-SpecialChar -String $CapacityExtent.Repository.Name -SpecialChars '\'
+                            IconType = Get-IconType -String $CapacityExtent.Repository.Type
+                            AditionalInfo = $CapacityRows
+                        }
                     }
+
+                    if ($Sobr.ArchiveExtent.Repository.AzureBlobFolder) {
+                        $ArchiveFolder = $Sobr.ArchiveExtent.Repository.AzureBlobFolder
+                    } else { $ArchiveFolder = 'Unknown' }
 
                     $ArchiveRows = [ordered]@{
                         Type = $Sobr.ArchiveExtent.Repository.ArchiveType
@@ -108,19 +124,19 @@ function Get-VbrBackupSobrInfo {
                     }
 
                     if ($Sobr.ArchiveExtent.Repository.AzureBlobFolder) {
-                        $ArchiveRows.add('Folder', "/$($Folder.Name)")
-                        $ArchiveRows.add('Container', $($Folder.Container))
+                        $ArchiveRows.add('Folder', "/$($ArchiveFolder.Name)")
+                        $ArchiveRows.add('Container', $($ArchiveFolder.Container))
                     }
 
                     $TempSobrInfo = [PSCustomObject]@{
                         Name = "$($Sobr.Name.toUpper())"
                         Label = Get-DiaNodeIcon -Name "$($Sobr.Name)" -IconType "VBR_SOBR_Repo" -Align "Center" -Rows $SobrRows -ImagesObj $Images -IconDebug $IconDebug
 
-                        Capacity = $Sobr.CapacityExtent.Repository | Select-Object -Property @{Name = 'Name'; Expression = { Remove-SpecialChar -String $_.Name -SpecialChars '\' } }, @{Name = 'Rows'; Expression = { $CapacityRows } }, @{Name = 'Icon'; Expression = { Get-IconType -String $_.Type } }
+                        Capacity = $SobrsCapacityExtents
 
                         Archive = $Sobr.ArchiveExtent.Repository | Select-Object -Property @{Name = 'Name'; Expression = { Remove-SpecialChar -String $_.Name -SpecialChars '\' } }, @{Name = 'Rows'; Expression = { $ArchiveRows } }, @{Name = 'Icon'; Expression = { Get-IconType -String $_.ArchiveType } }
 
-                        Performance = $Sobr.Extent | Select-Object -Property @{Name = 'Name'; Expression = { Remove-SpecialChar -String $_.Name -SpecialChars '\' } }, @{Name = 'Rows'; Expression = { $SOBRPERFHASHTABLE } }, @{Name = 'Icon'; Expression = { Get-IconType -String $_.Repository.Type } }
+                        Performance = $SobrsExtents
                     }
                     $SobrInfo += $TempSobrInfo
                 }
