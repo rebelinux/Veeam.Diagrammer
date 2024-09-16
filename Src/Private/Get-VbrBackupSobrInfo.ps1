@@ -63,7 +63,7 @@ function Get-VbrBackupSobrInfo {
 
                         $CapacityRows = @{
                             Type = $CapacityExtent.Repository.Type
-                            Folder = "/$($Folder)"
+                            Folder = "/$($CapacityFolder)"
                             Gateway = & {
                                 if (-Not $CapacityExtent.Repository.UseGatewayServer) {
                                     Switch ($CapacityExtent.Repository.ConnectionType) {
