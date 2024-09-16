@@ -22,7 +22,16 @@ function Get-DiagBackupServer {
         try {
             SubGraph BackupServers -Attributes @{Label = 'Management'; labelloc = 'b'; labeljust = "r"; style = "rounded"; bgcolor = "#ceedc4"; fontcolor = '#696969'; fontsize = 14; penwidth = 2 } {
                 SubGraph BackupServer -Attributes @{Label = 'Backup Server'; style = "rounded"; bgcolor = "#ceedc4"; fontsize = 18; fontcolor = '#005f4b'; penwidth = 0; labelloc = 't'; labeljust = "c"; } {
-                    if (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and $EMServerInfo) {
+                    if (( -Not $DatabaseServerInfo.Name ) -and ( -Not $EMServerInfo.Name )) {
+                        Write-Verbose -Message "Collecting Backup Server Information."
+                        $BSHASHTABLE = @{}
+                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
+                        Node Left @{Label = 'Left'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                        Node Right @{Label = 'Right'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                        Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain' }
+                        Edge Left, $BackupServerInfo.Name, Right @{style = $EdgeDebug.style; color = $EdgeDebug.color }
+                        Rank Left, $BackupServerInfo.Name, Right
+                    } elseif (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and ($EMServerInfo.Name -ne $BackupServerInfo.Name )) {
                         Write-Verbose -Message "Collecting Backup Server, Database Server and Enterprise Manager Information."
                         $BSHASHTABLE = @{}
                         $DBHASHTABLE = @{}
@@ -63,6 +72,38 @@ function Get-DiagBackupServer {
                             Rank $BackupServerInfo.Name, $DatabaseServerInfo.Name
                             Edge -From $BackupServerInfo.Name -To $DatabaseServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; xlabel = $DatabaseServerInfo.DBPort }
                         }
+                    } elseif (($EMServerInfo.Name -eq $BackupServerInfo.Name) -and ($DatabaseServerInfo.Name -eq $BackupServerInfo.Name)) {
+                        Write-Verbose -Message "Database and Enterprise Maneger server colocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
+                        $BSHASHTABLE = @{}
+
+                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
+
+                        Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain' }
+
+                        Node Left @{Label = 'Left'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                        Node Right @{Label = 'Right'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
+                        Edge Left, $BackupServerInfo.Name, Right @{style = $EdgeDebug.style; color = $EdgeDebug.color }
+                        Rank Left, $BackupServerInfo.Name, Right
+
+                    } elseif (($EMServerInfo.Name -eq $BackupServerInfo.Name) -and ($DatabaseServerInfo.Name -ne $BackupServerInfo.Name)) {
+                        Write-Verbose -Message "Enterprise Maneger server colocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
+                        $BSHASHTABLE = @{}
+                        $DBHASHTABLE = @{}
+
+                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
+                        $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
+
+                        Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain' }
+                        Node $DatabaseServerInfo.Name -Attributes @{Label = $DBHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain' }
+
+                        if ($Dir -eq 'LR') {
+                            Rank $BackupServerInfo.Name, $DatabaseServerInfo.Name
+                            Edge -From $DatabaseServerInfo.Name -To $BackupServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; xlabel = $DatabaseServerInfo.DBPort }
+                        } else {
+                            Rank $BackupServerInfo.Name, $DatabaseServerInfo.Name
+                            Edge -From $BackupServerInfo.Name -To $DatabaseServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; xlabel = $DatabaseServerInfo.DBPort }
+                        }
+
                     } elseif ($EMServerInfo -and ($DatabaseServerInfo.Name -eq $BackupServerInfo.Name)) {
                         Write-Verbose -Message "Database server colocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
                         $BSHASHTABLE = @{}
@@ -82,15 +123,14 @@ function Get-DiagBackupServer {
                             Edge -From $BackupServerInfo.Name -To $EMServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; }
                         }
                     } else {
-                        Write-Verbose -Message "Database server colocated with Backup Server and no Enterprise Manager found: Collecting Backup Server Information."
+                        Write-Verbose -Message "Collecting Backup Server Information."
                         $BSHASHTABLE = @{}
                         $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
                         Node Left @{Label = 'Left'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
-                        Node Leftt @{Label = 'Leftt'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
                         Node Right @{Label = 'Right'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; fillColor = 'transparent' }
                         Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; fillColor = '#ceedc4'; shape = 'plain' }
-                        Edge Left, Leftt, $BackupServerInfo.Name, Right @{style = $EdgeDebug.style; color = $EdgeDebug.color }
-                        Rank Left, Leftt, $BackupServerInfo.Name, Right
+                        Edge Left, $BackupServerInfo.Name, Right @{style = $EdgeDebug.style; color = $EdgeDebug.color }
+                        Rank Left, $BackupServerInfo.Name, Right
                     }
                 }
             }

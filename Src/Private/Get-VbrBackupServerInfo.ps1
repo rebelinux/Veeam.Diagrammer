@@ -20,8 +20,14 @@ function Get-VbrBackupServerInfo {
     )
     process {
         try {
-            $CimSession = New-CimSession $VBRServer.Name -Credential $Credential -Authentication Negotiate
-            $PssSession = New-PSSession $VBRServer.Name -Credential $Credential -Authentication Negotiate
+            $CimSession = try { New-CimSession $VBRServer.Name -Credential $Credential -Authentication Negotiate -Name 'CIMBackupServerDiagram' -ErrorAction Stop } catch { Write-Verbose "Backup Server Section: New-CimSession: Unable to connect to $($VBRServer.Name): $($_.Exception.MessageId)" }
+
+            $PssSession = try { New-PSSession $VBRServer.Name -Credential $Credential -Authentication Negotiate -ErrorAction Stop -Name 'PSSBackupServerDiagram' } catch {
+                if (-Not $_.Exception.MessageId) {
+                    $ErrorMessage = $_.FullyQualifiedErrorId
+                } else { $ErrorMessage = $_.Exception.MessageId }
+                Write-Verbose "Backup Server Section: New-PSSession: Unable to connect to $($VBRServer.Name): $ErrorMessage"
+            }
             Write-Verbose -Message "Collecting Backup Server information from $($VBRServer.Name)."
             try {
                 $VeeamVersion = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { Get-ChildItem -Recurse HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -match 'Veeam Backup & Replication Server' } | Select-Object -Property DisplayVersion }
@@ -61,7 +67,7 @@ function Get-VbrBackupServerInfo {
 
                     $Rows = @{
                         Role = $Roles
-                        IP = Get-NodeIP -HostName $VBRServer.Name
+                        IP = Get-NodeIP -Hostname $VBRServer.Name
                     }
 
                     if ($VeeamVersion) {
@@ -89,7 +95,7 @@ function Get-VbrBackupServerInfo {
                 }
 
                 if ($DatabaseServer) {
-                    $DatabaseServerIP = Get-NodeIP -HostName $DatabaseServer
+                    $DatabaseServerIP = Get-NodeIP -Hostname $DatabaseServer
 
                     $Rows = @{
                         Role = 'Database Server'
@@ -122,7 +128,7 @@ function Get-VbrBackupServerInfo {
             try {
                 $EMServer = [Veeam.Backup.Core.SBackupOptions]::GetEnterpriseServerInfo()
                 if ($EMServer.ServerName) {
-                    $EMServerIP = Get-NodeIP -HostName $EMServer.ServerName
+                    $EMServerIP = Get-NodeIP -Hostname $EMServer.ServerName
 
                     $Rows = @{
                         Role = 'Enterprise Manager Server'

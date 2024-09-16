@@ -34,19 +34,17 @@ function Get-DiagBackupToSobr {
                         foreach ($SOBROBJ in $SobrRepo) {
                             $SubGraphName = Remove-SpecialChar -String $SOBROBJ.Name -SpecialChars '\- '
                             SubGraph $SubGraphName  -Attributes @{Label = $SOBROBJ.Name; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
-                                $SOBRHASHTABLE = @{}
-                                $SOBROBJ.psobject.properties | ForEach-Object { $SOBRHASHTABLE[$_.Name] = $_.Value }
-                                Node $SOBROBJ -NodeScript { $_.Name } @{Label = $SOBRHASHTABLE.Label; fontname = "Segoe Ui"; shape = "plain"; }
+                                $SOBROBJ | ForEach-Object { Node $_.Name @{Label = $_.Label; fontname = "Segoe Ui"; shape = "plain"; }}
                                 if ($SOBROBJ.Performance) {
                                     SubGraph "$($SubGraphName)Performance" -Attributes @{Label = "Performance Extent"; fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = "dashed,rounded"; } {
 
-                                        $SOBROBJ.Performance | ForEach-Object { Node $_.Name @{Label = Get-DiaNodeIcon -Name $_.Name -IconType $_.Icon -Align "Center" -Rows $_.Rows -ImagesObj $Images -IconDebug $IconDebug; fontname = "Segoe Ui"; shape = "plain" } }
+                                        $SOBROBJ.Performance | ForEach-Object { Node $_.Name @{Label = Get-DiaNodeIcon -Name $_.Name -IconType $_.IconType -Align "Center" -Rows $_.AditionalInfo -ImagesObj $Images -IconDebug $IconDebug; fontname = "Segoe Ui"; shape = "plain" } }
                                     }
                                 }
                                 if ($SOBROBJ.Capacity) {
                                     SubGraph "$($SubGraphName)Capacity" -Attributes @{Label = "Capacity Extent"; fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = "dashed,rounded" } {
 
-                                        $SOBROBJ.Capacity | ForEach-Object { Node $_.Name @{Label = Get-DiaNodeIcon -Name $_.Name -IconType $_.Icon -Align "Center" -Rows $_.Rows -ImagesObj $Images -IconDebug $IconDebug; fontname = "Segoe Ui"; shape = "plain" } }
+                                        $SOBROBJ.Capacity | ForEach-Object { Node $_.Name @{Label = Get-DiaNodeIcon -Name $_.Name -IconType $_.IconType -Align "Center" -Rows $_.AditionalInfo -ImagesObj $Images -IconDebug $IconDebug; fontname = "Segoe Ui"; shape = "plain" } }
                                     }
                                 }
                                 if ($SOBROBJ.Archive) {
@@ -59,7 +57,11 @@ function Get-DiagBackupToSobr {
                                 if ($SOBROBJ.Archive) {
                                     $SOBROBJ.Performance | ForEach-Object { Edge -From $SOBROBJ.Name -To $SOBROBJ.Archive.Name, $SOBROBJ.Capacity.Name, $_.Name @{minlen = 2 } } | Select-Object -Unique
 
-                                } else { $SOBROBJ.Performance | ForEach-Object { Edge -From $SOBROBJ.Name -To $SOBROBJ.Capacity.Name, $_.Name @{minlen = 2 } } | Select-Object -Unique }
+                                } else {
+                                    $SOBROBJ.Performance | ForEach-Object { Edge -From $SOBROBJ.Name -To $_.Name @{minlen = 2 } } | Select-Object -Unique
+                                    $SOBROBJ.Capacity | ForEach-Object { Edge -From $SOBROBJ.Name -To $_.Name @{minlen = 2 } } | Select-Object -Unique
+
+                                }
                             }
                             Edge -From MainSubGraph:s -To $SOBROBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
