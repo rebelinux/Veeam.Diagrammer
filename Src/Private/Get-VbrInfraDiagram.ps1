@@ -55,6 +55,15 @@ function Get-VbrInfraDiagram {
                     Write-Verbose "Error: Unable to create ProxiesHyperV Objects. Disabling the section"
                     Write-Verbose "Error Message: $($_.Exception.Message)"
                 }
+
+                if ($NASProxies = Get-VbrNASProxyInfo) {
+                    $ProxiesNas = try {
+                        Node NasProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject (($NASProxies).Name | ForEach-Object { $_.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($NASProxies.AditionalInfo)); shape = 'plain'; fillColor = 'transparent'; fontname = "Segoe Ui" }
+                    } catch {
+                        Write-Verbose "Error: Unable to create ProxiesNas Objects. Disabling the section"
+                        Write-Verbose "Error Message: $($_.Exception.Message)"
+                    }
+                }
             }
 
             if ($Proxies -and ($ProxiesVi -or $ProxiesHv)) {
@@ -73,6 +82,13 @@ function Get-VbrInfraDiagram {
                         SubGraph HvProxyServer -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Hyper-V Proxies" -IconType "VBR_HyperV" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
 
                             $ProxiesHv
+                        }
+                    }
+
+                    if ($ProxiesNas) {
+                        SubGraph NasProxyServer -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Nas Proxies" -IconType "VBR_NAS" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
+
+                            $ProxiesNas
                         }
                     }
                 }
@@ -294,7 +310,12 @@ function Get-VbrInfraDiagram {
             # VBRStartPoint --- VBRServerPointSpace --- VBRProxyPoint --- VBRProxyPointSpace --- VBRRepoPoint --- VBREndPointSpace
             Edge -From VBRStartPoint -To VBRServerPointSpace @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
             Edge -From VBRServerPointSpace -To VBRProxyPoint @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-            Edge -From VBRProxyPoint -To VBRProxyPointSpace @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+            if ($ProxiesVi -and $ProxiesHv -and $ProxiesNas ) {
+                Edge -From VBRProxyPoint -To VBRProxyPointSpace @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+            } else {
+                Edge -From VBRProxyPoint -To VBRProxyPointSpace @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+
+            }
             Edge -From VBRProxyPointSpace -To VBRRepoPoint @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
             Edge -From VBRRepoPoint -To VBRRepoPointSpace @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
 

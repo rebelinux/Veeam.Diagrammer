@@ -43,6 +43,50 @@ function Get-VbrProxyInfo {
 
 }
 
+# Nas Proxy Graphviz Cluster
+function Get-VbrNASProxyInfo {
+    param (
+    )
+    try {
+        Write-Verbose "Collecting NAS Proxy information from $($VBRServer.Name)."
+        $Proxies = @()
+        $Proxies += Get-VBRNASProxyServer
+
+
+        if ($Proxies) {
+
+            $ProxiesInfo = @()
+
+            $Proxies | ForEach-Object {
+                $inobj = [ordered] @{
+                    'Enabled' = Switch ($_.IsEnabled) {
+                        'True' { 'Yes' }
+                        'False' { 'No' }
+                        default { 'Unknown' }
+                    }
+                    'Max Tasks' = $_.ConcurrentTaskNumber
+                }
+
+                $IconType = Get-IconType -String 'ProxyServer'
+
+                $TempProxyInfo = [PSCustomObject]@{
+                    Name = $_.Server.Name
+                    AditionalInfo = $inobj
+                    IconType = $IconType
+                }
+
+                $ProxiesInfo += $TempProxyInfo
+            }
+        }
+
+        return $ProxiesInfo
+
+    } catch {
+        $_
+    }
+
+}
+
 # Wan Accel Graphviz Cluster
 function Get-VbrWanAccelInfo {
     param (
