@@ -1,6 +1,7 @@
 $script:Images = @{
     "VBR_Server" = "VBR_server.png"
     "VBR_Repository" = "VBR_Repository.png"
+    "VBR_Veeam_Repository" = "Veeam_Repository.png"
     "VBR_NAS" = "NAS.png"
     "VBR_Deduplicating_Storage" = "Deduplication.png"
     "VBR_Linux_Repository" = "Linux_Repository.png"
@@ -17,7 +18,7 @@ $script:Images = @{
     "VBR_Wan_Accel" = "WAN_accelerator.png"
     "VBR_SOBR" = "Logo_SOBR.png"
     "VBR_SOBR_Repo" = "Scale_out_Backup_Repository.png"
-    "VBR_LOGO" = "Veeam_logo.png"
+    "VBR_LOGO" = "Veeam_logo_new.png"
     "VBR_No_Icon" = "no_icon.png"
     'VBR_Storage_NetApp' = "Storage_NetApp.png"
     'VBR_vCenter_Server' = 'vCenter_server.png'
@@ -43,4 +44,10 @@ $script:Images = @{
     "VBR_Tape" = "Tape.png"
     "VBR_Service_Providers" = "Veeam_Service_Provider_Console.png"
     "VBR_Service_Providers_Server" = "Veeam_Service_Provider_Server.png"
+    "VBR_NetApp" = "Storage_with_snapshot.png"
+    "VBR_Dell" = "Storage_with_snapshot.png"
+    "VBR_SAN" = "Storage_Stack.png"
+    "VBR_Virtual_Lab" = "Virtual_host.png"
+    "VBR_SureBackup" = "SureBackup.png"
+    "VBR_Application_Groups" = "Service-Application.png"
 }

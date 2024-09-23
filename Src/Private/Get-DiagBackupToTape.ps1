@@ -5,7 +5,7 @@ function Get-DiagBackupToTape {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.2
+        Version:        0.6.8
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -40,7 +40,7 @@ function Get-DiagBackupToTape {
                                     SubGraph  $TSSubGraph -Attributes @{Label = ' '; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                         $TSHASHTABLE = @{}
                                         $TSOBJ.psobject.properties | ForEach-Object { $TSHASHTABLE[$_.Name] = $_.Value }
-                                        Node $TSOBJ -NodeScript { $_.Name } @{Label = $TSHASHTABLE.Label; fontname = "Segoe Ui" }
+                                        Node $TSOBJ -NodeScript { $_.Name } @{Label = $TSHASHTABLE.Label; fontname = "Segoe Ui"; fillColor = 'transparent' }
                                         if ($BackupTapeLibrary) {
                                             $BKPTLOBJ = ($BackupTapeLibrary | Where-Object { $_.TapeServerId -eq $TSOBJ.Id } | Sort-Object -Property Name)
                                             foreach ($TSLibraryOBJ in $BKPTLOBJ) {
@@ -48,12 +48,12 @@ function Get-DiagBackupToTape {
                                                 SubGraph $TLSubGraph -Attributes @{Label = ' '; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
                                                     $TSLHASHTABLE = @{}
                                                     $TSLibraryOBJ.psobject.properties | ForEach-Object { $TSLHASHTABLE[$_.Name] = $_.Value }
-                                                    Node $TSLibraryOBJ -NodeScript { $_.Id } @{Label = $TSLHASHTABLE.Label; fontname = "Segoe Ui" }
+                                                    Node $TSLibraryOBJ -NodeScript { $_.Id } @{Label = $TSLHASHTABLE.Label; fontname = "Segoe Ui"; fillColor = 'transparent' }
                                                     if ($BackupTapeDrives) {
                                                         $TSLibraryOBJName = "$((Remove-SpecialChar -String $TSLibraryOBJ.Name -SpecialChars ' \_').toUpper())"
                                                         $TapeLibraryDrives = ($BackupTapeDrives | Where-Object { $_.LibraryId -eq $TSLibraryOBJ.Id } | Sort-Object -Property Name)
 
-                                                        Node "$($TSLibraryOBJName)Drives" @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($TapeLibraryDrives | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Tape_Drive" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($TapeLibraryDrives.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                                                        Node "$($TSLibraryOBJName)Drives" @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($TapeLibraryDrives | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Tape_Drive" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($TapeLibraryDrives.AditionalInfo )); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
                                                         Edge -From $TSLibraryOBJ.id -To "$($TSLibraryOBJName)Drives"
 
@@ -64,7 +64,7 @@ function Get-DiagBackupToTape {
                                         }
                                     }
                                 }
-                                ($BackupTapeServers | Sort-Object -Property Name) | ForEach-Object { Edge -From MainSubGraph:s -To $_.Name @{style = $EdgeDebug.style; color = $EdgeDebug.color } }
+                                ($BackupTapeServers | Sort-Object -Property Name) | ForEach-Object { Edge -From MainSubGraph:s -To $_.Name @{style = $EdgeDebug.style; color = $EdgeDebug.color; } }
                             }
                         }
                     }

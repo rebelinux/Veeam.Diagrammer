@@ -31,6 +31,11 @@ function New-VeeamDiagram {
         The supported directions are:
             'top-to-bottom', 'left-to-right'
         By default, direction will be set to top-to-bottom.
+    .PARAMETER DiagramType
+        Use it to set the diagram theme.
+        The supported themes are:
+            'Black', 'White', 'Neon'
+        By default, theme will be set to White.
     .PARAMETER NodeSeparation
         Controls Node separation ratio in visualization
         By default, NodeSeparation will be set to .60.
@@ -71,7 +76,7 @@ function New-VeeamDiagram {
     .PARAMETER WatermarkColor
         Allow to specified the color used for the watermark text. Default: Green.
     .NOTES
-        Version:        0.6.6
+        Version:        0.6.8
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -150,6 +155,13 @@ function New-VeeamDiagram {
             HelpMessage = 'TCP Port of target Veeam Backup Server'
         )]
         [string] $Port = '9392',
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Use it to set the diagram theme. (Black/White/Neon)'
+        )]
+        [ValidateSet('Black', 'White', 'Neon')]
+        [string] $DiagramTheme = 'White',
 
         [Parameter(
             Mandatory = $false,
@@ -353,6 +365,36 @@ function New-VeeamDiagram {
             $script:NodeDebugEdge = @{color = 'transparent'; style = 'transparent'; shape = 'none' }
         }
 
+        # Used to set diagram theme
+        if ($DiagramTheme -eq 'Black') {
+            $MainGraphBGColor = 'Black'
+            $Edgecolor = 'White'
+            $Fontcolor = 'White'
+            $NodeFontcolor = 'White'
+            $EdgeArrowSize = 1
+            $EdgeLineWidth = 3
+            $BackupServerBGColor = 'Black'
+            $BackupServerFontColor = 'White'
+        } elseif ($DiagramTheme -eq 'Neon') {
+            $MainGraphBGColor = 'grey14'
+            $Edgecolor = 'gold2'
+            $Fontcolor = 'gold2'
+            $NodeFontcolor = 'gold2'
+            $EdgeArrowSize = 1
+            $EdgeLineWidth = 3
+            $BackupServerBGColor = 'grey14'
+            $BackupServerFontColor = 'gold2'
+        } elseif ($DiagramTheme -eq 'White') {
+            $MainGraphBGColor = 'White'
+            $Edgecolor = '#71797E'
+            $Fontcolor = '#565656'
+            $NodeFontcolor = 'Black'
+            $EdgeArrowSize = 1
+            $EdgeLineWidth = 3
+            $BackupServerBGColor = '#ceedc4'
+            $BackupServerFontColor = '#005f4b'
+        }
+
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
         $IconPath = Join-Path $RootPath 'icons'
 
@@ -387,13 +429,15 @@ function New-VeeamDiagram {
             splines = $EdgeType
             penwidth = 1.5
             fontname = "Segoe Ui Black"
-            fontcolor = '#565656'
+            fontcolor = $Fontcolor
             fontsize = 32
             style = "dashed"
             labelloc = 't'
             imagepath = $IconPath
             nodesep = $NodeSeparation
             ranksep = $SectionSeparation
+            bgcolor = $MainGraphBGColor
+
         }
     }
 
@@ -418,18 +462,20 @@ function New-VeeamDiagram {
                     shape = 'none'
                     labelloc = 't'
                     style = 'filled'
-                    fillColor = 'white'
-                    fontsize = 14;
+                    fillColor = 'transparent'
+                    fontsize = $NodeFontSize
                     imagescale = $true
+                    fontcolor = $NodeFontcolor
                 }
                 # Edge default theme
                 Edge @{
                     style = 'dashed'
                     dir = 'both'
                     arrowtail = 'dot'
-                    color = '#71797E'
-                    penwidth = 1.5
-                    arrowsize = 1
+                    color = $Edgecolor
+                    penwidth = $EdgeLineWidth
+                    arrowsize = $EdgeArrowSize
+                    fontcolor = $Edgecolor
                 }
 
                 if ($Signature) {
