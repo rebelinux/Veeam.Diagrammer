@@ -152,6 +152,11 @@ The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication d
   The supported directions are:
       'top-to-bottom', 'left-to-right'
   By default, direction will be set to top-to-bottom.
+.PARAMETER DiagramType
+  Use it to set the diagram theme.
+  The supported themes are:
+      'Black', 'White', 'Neon'
+  By default, theme will be set to White.
 .PARAMETER NodeSeparation
   Controls Node separation ratio in visualization
   By default, NodeSeparation will be set to .60.

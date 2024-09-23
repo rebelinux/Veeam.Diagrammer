@@ -320,6 +320,51 @@ function Get-VbrSOBRInfo {
 
 }
 
+# Storage Infrastructure Graphviz Cluster
+function Get-VbrSANInfo {
+    param (
+    )
+    try {
+        Write-Verbose "Collecting Storage Infrastructure information from $($VBRServer.Name)."
+        $SANHost = @()
+        $SANHost += Get-NetAppHost | Select-Object -Property Name, @{ Name = 'Type'; Expression = { 'Netapp' } }
+        $SANHost += Get-VBRIsilonHost | Select-Object -Property Name, @{ Name = 'Type'; Expression = { 'Dell' } }
+
+        if ($SANHost) {
+
+            $SANHostInfo = @()
+
+            $SANHost | ForEach-Object {
+                try {
+                    $IconType = Get-IconType -String $_.Type
+                    $inobj = [ordered] @{
+                        'Type' = switch ($_.Type) {
+                            "Netapp" { "NetApp Ontap" }
+                            "Dell" { "Dell Isilon" }
+                            default { 'Unknown' }
+                        }
+                    }
+
+                    $TempSanInfo = [PSCustomObject]@{
+                        Name = $_.Name
+                        AditionalInfo = $inobj
+                        IconType = $IconType
+                    }
+
+                    $SANHostInfo += $TempSanInfo
+                } catch {
+                    Write-Verbose "Error: Unable to process $($_.Name) from Storage Infrastructure table: $($_.Exception.Message)"
+                }
+            }
+        }
+
+        return $SANHostInfo
+
+    } catch {
+        $_
+    }
+}
+
 # Tape Servers Graphviz Cluster
 function Get-VbrTapeServersInfo {
     param (
@@ -471,6 +516,83 @@ function Get-VbrServiceProviderInfo {
         }
 
         return $ServiceProvidersInfo
+
+    } catch {
+        $_
+    }
+}
+
+# SureBackup Virtual Lab Graphviz Cluster
+function Get-VbrVirtualLabInfo {
+    param (
+    )
+    try {
+        Write-Verbose "Collecting VirtualLab information from $($VBRServer.Name)."
+        $VirtualLab = Get-VBRVirtualLab
+
+        if ($VirtualLab) {
+
+            $VirtualLabInfo = @()
+
+            $VirtualLab | ForEach-Object {
+                $inobj = [ordered] @{
+                    'Platform' = Switch ($_.Platform) {
+                        'HyperV' { 'Microsoft Hyper-V' }
+                        'VMWare' { 'VMWare vSphere' }
+                        default { $_.Platform }
+                    }
+                    'Server' = $_.Server.Name
+                }
+
+                $IconType = Get-IconType -String 'VirtualLab'
+
+                $TempVirtualLabInfo = [PSCustomObject]@{
+                    Name = $_.Name
+                    AditionalInfo = $inobj
+                    IconType = $IconType
+                }
+
+                $VirtualLabInfo += $TempVirtualLabInfo
+            }
+        }
+
+        return $VirtualLabInfo
+
+    } catch {
+        $_
+    }
+}
+
+# SureBackup Application Groups Graphviz Cluster
+function Get-VbrApplicationGroupsInfo {
+    param (
+    )
+    try {
+        Write-Verbose "Collecting Application Groups information from $($VBRServer.Name)."
+        $ApplicationGroups = Get-VBRApplicationGroup
+
+        if ($ApplicationGroups) {
+
+            $ApplicationGroupsInfo = @()
+
+            $ApplicationGroups | ForEach-Object {
+                $inobj = [ordered] @{
+                    'Machine Count' = ($_.VM | Measure-Object).Count
+                }
+
+                $IconType = Get-IconType -String 'ApplicationGroups'
+
+                $TempApplicationGroupsInfo = [PSCustomObject]@{
+                    Name = $_.Name
+                    AditionalInfo = $inobj
+                    IconType = $IconType
+                }
+
+                $ApplicationGroupsInfo += $TempApplicationGroupsInfo
+            }
+        }
+
+        return $ApplicationGroupsInfo
 
     } catch {
         $_

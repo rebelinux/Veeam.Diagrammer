@@ -38,6 +38,10 @@ function Get-IconType {
         'CSV' { 'VBR_AGENT_CSV' }
         'CifsShare' { 'VBR_NAS' }
         'Nfs' { 'VBR_NAS' }
+        'Netapp' {'VBR_NetApp'}
+        'Dell' {'VBR_Dell'}
+        'VirtualLab' {'VBR_Virtual_Lab'}
+        'ApplicationGroups' {'VBR_Application_Groups'}
         default { 'VBR_No_Icon' }
     }
 

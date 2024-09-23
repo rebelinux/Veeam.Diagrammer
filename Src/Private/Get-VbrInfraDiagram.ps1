@@ -5,7 +5,7 @@ function Get-VbrInfraDiagram {
     .DESCRIPTION
         Diagram the configuration of Veeam Backup & Replication infrastructure in PDF/SVG/DOT/PNG formats using PSGraph and Graphviz.
     .NOTES
-        Version:        0.6.5
+        Version:        0.6.8
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -43,14 +43,14 @@ function Get-VbrInfraDiagram {
             # Proxy Graphviz Cluster
             if ($Proxies = Get-VbrProxyInfo) {
                 $ProxiesVi = try {
-                    Node ViProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "vSphere" }) | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($Proxies.AditionalInfo | Where-Object { $_.Type -eq "vSphere" })); shape = 'plain'; fillColor = 'transparent'; fontname = "Segoe Ui" }
+                    Node ViProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "vSphere" }) | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($Proxies.AditionalInfo | Where-Object { $_.Type -eq "vSphere" })); shape = 'plain'; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create ProxiesVSphere Objects. Disabling the section"
                     Write-Verbose "Error Message: $($_.Exception.Message)"
                 }
 
                 $ProxiesHv = try {
-                    Node HvProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "Off host" -or $_.AditionalInfo.Type -eq "On host" }).Name | ForEach-Object { $_.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($Proxies.AditionalInfo | Where-Object { $_.Type -eq "Off host" -or $_.Type -eq "On host" })); shape = 'plain'; fillColor = 'transparent'; fontname = "Segoe Ui" }
+                    Node HvProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "Off host" -or $_.AditionalInfo.Type -eq "On host" }).Name | ForEach-Object { $_.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($Proxies.AditionalInfo | Where-Object { $_.Type -eq "Off host" -or $_.Type -eq "On host" })); shape = 'plain'; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create ProxiesHyperV Objects. Disabling the section"
                     Write-Verbose "Error Message: $($_.Exception.Message)"
@@ -58,7 +58,7 @@ function Get-VbrInfraDiagram {
 
                 if ($NASProxies = Get-VbrNASProxyInfo) {
                     $ProxiesNas = try {
-                        Node NasProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject (($NASProxies).Name | ForEach-Object { $_.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($NASProxies.AditionalInfo)); shape = 'plain'; fillColor = 'transparent'; fontname = "Segoe Ui" }
+                        Node NasProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject (($NASProxies).Name | ForEach-Object { $_.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($NASProxies.AditionalInfo)); shape = 'plain'; fontname = "Segoe Ui" }
                     } catch {
                         Write-Verbose "Error: Unable to create ProxiesNas Objects. Disabling the section"
                         Write-Verbose "Error Message: $($_.Exception.Message)"
@@ -95,52 +95,71 @@ function Get-VbrInfraDiagram {
             } else {
                 SubGraph ProxyServer -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Backup Proxies" -IconType "VBR_Proxy" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
 
-                    Node -Name Proxies -Attributes @{Label = 'No Backup Proxies'; shape = "rectangle"; labelloc = 'c'; fixedsize = $true; width = "3"; height = "2"; fillColor = 'transparent'; penwidth = 0 }
+                    Node -Name Proxies -Attributes @{Label = 'No Backup Proxies'; shape = "rectangle"; labelloc = 'c'; fixedsize = $true; width = "3"; height = "2"; penwidth = 0 }
                 }
             }
 
-            # SOBR Graphviz Cluster
-            if ($SOBR = Get-VbrSOBRInfo) {
-                $SOBRNode = try {
-                    Node SOBRRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBR.Name -Align "Center" -iconType "VBR_SOBR_Repo" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBR.AditionalInfo); shape = 'plain'; fillColor = 'transparent'; fontname = "Segoe Ui" }
-                } catch {
-                    Write-Verbose "Error: Unable to create SOBR Objects. Disabling the section"
-                    Write-Verbose "Error Message: $($_.Exception.Message)"
+            SubGraph OnpremStorage -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Backup Infrastructure" -IconType "VBR_Veeam_Repository" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
+
+                # Repositories Graphviz Cluster
+                if ($RepositoriesInfo = Get-VbrRepositoryInfo) {
+                    $RepositoriesNode = try {
+                        Node Repositories @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $RepositoriesInfo.Name -Align "Center" -iconType $RepositoriesInfo.IconType -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $RepositoriesInfo.AditionalInfo); shape = 'plain'; fontname = "Segoe Ui" }
+                    } catch {
+                        Write-Verbose "Error: Unable to create Repositories Objects. Disabling the section"
+                        Write-Verbose "Error Message: $($_.Exception.Message)"
+                    }
                 }
-            }
+                if ($RepositoriesInfo -and $RepositoriesNode) {
+                    SubGraph Repos -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Backup Repositories" -IconType "VBR_Repository" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
 
-            if ($SOBR -and $SOBRNode) {
-                SubGraph SOBR -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Scale-Out Backup Repositories" -IconType "VBR_SOBR" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
-                    $SOBRNode
+                        $RepositoriesNode
+
+                    }
+                } else {
+                    SubGraph Repos -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Backup Repositories" -IconType "VBR_Repository" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
+
+                        Node -Name Repositories -Attributes @{Label = 'No Backup Repositories'; shape = "rectangle"; labelloc = 'c'; fixedsize = $true; width = "3"; height = "2"; penwidth = 0 }
+                    }
                 }
-            }
 
-            # Repositories Graphviz Cluster
-            if ($RepositoriesInfo = Get-VbrRepositoryInfo) {
-                $RepositoriesNode = try {
-                    Node Repositories @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $RepositoriesInfo.Name -Align "Center" -iconType $RepositoriesInfo.IconType -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $RepositoriesInfo.AditionalInfo); shape = 'plain'; fillColor = 'transparent'; fontname = "Segoe Ui" }
-                } catch {
-                    Write-Verbose "Error: Unable to create Repositories Objects. Disabling the section"
-                    Write-Verbose "Error Message: $($_.Exception.Message)"
+                # SOBR Graphviz Cluster
+                if ($SOBR = Get-VbrSOBRInfo) {
+                    $SOBRNode = try {
+                        Node SOBRRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBR.Name -Align "Center" -iconType "VBR_SOBR_Repo" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBR.AditionalInfo); shape = 'plain'; fontname = "Segoe Ui" }
+                    } catch {
+                        Write-Verbose "Error: Unable to create SOBR Objects. Disabling the section"
+                        Write-Verbose "Error Message: $($_.Exception.Message)"
+                    }
                 }
-            }
-            if ($RepositoriesInfo -and $RepositoriesNode) {
-                SubGraph Repos -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Backup Repositories" -IconType "VBR_Repository" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
 
-                    $RepositoriesNode
-
+                if ($SOBR -and $SOBRNode) {
+                    SubGraph SOBR -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Scale-Out Backup Repositories" -IconType "VBR_SOBR" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
+                        $SOBRNode
+                    }
                 }
-            } else {
-                SubGraph Repos -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Backup Repositories" -IconType "VBR_Repository" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
 
-                    Node -Name Repositories -Attributes @{Label = 'No Backup Repositories'; shape = "rectangle"; labelloc = 'c'; fixedsize = $true; width = "3"; height = "2"; fillColor = 'transparent'; penwidth = 0 }
+                # SAN Infrastructure Graphviz Cluster
+                if ($SAN = Get-VbrSANInfo) {
+                    $SANNode = try {
+                        Node SANRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SAN.Name -Align "Center" -iconType $SAN.IconType -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SAN.AditionalInfo); shape = 'plain'; fontname = "Segoe Ui" }
+                    } catch {
+                        Write-Verbose "Error: Unable to create SAN Objects. Disabling the section"
+                        Write-Verbose "Error Message: $($_.Exception.Message)"
+                    }
+                }
+
+                if ($SAN -and $SANNode) {
+                    SubGraph SAN -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Storage Infrastructure" -IconType "VBR_SAN" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
+                        $SANNode
+                    }
                 }
             }
 
             # Object Repositories Graphviz Cluster
             if ($ObjectRepositoriesInfo = Get-VbrObjectRepoInfo) {
                 $ObjectRepositoriesNode = try {
-                    Node ObjectRepositories @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ObjectRepositoriesInfo.Name -Align "Center" -iconType $ObjectRepositoriesInfo.Icontype -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $ObjectRepositoriesInfo.AditionalInfo); shape = 'plain'; fillColor = 'transparent'; fontname = "Segoe Ui" }
+                    Node ObjectRepositories @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ObjectRepositoriesInfo.Name -Align "Center" -iconType $ObjectRepositoriesInfo.Icontype -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $ObjectRepositoriesInfo.AditionalInfo); shape = 'plain'; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create ObjectRepositories Objects. Disabling the section"
                     Write-Verbose "Error Message: $($_.Exception.Message)"
@@ -150,7 +169,7 @@ function Get-VbrInfraDiagram {
             # Archive Object Repositories Graphviz Cluster
             if ($ArchObjRepositoriesInfo = Get-VbrArchObjectRepoInfo) {
                 $ArchObjRepositoriesNode = try {
-                    Node ArchObjectRepositories @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ArchObjRepositoriesInfo.Name -Align "Center" -iconType $ArchObjRepositoriesInfo.Icontype -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $ArchObjRepositoriesInfo.AditionalInfo); shape = 'plain'; fillColor = 'transparent'; fontname = "Segoe Ui" }
+                    Node ArchObjectRepositories @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ArchObjRepositoriesInfo.Name -Align "Center" -iconType $ArchObjRepositoriesInfo.Icontype -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $ArchObjRepositoriesInfo.AditionalInfo); shape = 'plain'; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create ArchiveObjectRepositories Objects. Disabling the section"
                     Write-Verbose "Error Message: $($_.Exception.Message)"
@@ -178,14 +197,14 @@ function Get-VbrInfraDiagram {
             } else {
                 SubGraph ObjectRepos -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Object Storage" -IconType "VBR_Object" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
 
-                    Node -Name ObjectRepo -Attributes @{Label = 'No Object Storage Repositories'; shape = "rectangle"; labelloc = 'c'; fixedsize = $true; width = "4"; height = "3"; fillColor = 'transparent'; penwidth = 0 }
+                    Node -Name ObjectRepo -Attributes @{Label = 'No Object Storage Repositories'; shape = "rectangle"; labelloc = 'c'; fixedsize = $true; width = "4"; height = "3"; penwidth = 0 }
                 }
             }
 
             # WanAccels Graphviz Cluster
             if ($WanAccels = Get-VbrWanAccelInfo) {
                 $WanAccelsNode = try {
-                    Node WanAccelServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($WanAccels | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Wan_Accel" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $WanAccels.AditionalInfo); shape = 'plain'; fillColor = 'transparent'; fontname = "Segoe Ui" }
+                    Node WanAccelServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($WanAccels | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Wan_Accel" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $WanAccels.AditionalInfo); shape = 'plain'; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create WanAccelerators Objects. Disabling the section"
                     Write-Verbose "Error Message: $($_.Exception.Message)"
@@ -202,14 +221,14 @@ function Get-VbrInfraDiagram {
             # Tapes Graphviz Cluster
             if ($TapeServerInfo = Get-VbrTapeServersInfo) {
                 $TapeServerNode = try {
-                    Node TapeServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeServerInfo.Name -Align "Center" -iconType "VBR_Tape_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeServerInfo.AditionalInfo); shape = 'plain'; fillColor = 'transparent'; fontname = "Segoe Ui" }
+                    Node TapeServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeServerInfo.Name -Align "Center" -iconType "VBR_Tape_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeServerInfo.AditionalInfo); shape = 'plain'; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create TapeServers Objects. Disabling the section"
                     Write-Verbose "Error Message: $($_.Exception.Message)"
                 }
                 if ($TapeLibraryInfo = Get-VbrTapeLibraryInfo) {
                     $TapeLibraryNode = try {
-                        Node TapeLibrary @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeLibraryInfo.Name -Align "Center" -iconType "VBR_Tape_Library" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeLibraryInfo.AditionalInfo); shape = 'plain'; fillColor = 'transparent'; fontname = "Segoe Ui" }
+                        Node TapeLibrary @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeLibraryInfo.Name -Align "Center" -iconType "VBR_Tape_Library" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeLibraryInfo.AditionalInfo); shape = 'plain'; fontname = "Segoe Ui" }
                     } catch {
                         Write-Verbose "Error: Unable to create TapeLibrary Objects. Disabling the section"
                         Write-Verbose "Error Message: $($_.Exception.Message)"
@@ -217,7 +236,7 @@ function Get-VbrInfraDiagram {
                 }
                 if ($TapeVaultInfo = Get-VbrTapeVaultInfo) {
                     $TapeVaultNode = try {
-                        Node TapeVault @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeVaultInfo.Name -Align "Center" -iconType "VBR_Tape_Vaults" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeVaultInfo.AditionalInfo); shape = 'plain'; fillColor = 'transparent'; fontname = "Segoe Ui" }
+                        Node TapeVault @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeVaultInfo.Name -Align "Center" -iconType "VBR_Tape_Vaults" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeVaultInfo.AditionalInfo); shape = 'plain'; fontname = "Segoe Ui" }
                     } catch {
                         Write-Verbose "Error: Unable to create TapeVault Objects. Disabling the section"
                         Write-Verbose "Error Message: $($_.Exception.Message)"
@@ -252,7 +271,7 @@ function Get-VbrInfraDiagram {
             # ServiceProvider Graphviz Cluster
             if ($ServiceProviderInfo = Get-VbrServiceProviderInfo) {
                 $ServiceProviderNode = try {
-                    Node ServiceProvider @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ServiceProviderInfo.Name -Align "Center" -iconType "VBR_Service_Providers_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $ServiceProviderInfo.AditionalInfo); shape = 'plain'; fillColor = 'transparent'; fontname = "Segoe Ui" }
+                    Node ServiceProvider @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ServiceProviderInfo.Name -Align "Center" -iconType "VBR_Service_Providers_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $ServiceProviderInfo.AditionalInfo); shape = 'plain'; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create ServiceProvider Objects. Disabling the section"
                     Write-Verbose "Error Message: $($_.Exception.Message)"
@@ -264,6 +283,52 @@ function Get-VbrInfraDiagram {
                     $ServiceProviderNode
 
                 }
+            }
+
+            # SureBackup Graphviz Cluster
+            if (($VirtualLab = Get-VbrVirtualLabInfo -and ($ApplicationGroups = Get-VbrApplicationGroupsInfo))) {
+                if ($VirtualLab) {
+                    $VirtualLabNode = try {
+                        Node VirtualLabServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $VirtualLab.Name -Align "Center" -iconType $VirtualLab.IconType -columnSize 2 -IconDebug $IconDebug -MultiIcon -AditionalInfo $VirtualLab.AditionalInfo); shape = 'plain'; fontname = "Segoe Ui" }
+                    } catch {
+                        Write-Verbose "Error: Unable to create VirtualLab Objects. Disabling the section"
+                        Write-Verbose "Error Message: $($_.Exception.Message)"
+                    }
+                }
+                if ($ApplicationGroups) {
+                    $ApplicationGroupsNode = try {
+                        Node ApplicationGroups @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ApplicationGroups.Name -Align "Center" -iconType $ApplicationGroups.IconType -columnSize 2 -IconDebug $IconDebug -MultiIcon -AditionalInfo $ApplicationGroups.AditionalInfo); shape = 'plain'; fontname = "Segoe Ui" }
+                    } catch {
+                        Write-Verbose "Error: Unable to create VirtualLab Objects. Disabling the section"
+                        Write-Verbose "Error Message: $($_.Exception.Message)"
+                    }
+                }
+                SubGraph SureBackup -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "SureBackup" -IconType "VBR_SureBackup" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'd'; style = 'dashed,rounded' } {
+                    # VirtualLab Graphviz Cluster
+                    if ($VirtualLab -and $VirtualLabNode) {
+                        SubGraph VirtualLab -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Virtual Labs" -IconType "VBR_Virtual_Lab" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
+
+                            $VirtualLabNode
+
+                        }
+                    }
+                    # ApplicationGroups Graphviz Cluster
+                    if ($ApplicationGroups -and $ApplicationGroupsNode) {
+                        SubGraph ApplicationGroup -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Application Groups" -IconType "VBR_Virtual_Lab" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
+
+                            $ApplicationGroupsNode
+
+                        }
+                    }
+                }
+            }
+
+            if ($DiagramTheme -eq 'Black') {
+                $NodeFillColor = 'White'
+            } elseif ($DiagramTheme -eq 'Neon') {
+                $NodeFillColor = 'Gold2'
+            } else {
+                $NodeFillColor = '#71797E'
             }
 
             # Veeam VBR elements point of connection (Dummy Nodes!)
@@ -284,10 +349,14 @@ function Get-VbrInfraDiagram {
                 $Node += 'VBRServiceProviderPoint'
             }
 
+            if ($VirtualLabNode -or $ApplicationGroups) {
+                $Node += 'VBRSureBackupPoint'
+            }
+
             Node $Node -NodeScript { $_ } @{Label = { $_ } ; fontcolor = $NodeDebug.color; fillColor = $NodeDebug.style; shape = $NodeDebug.shape }
 
             $NodeStartEnd = @('VBRStartPoint', 'VBREndPointSpace')
-            Node $NodeStartEnd -NodeScript { $_ } @{Label = { $_ }; fillColor = '#71797E'; fontcolor = $NodeDebug.color; shape = 'point'; fixedsize = 'true'; width = .2 ; height = .2 }
+            Node $NodeStartEnd -NodeScript { $_ } @{Label = { $_ }; fillColor = $Edgecolor; fontcolor = $NodeDebug.color; shape = 'point'; fixedsize = 'true'; width = .2 ; height = .2 }
             #---------------------------------------------------------------------------------------------#
             #                             Graphviz Rank Section                                           #
             #                     Rank allow to put Nodes on the same group level                         #
@@ -316,36 +385,103 @@ function Get-VbrInfraDiagram {
                 Edge -From VBRProxyPoint -To VBRProxyPointSpace @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
 
             }
-            Edge -From VBRProxyPointSpace -To VBRRepoPoint @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+            Edge -From VBRProxyPointSpace -To VBRRepoPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
             Edge -From VBRRepoPoint -To VBRRepoPointSpace @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
 
-            if ($TapeServerNode -and $WanAccelsNode -and $ServiceProviderNode) {
-                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRWanAccelPoint -To VBRTapePoint @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRTapePoint -To VBRServiceProviderPoint @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+            if ($TapeServerNode -and $WanAccelsNode -and $ServiceProviderNode -and ($VirtualLabNode -or $ApplicationGroupsNode)) {
+                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRWanAccelPoint -To VBRTapePoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRTapePoint -To VBRServiceProviderPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRServiceProviderPoint -To VBRSureBackupPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                $LastPoint = 'VBRSureBackupPoint'
+
+            } elseif ($TapeServerNode -and $WanAccelsNode -and $ServiceProviderNode -and ( -Not ($VirtualLabNode -or $ApplicationGroupsNode))) {
+                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRWanAccelPoint -To VBRTapePoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRTapePoint -To VBRServiceProviderPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
                 $LastPoint = 'VBRServiceProviderPoint'
 
-            } elseif ($TapeServerNode -and (-Not $WanAccelsNode) -and $ServiceProviderNode) {
+            } elseif ($TapeServerNode -and $WanAccelsNode -and (-Not $ServiceProviderNode) -and ($VirtualLabNode -or $ApplicationGroupsNode)) {
+                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRWanAccelPoint -To VBRTapePoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRTapePoint -To VBRSureBackupPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                $LastPoint = 'VBRSureBackupPoint'
+
+            } elseif ($TapeServerNode -and $WanAccelsNode -and (-Not $ServiceProviderNode) -and (-Not ($VirtualLabNode -or $ApplicationGroupsNode))) {
+                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRWanAccelPoint -To VBRTapePoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                $LastPoint = 'VBRTapePoint'
+
+            } elseif ($TapeServerNode -and (-Not $WanAccelsNode) -and (-Not $ServiceProviderNode) -and ($VirtualLabNode -or $ApplicationGroupsNode)) {
+                Edge -From VBRRepoPointSpace -To VBRTapePoint @{minlen = 18; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRTapePoint -To VBRSureBackupPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                $LastPoint = 'VBRSureBackupPoint'
+
+            } elseif ($TapeServerNode -and (-Not $WanAccelsNode) -and (-Not $ServiceProviderNode) -and (-Not ($VirtualLabNode -or $ApplicationGroupsNode))) {
                 Edge -From VBRRepoPointSpace -To VBRTapePoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRTapePoint -To VBRServiceProviderPoint @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                $LastPoint = 'VBRTapePoint'
+
+            } elseif ((-Not $TapeServerNode) -and (-Not $WanAccelsNode) -and (-Not $ServiceProviderNode) -and ($VirtualLabNode -or $ApplicationGroupsNode)) {
+                Edge -From VBRRepoPointSpace -To VBRSureBackupPoint @{minlen = 18; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                $LastPoint = 'VBRSureBackupPoint'
+
+            } elseif ((-Not $TapeServerNode) -and (-Not $WanAccelsNode) -and (-Not $ServiceProviderNode) -and (-Not ($VirtualLabNode -or $ApplicationGroupsNode))) {
+                $LastPoint = 'VBRTapePoint'
+
+            } elseif ((-Not $TapeServerNode) -and $WanAccelsNode -and $ServiceProviderNode -and (($VirtualLabNode -or $ApplicationGroupsNode))) {
+                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRWanAccelPoint -To VBRServiceProviderPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRServiceProviderPoint -To VBRSureBackupPoint @{minlen = 18; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                $LastPoint = 'VBRSureBackupPoint'
+            } elseif ((-Not $TapeServerNode) -and $WanAccelsNode -and $ServiceProviderNode -and ( -Not ($VirtualLabNode -or $ApplicationGroupsNode))) {
+                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRWanAccelPoint -To VBRServiceProviderPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                $LastPoint = 'VBRServiceProviderPoint'
+            }
+
+            elseif ((-Not $TapeServerNode) -and (-Not $WanAccelsNode) -and $ServiceProviderNode -and (($VirtualLabNode -or $ApplicationGroupsNode))) {
+                Edge -From VBRRepoPointSpace -To VBRServiceProviderPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRServiceProviderPoint -To VBRSureBackupPoint @{minlen = 18; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                $LastPoint = 'VBRSureBackupPoint'
+            } elseif ((-Not $TapeServerNode) -and (-Not $WanAccelsNode) -and $ServiceProviderNode -and ( -Not ($VirtualLabNode -or $ApplicationGroupsNode))) {
+                Edge -From VBRRepoPointSpace -To VBRServiceProviderPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                $LastPoint = 'VBRServiceProviderPoint'
+            }
+
+            elseif ((-Not $TapeServerNode) -and $WanAccelsNode -and (-Not $ServiceProviderNode) -and (($VirtualLabNode -or $ApplicationGroupsNode))) {
+                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRWanAccelPoint -To VBRSureBackupPoint @{minlen = 18; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                $LastPoint = 'VBRSureBackupPoint'
+            }
+
+            elseif ($TapeServerNode -and (-Not $WanAccelsNode) -and $ServiceProviderNode -and (($VirtualLabNode -or $ApplicationGroupsNode))) {
+                Edge -From VBRRepoPointSpace -To VBRTapePoint @{minlen = 18; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRTapePoint -To VBRServiceProviderPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRServiceProviderPoint -To VBRSureBackupPoint @{minlen = 18; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                $LastPoint = 'VBRSureBackupPoint'
+            }
+
+            elseif ($TapeServerNode -and (-Not $WanAccelsNode) -and $ServiceProviderNode) {
+                Edge -From VBRRepoPointSpace -To VBRTapePoint @{minlen = 18; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRTapePoint -To VBRServiceProviderPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
                 $LastPoint = 'VBRServiceProviderPoint'
             } elseif ($TapeServerNode -and (-Not $WanAccels) -and (-Not $ServiceProviderNode)) {
-                Edge -From VBRRepoPointSpace -To VBRTapePoint @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRRepoPointSpace -To VBRTapePoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
                 $LastPoint = 'VBRTapePoint'
             } elseif ((-Not $TapeServerNode) -and $WanAccelsNode -and $ServiceProviderNode) {
-                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
                 Edge -From VBRWanAccelPoint -To VBRServiceProviderPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
                 $LastPoint = 'VBRServiceProviderPoint'
             } elseif ((-Not $TapeServerNode) -and (-Not $WanAccelsNode) -and $ServiceProviderNode) {
-                Edge -From VBRRepoPointSpace -To VBRServiceProviderPoint @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRRepoPointSpace -To VBRServiceProviderPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
                 $LastPoint = 'VBRServiceProviderPoint'
 
             } elseif ((-Not $TapeServerNode) -and $WanAccelsNode -and (-Not $ServiceProviderNode)) {
-                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
                 $LastPoint = 'VBRWanAccelPoint'
             } elseif ($TapeServerNode -and $WanAccelsNode -and (-Not $ServiceProviderNode)) {
-                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRWanAccelPoint -To VBRTapePoint @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From VBRWanAccelPoint -To VBRTapePoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
                 $LastPoint = 'VBRTapePoint'
             } elseif ((-Not $TapeServerNode) -and (-Not $WanAccelsNode) -and (-Not $ServiceProviderNode)) {
                 $LastPoint = 'VBRRepoPointSpace'
@@ -387,11 +523,6 @@ function Get-VbrInfraDiagram {
                 Edge -From WanAccelServer -To VBRWanAccelPoint @{minlen = 2; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
             }
 
-            # Connect Veeam Scale-Out Backup Repository to the Dummy line
-            if ($SOBR -and $SOBRNode) {
-                Edge -From VBRRepoPointSpace -To SOBRRepo @{minlen = 2; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
-            }
-
             # Connect Veeam Tape Infra to VBRTapePoint Dummy line
             if ($TapeServerInfo -and $TapeServerNode) {
                 Edge -From VBRTapePoint -To TapeServer @{minlen = 2; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
@@ -400,6 +531,13 @@ function Get-VbrInfraDiagram {
             # Connect Veeam ServiceProvider Infra to VBRServiceProviderPoint Dummy line
             if ($ServiceProviderInfo -and $ServiceProviderNode) {
                 Edge -From ServiceProvider -To VBRServiceProviderPoint @{minlen = 2; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
+            }
+
+            # Connect Veeam Object Repository to the Dummy line
+            if ($VirtualLabNode) {
+                Edge -From VirtualLabServer -To VBRSureBackupPoint @{minlen = 2; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
+            } elseif ($ApplicationGroupsNode) {
+                Edge -From ApplicationGroups -To VBRSureBackupPoint @{minlen = 2; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
             }
 
             ####################################################################################

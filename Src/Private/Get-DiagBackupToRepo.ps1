@@ -5,7 +5,7 @@ function Get-DiagBackupToRepo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.5
+        Version:        0.6.8
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -39,7 +39,7 @@ function Get-DiagBackupToRepo {
                         if ($LocalBackupRepo) {
                             SubGraph LocalRepos -Attributes @{Label = 'Local Repositories'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
 
-                                Node LocalRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($LocalBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($LocalBackupRepo.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                                Node LocalRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($LocalBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($LocalBackupRepo.AditionalInfo )); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
                             }
                             Edge -From MainSubGraph:s -To LocalRepo @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
@@ -47,14 +47,14 @@ function Get-DiagBackupToRepo {
                         if ($NASBackupRepo) {
                             SubGraph NasRepos -Attributes @{Label = 'NAS Repositories'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
 
-                                Node NasRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($NASBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_NAS" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($NASBackupRepo.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                                Node NasRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($NASBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_NAS" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($NASBackupRepo.AditionalInfo )); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
                             }
                             Edge -From MainSubGraph:s -To NasRepo @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
                         }
                         if ($DedupBackupRepo) {
                             SubGraph RemoteRepos -Attributes @{Label = 'Deduplicating Storage Appliances'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
 
-                                Node RemoteRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($DedupBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Deduplicating_Storage" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($DedupBackupRepo.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                                Node RemoteRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($DedupBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Deduplicating_Storage" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($DedupBackupRepo.AditionalInfo )); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
                             }
                             Edge -From MainSubGraph:s -To RemoteRepo @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
@@ -63,7 +63,7 @@ function Get-DiagBackupToRepo {
                         if ($ObjStorage) {
                             SubGraph ObjectStorages -Attributes @{Label = 'Object Repositories'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
 
-                                Node ObjectStorage @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($ObjStorage | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($ObjStorage.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                                Node ObjectStorage @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($ObjStorage | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($ObjStorage.AditionalInfo )); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
                             }
                             Edge -From MainSubGraph:s -To ObjectStorage @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
@@ -71,7 +71,7 @@ function Get-DiagBackupToRepo {
                         if ($ArchiveObjStorage) {
                             SubGraph ArchiveObjectStorages -Attributes @{Label = 'Archive Object Repositories'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
 
-                                Node ArchiveObjectStorage @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($ArchiveObjStorage | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($ArchiveObjStorage.AditionalInfo )); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                                Node ArchiveObjectStorage @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($ArchiveObjStorage | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($ArchiveObjStorage.AditionalInfo )); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
                             }
                             Edge -From MainSubGraph:s -To ArchiveObjectStorage @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
