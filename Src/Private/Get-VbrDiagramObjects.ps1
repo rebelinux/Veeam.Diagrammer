@@ -38,7 +38,7 @@ function Get-VbrProxyInfo {
         return $ProxiesInfo
 
     } catch {
-        $_
+        Write-Verbose $_.Exception.Message
     }
 
 }
@@ -82,7 +82,7 @@ function Get-VbrNASProxyInfo {
         return $ProxiesInfo
 
     } catch {
-        $_
+        Write-Verbose $_.Exception.Message
     }
 
 }
@@ -117,7 +117,7 @@ function Get-VbrWanAccelInfo {
         return $WanAccelsInfo
 
     } catch {
-        $_
+        Write-Verbose $_.Exception.Message
     }
 
 }
@@ -315,7 +315,7 @@ function Get-VbrSOBRInfo {
         return $SOBRInfo
 
     } catch {
-        $_
+        Write-Verbose $_.Exception.Message
     }
 
 }
@@ -361,7 +361,7 @@ function Get-VbrSANInfo {
         return $SANHostInfo
 
     } catch {
-        $_
+        Write-Verbose $_.Exception.Message
     }
 }
 
@@ -400,7 +400,7 @@ function Get-VbrTapeServersInfo {
         return $TapeServernfo
 
     } catch {
-        $_
+        Write-Verbose $_.Exception.Message
     }
 
 }
@@ -436,7 +436,7 @@ function Get-VbrTapeLibraryInfo {
         return $TapeLibrariesInfo
 
     } catch {
-        $_
+        Write-Verbose $_.Exception.Message
     }
 
 }
@@ -474,7 +474,7 @@ function Get-VbrTapeVaultInfo {
         return $TapeVaultsInfo
 
     } catch {
-        $_
+        Write-Verbose $_.Exception.Message
     }
 }
 
@@ -518,7 +518,7 @@ function Get-VbrServiceProviderInfo {
         return $ServiceProvidersInfo
 
     } catch {
-        $_
+        Write-Verbose $_.Exception.Message
     }
 }
 
@@ -559,7 +559,7 @@ function Get-VbrVirtualLabInfo {
         return $VirtualLabInfo
 
     } catch {
-        $_
+        Write-Verbose $_.Exception.Message
     }
 }
 
@@ -595,6 +595,6 @@ function Get-VbrApplicationGroupsInfo {
         return $ApplicationGroupsInfo
 
     } catch {
-        $_
+        Write-Verbose $_.Exception.Message
     }
 }

@@ -5,7 +5,7 @@ function Get-VbrBackupServerInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.0
+        Version:        0.6.9
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -31,16 +31,16 @@ function Get-VbrBackupServerInfo {
             Write-Verbose -Message "Collecting Backup Server information from $($VBRServer.Name)."
             try {
                 $VeeamVersion = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { Get-ChildItem -Recurse HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -match 'Veeam Backup & Replication Server' } | Select-Object -Property DisplayVersion }
-            } catch { $_ }
+            } catch { Write-Verbose "Unabe to retreive Veeam Backup & Replication Version" }
             try {
                 $VeeamDBFlavor = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations' }
-            } catch { $_ }
+            } catch { Write-Verbose "Unabe to retreive Veeam Backup & Replication Database Flavor" }
             try {
                 $VeeamDBInfo12 = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { Get-ItemProperty -Path "HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations\$(($Using:VeeamDBFlavor).SqlActiveConfiguration)" }
-            } catch { $_ }
+            } catch { Write-Verbose "Unabe to retreive Veeam Backup & Replication 12 Database Information" }
             try {
                 $VeeamDBInfo11 = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication' }
-            } catch { $_ }
+            } catch { Write-Verbose "Unabe to retreive Veeam Backup & Replication 11 Database Information" }
 
             if ($VeeamDBInfo11.SqlServerName) {
                 $VeeamDBInfo = $VeeamDBInfo11.SqlServerName
@@ -84,7 +84,7 @@ function Get-VbrBackupServerInfo {
                     }
                 }
             } catch {
-                $_
+                Write-Verbose "Unabe to create BackupServerInfo Object"
             }
             try {
                 $DatabaseServer = $VeeamDBInfo
@@ -122,7 +122,7 @@ function Get-VbrBackupServerInfo {
                     }
                 }
             } catch {
-                $_
+                Write-Verbose "Unabe to create DatabaseServer Object"
             }
 
             try {
@@ -141,14 +141,18 @@ function Get-VbrBackupServerInfo {
                     }
                 }
             } catch {
-                $_
+                Write-Verbose "Unabe to create EMServer Object"
             }
         } catch {
-            $_
+            Write-Verbose $_.Exception.Message
         }
     }
     end {
-        Remove-CimSession $CimSession
-        Remove-PSSession $PssSession
+        if ($CimSession) {
+            Remove-CimSession $CimSession
+        }
+        if ($PssSession) {
+            Remove-PSSession $PssSession
+        }
     }
 }

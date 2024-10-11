@@ -5,7 +5,7 @@ function Get-DiagBackupToProtectedGroup {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.8
+        Version:        0.6.9
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -55,7 +55,7 @@ function Get-DiagBackupToProtectedGroup {
                     }
                 }
             } catch {
-                $_
+                Write-Verbose $_.Exception.Message
             }
 
             if ($ProtectedGroups.Container) {
@@ -343,7 +343,7 @@ function Get-DiagBackupToProtectedGroup {
                 }
             }
         } catch {
-            $_
+            Write-Verbose $_.Exception.Message
         }
     }
     end {}

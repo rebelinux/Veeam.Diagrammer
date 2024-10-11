@@ -5,7 +5,7 @@ function Get-VbrBackupSobrInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.0
+        Version:        0.6.9
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -144,7 +144,7 @@ function Get-VbrBackupSobrInfo {
 
             return $SobrInfo
         } catch {
-            $_
+            Write-Verbose $_.Exception.Message
         }
     }
     end {}

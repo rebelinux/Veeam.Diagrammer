@@ -5,7 +5,7 @@ function Get-DiagBackupToHvProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.8
+        Version:        0.6.9
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -28,25 +28,15 @@ function Get-DiagBackupToHvProxy {
         try {
             $HyperVBackupProxy = Get-VbrBackupProxyInfo -Type 'hyperv'
             if ($HyperVBackupProxy) {
-                $ProxiesAttr = @{
-                    Label = 'Hyper-V Backup Proxies'
-                    fontsize = 18
-                    penwidth = 1.5
-                    labelloc = 'b'
-                    color = $SubGraphDebug.color
-                    style = 'dashed,rounded'
-                }
-                SubGraph MainSubGraph -Attributes $ProxiesAttr -ScriptBlock {
 
-                    Node HvProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($HyperVBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($HyperVBackupProxy.AditionalInfo )); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+                Node HvProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($HyperVBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo $HyperVBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_Proxy" -SubgraphLabel "Hyper-V Backup Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1"); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
-                }
 
                 Edge $BackupServerInfo.Name -To HvProxies @{minlen = 3 }
 
             }
         } catch {
-            $_
+            Write-Verbose $_.Exception.Message
         }
     }
     end {}
