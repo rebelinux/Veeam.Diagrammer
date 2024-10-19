@@ -5,7 +5,7 @@ function Get-DiagBackupToSobr {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.9
+        Version:        0.6.10
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -30,43 +30,94 @@ function Get-DiagBackupToSobr {
 
             if ($SobrRepo) {
                 if ($SobrRepo) {
-                    SubGraph MainSubGraph -Attributes @{Label = 'SOBR Repositories' ; fontsize = 22; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded'; color = $SubGraphDebug.color } {
-                        foreach ($SOBROBJ in $SobrRepo) {
-                            $SubGraphName = Remove-SpecialChar -String $SOBROBJ.Name -SpecialChars '\- '
-                            SubGraph $SubGraphName  -Attributes @{Label = $SOBROBJ.Name; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
-                                $SOBROBJ | ForEach-Object { Node $_.Name @{Label = $_.Label; fontname = "Segoe Ui"; shape = "plain"; fillColor = 'transparent' } }
-                                if ($SOBROBJ.Performance) {
-                                    SubGraph "$($SubGraphName)Performance" -Attributes @{Label = "Performance Extent"; fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = "dashed,rounded"; } {
+                    $SOBRArray = @()
+                    foreach ($SOBROBJ in $SobrRepo) {
 
-                                        $SOBROBJ.Performance | ForEach-Object { Node $_.Name @{Label = Get-DiaNodeIcon -Name $_.Name -IconType $_.IconType -Align "Center" -Rows $_.AditionalInfo -ImagesObj $Images -IconDebug $IconDebug; fontname = "Segoe Ui"; shape = "plain"; fillColor = 'transparent' } }
-                                    }
-                                }
-                                if ($SOBROBJ.Capacity) {
-                                    SubGraph "$($SubGraphName)Capacity" -Attributes @{Label = "Capacity Extent"; fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = "dashed,rounded" } {
+                        $SOBRExtentNodesArray = @()
+                        $SOBRNodesArray = @()
 
-                                        $SOBROBJ.Capacity | ForEach-Object { Node $_.Name @{Label = Get-DiaNodeIcon -Name $_.Name -IconType $_.IconType -Align "Center" -Rows $_.AditionalInfo -ImagesObj $Images -IconDebug $IconDebug; fontname = "Segoe Ui"; shape = "plain"; fillColor = 'transparent' } }
-                                    }
-                                }
-                                if ($SOBROBJ.Archive) {
-                                    SubGraph "$($SubGraphName)Archive" -Attributes @{Label = "Archive Extent"; fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = "dashed,rounded" } {
+                        $SOBROBJNode = $SOBROBJ.Label
 
-                                        $SOBROBJ.Archive | ForEach-Object { Node $_.Name @{Label = Get-DiaNodeIcon -Name $_.Name -IconType $_.Icon -Align "Center" -Rows $_.Rows -ImagesObj $Images -IconDebug $IconDebug; fontname = "Segoe Ui"; shape = "plain"; fillColor = 'transparent' } }
-                                    }
-                                }
+                        if ($SOBROBJNode) {
+                            $SOBRNodesArray += $SOBROBJNode
+                        }
 
-                                if ($SOBROBJ.Archive) {
-                                    $SOBROBJ.Performance | ForEach-Object { Edge -From $SOBROBJ.Name -To $SOBROBJ.Archive.Name, $SOBROBJ.Capacity.Name, $_.Name @{minlen = 2 } } | Select-Object -Unique
+                        if ($SOBROBJ.Performance) {
 
-                                } else {
-                                    $SOBROBJ.Performance | ForEach-Object { Edge -From $SOBROBJ.Name -To $_.Name @{minlen = 2 } } | Select-Object -Unique
-                                    $SOBROBJ.Capacity | ForEach-Object { Edge -From $SOBROBJ.Name -To $_.Name @{minlen = 2 } } | Select-Object -Unique
-
-                                }
+                            $Performance = try {
+                                Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBROBJ.Performance.Name -Align "Center" -iconType $SOBROBJ.Performance.IconType -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Performance.AditionalInfo -Subgraph -SubgraphLabel "Performance Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1"
+                            } catch {
+                                Write-Verbose "Error: Unable to create SOBR Performance Objects. Disabling the section"
+                                Write-Verbose "Error Message: $($_.Exception.Message)"
                             }
-                            Edge -From MainSubGraph:s -To $SOBROBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+
+                            if ($Performance) {
+                                $SOBRExtentNodesArray += $Performance
+                            }
+                        }
+                        if ($SOBROBJ.Capacity) {
+
+                            $Capacity = try {
+                                Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBROBJ.Capacity.Name -Align "Center" -iconType $SOBROBJ.Capacity.IconType -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Capacity.AditionalInfo -Subgraph -SubgraphLabel "Capacity Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1"
+                            } catch {
+                                Write-Verbose "Error: Unable to create SOBR Capacity Objects. Disabling the section"
+                                Write-Verbose "Error Message: $($_.Exception.Message)"
+                            }
+
+                            if ($Capacity) {
+                                $SOBRExtentNodesArray += $Capacity
+                            }
+                        }
+                        if ($SOBROBJ.Archive) {
+
+                            $Archive = try {
+                                Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBROBJ.Archive.Name -Align "Center" -iconType $SOBROBJ.Archive.IconType -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Archive.AditionalInfo -Subgraph -SubgraphLabel "Archive Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1"
+
+                            } catch {
+                                Write-Verbose "Error: Unable to create SOBR Archive Objects. Disabling the section"
+                                Write-Verbose "Error Message: $($_.Exception.Message)"
+                            }
+
+                            if ($Archive) {
+                                $SOBRExtentNodesArray += $Archive
+                            }
+                        }
+
+                        $SOBRExtentSubgraphNode = try {
+                            Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $SOBRExtentNodesArray  -Align 'Center' -IconDebug $IconDebug -Label 'Extents' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3
+                        } catch {
+                            Write-Verbose "Error: Unable to create SOBR Extents SubGraph Objects. Disabling the section"
+                            Write-Verbose "Error Message: $($_.Exception.Message)"
+                        }
+
+                        if ($SOBRExtentSubgraphNode) {
+                            $SOBRNodesArray += $SOBRExtentSubgraphNode
+                        }
+
+                        $SOBRSubgraphNode = try {
+                            Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $SOBRNodesArray  -Align 'Center' -IconDebug $IconDebug -Label $SOBROBJ.Name -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1
+                        } catch {
+                            Write-Verbose "Error: Unable to create SOBR SubGraph Nodes Objects. Disabling the section"
+                            Write-Verbose "Error Message: $($_.Exception.Message)"
+                        }
+
+                        if ($SOBRSubgraphNode) {
+                            $SOBRArray += $SOBRSubgraphNode
                         }
                     }
-                    Edge -From $BackupServerInfo.Name -To MainSubGraph @{minlen = 3 }
+
+                    $SOBRSubgraph = try {
+                        Node -Name SOBRRepo -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $SOBRArray  -Align 'Center' -IconDebug $IconDebug -Label 'SOBR Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                    } catch {
+                        Write-Verbose "Error: Unable to create SOBR SubGraph Objects. Disabling the section"
+                        Write-Verbose "Error Message: $($_.Exception.Message)"
+                    }
+
+                    if ($SOBRSubgraph) {
+                        $SOBRSubgraph
+                    }
+
+                    Edge -From $BackupServerInfo.Name -To SOBRRepo @{minlen = 3 }
 
                 }
             }
