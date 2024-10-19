@@ -34,7 +34,6 @@ function Get-DiagBackupToTape {
                 if ($BackupTapeServers) {
                     $TapeArray = @()
                     foreach ($TSOBJ in ($BackupTapeServers | Sort-Object -Property Name)) {
-                        $TapeServerName = Remove-SpecialChar -String $TSOBJ.Name -SpecialChars '\.-'
                         $TapeNodesArray = @()
 
                         $TapeServerNode = $TSOBJ.Label
