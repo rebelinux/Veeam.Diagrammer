@@ -494,7 +494,7 @@ function Get-VbrServiceProviderInfo {
                 $inobj = [ordered] @{
                     'Cloud Connect Type' = & {
                         if ($_.ResourcesEnabled -and $_.ReplicationResourcesEnabled) {
-                            'BaaS & DRaaS'
+                            'BaaS and DRaaS'
                         } elseif ($_.ResourcesEnabled) {
                             'BaaS'
                         } elseif ($_.ReplicationResourcesEnabled) {

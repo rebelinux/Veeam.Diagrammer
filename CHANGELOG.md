@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.11] - 2024-10-20
+
+### Changed
+
+- Increase Diagrammer.Core minimum version requirement
+
+### Fixed
+
+- Fix bug in Service Provider section
+
 ## [0.6.10] - 2024-10-19
 
 ### Changed
