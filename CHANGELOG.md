@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add code to properly display diskspace information
 
+### Fixed
+
+- Fix [#43](https://github.com/rebelinux/Veeam.Diagrammer/issues/43)
+
 ## [0.6.11] - 2024-10-20
 
 ### Changed
