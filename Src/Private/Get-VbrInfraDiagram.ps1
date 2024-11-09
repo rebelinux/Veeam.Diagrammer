@@ -194,11 +194,6 @@ function Get-VbrInfraDiagram {
                         }
                     }
                 }
-            } else {
-                SubGraph ObjectRepos -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Object Storage" -IconType "VBR_Object" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
-
-                    Node -Name ObjectRepo -Attributes @{Label = 'No Object Storage Repositories'; shape = "rectangle"; labelloc = 'c'; fixedsize = $true; width = "4"; height = "3"; penwidth = 0 }
-                }
             }
 
             # WanAccels Graphviz Cluster
@@ -514,8 +509,6 @@ function Get-VbrInfraDiagram {
 
             } elseif ($ArchObjRepositoriesInfo -and $ArchObjRepositoriesNode) {
                 Edge -To VBRRepoPoint -From ArchObjectRepositories @{minlen = 2; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
-            } else {
-                Edge -To VBRRepoPoint -From ObjectRepo @{minlen = 2; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
             }
 
             # Connect Veeam Wan Accelerator to the Dummy line

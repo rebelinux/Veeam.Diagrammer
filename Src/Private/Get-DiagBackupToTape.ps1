@@ -82,7 +82,7 @@ function Get-DiagBackupToTape {
                         }
 
                         $TapeLibrarySubgraphArray = try {
-                            Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $TapeNodesArray  -Align 'Center' -IconDebug $IconDebug -Label "Library" -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "0" -columnSize 3
+                            Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $TapeNodesArray  -Align 'Center' -IconDebug $IconDebug -Label " " -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "0" -columnSize 3
                         } catch {
                             Write-Verbose "Error: Unable to create Tape Library SubGraph Array Objects. Disabling the section"
                             Write-Verbose "Error Message: $($_.Exception.Message)"

@@ -478,7 +478,7 @@ function Get-VbrTapeVaultInfo {
     }
 }
 
-# Tape Library Graphviz Cluster
+# Service Provider Graphviz Cluster
 function Get-VbrServiceProviderInfo {
     param (
     )
