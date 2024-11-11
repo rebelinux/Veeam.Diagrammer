@@ -103,6 +103,19 @@ function Get-VbrInfraDiagram {
                 }
             }
 
+            # HyperVisors Graphviz Cluster
+            if ($vSphereObj = Get-VbrBackupvSphereInfo) {
+                $vSphereNode = try {
+                    Node vCenterServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $vSphereObj.Name -Align "Center" -iconType "VBR_vCenter_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $vSphereObj.AditionalInfo -Subgraph -SubgraphLabel "vCenter Servers" -SubgraphLabelPos "top" -SubgraphIconType "VBR_vCenter_Server" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1"); shape = 'plain'; fontname = "Segoe Ui" }
+                } catch {
+                    Write-Verbose "Error: Unable to create vSphere HyperVisors Objects. Disabling the section"
+                    Write-Verbose "Error Message: $($_.Exception.Message)"
+                }
+            }
+            if ($vSphereObj -and $vSphereNode) {
+                $vSphereNode
+            }
+
             SubGraph OnpremStorage -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Backup Infrastructure" -IconType "VBR_Veeam_Repository" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
 
                 # Repositories Graphviz Cluster
@@ -384,7 +397,6 @@ function Get-VbrInfraDiagram {
                 Edge -From VBRProxyPoint -To VBRProxyPointSpace @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
             } else {
                 Edge -From VBRProxyPoint -To VBRProxyPointSpace @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-
             }
             Edge -From VBRProxyPointSpace -To VBRRepoPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
             Edge -From VBRRepoPoint -To VBRRepoPointSpace @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
@@ -500,6 +512,9 @@ function Get-VbrInfraDiagram {
             # Connect Veeam Proxies Server to the Dummy line
             if ($ProxiesSubgraphNode) {
                 Edge -From VBRProxyPoint -To Proxies @{minlen = 2; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
+            }
+            if ($vSphereNode) {
+                Edge -From Proxies -To vCenterServer @{minlen = 1; arrowtail = 'dot'; arrowhead = 'dot'; style = 'dashed' }
             }
             # Connect Veeam Repository to the Dummy line
             Edge -From VBRRepoPoint -To Repositories @{minlen = 2; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
