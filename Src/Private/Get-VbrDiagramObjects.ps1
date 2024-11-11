@@ -147,8 +147,8 @@ function Get-VbrRepositoryInfo {
                 $Rows.add('Server', 'N/A')
             }
             $Rows.add('Repo Type', $Role)
-            $Rows.add('Total Space', "$(($Repository).GetContainer().CachedTotalSpace.InGigabytes) GB")
-            $Rows.add('Used Space', "$(($Repository).GetContainer().CachedFreeSpace.InGigabytes) GB")
+            $Rows.add('Total Space', (ConvertTo-FileSizeString -Size $Repository.GetContainer().CachedTotalSpace.InBytesAsUInt64))
+            $Rows.add('Used Space', (ConvertTo-FileSizeString -Size $Repository.GetContainer().CachedFreeSpace.InBytesAsUInt64))
 
             if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($Repository.Host.Name -in $ViBackupProxy.Host.Name -or $Repository.Host.Name -in $HvBackupProxy.Host.Name)) {
                 $BackupType = 'Proxy'
@@ -478,7 +478,7 @@ function Get-VbrTapeVaultInfo {
     }
 }
 
-# Tape Library Graphviz Cluster
+# Service Provider Graphviz Cluster
 function Get-VbrServiceProviderInfo {
     param (
     )
@@ -494,7 +494,7 @@ function Get-VbrServiceProviderInfo {
                 $inobj = [ordered] @{
                     'Cloud Connect Type' = & {
                         if ($_.ResourcesEnabled -and $_.ReplicationResourcesEnabled) {
-                            'BaaS & DRaaS'
+                            'BaaS and DRaaS'
                         } elseif ($_.ResourcesEnabled) {
                             'BaaS'
                         } elseif ($_.ReplicationResourcesEnabled) {

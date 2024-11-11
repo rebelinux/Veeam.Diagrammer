@@ -5,7 +5,7 @@ function Get-VbrBackupRepoInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.9
+        Version:        0.6.12
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -41,21 +41,21 @@ function Get-VbrBackupRepoInfo {
                     if ($Role -like '*Local' -or $Role -like '*Hardened') {
                         $Rows.add('Server', $BackupRepo.Host.Name.Split('.')[0])
                         $Rows.add('Path', $BackupRepo.FriendlyPath)
-                        $Rows.add('Total-Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
-                        $Rows.add('Used-Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
+                        $Rows.add('Total-Space', (ConvertTo-FileSizeString -Size $BackupRepo.GetContainer().CachedTotalSpace.InBytesAsUInt64))
+                        $Rows.add('Used-Space', (ConvertTo-FileSizeString -Size ($BackupRepo).GetContainer().CachedFreeSpace.InBytesAsUInt64))
                     } elseif ($Role -like 'Dedup*') {
                         $Rows.add('DedupType', $BackupRepo.TypeDisplay)
-                        $Rows.add('Total-Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
-                        $Rows.add('Used-Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
+                        $Rows.add('Total-Space', (ConvertTo-FileSizeString -Size ($BackupRepo).GetContainer().CachedTotalSpace.InBytesAsUInt64))
+                        $Rows.add('Used-Space', (ConvertTo-FileSizeString -Size ($BackupRepo).GetContainer().CachedFreeSpace.InBytesAsUInt64))
                     } elseif ($Role -like '*Share') {
                         $Rows.add('Path', $BackupRepo.FriendlyPath)
-                        $Rows.add('Total-Space', "$(($BackupRepo).GetContainer().CachedTotalSpace.InGigabytes) GB")
-                        $Rows.add('Used-Space', "$(($BackupRepo).GetContainer().CachedFreeSpace.InGigabytes) GB")
+                        $Rows.add('Total-Space', (ConvertTo-FileSizeString -Size ($BackupRepo).GetContainer().CachedTotalSpace.InBytesAsUInt64))
+                        $Rows.add('Used-Space', (ConvertTo-FileSizeString -Size ($BackupRepo).GetContainer().CachedFreeSpace.InBytesAsUInt64))
                     } else {
                         $Rows.add('Server', 'Uknown')
                         $Rows.add('Path', 'Uknown')
-                        $Rows.add('Total-Space', "0 GB")
-                        $Rows.add('Used-Space', "0 GB")
+                        $Rows.add('Total-Space', "0 B")
+                        $Rows.add('Used-Space', "0 B")
                     }
 
                     if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($Role -notlike '*Share') -and ($BackupRepo.Host.Name -in $ViBackupProxy.Host.Name -or $BackupRepo.Host.Name -in $HvBackupProxy.Host.Name)) {

@@ -5,7 +5,7 @@ function Get-VbrInfraDiagram {
     .DESCRIPTION
         Diagram the configuration of Veeam Backup & Replication infrastructure in PDF/SVG/DOT/PNG formats using PSGraph and Graphviz.
     .NOTES
-        Version:        0.6.8
+        Version:        0.6.12
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -117,7 +117,6 @@ function Get-VbrInfraDiagram {
             }
 
             SubGraph OnpremStorage -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Backup Infrastructure" -IconType "VBR_Veeam_Repository" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
-
                 # Repositories Graphviz Cluster
                 if ($RepositoriesInfo = Get-VbrRepositoryInfo) {
                     $RepositoriesNode = try {
@@ -212,12 +211,6 @@ function Get-VbrInfraDiagram {
 
                 if ($ObjStorageSubgraphNode) {
                     $ObjStorageSubgraphNode
-                }
-
-            } else {
-                SubGraph ObjectRepos -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Object Storage" -IconType "VBR_Object" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
-
-                    Node -Name ObjectRepo -Attributes @{Label = 'No Object Storage Repositories'; shape = "rectangle"; labelloc = 'c'; fixedsize = $true; width = "4"; height = "3"; penwidth = 0 }
                 }
             }
 
@@ -522,7 +515,6 @@ function Get-VbrInfraDiagram {
             # Connect Veeam Object Repository to the Dummy line
             if ($ObjStorageSubgraphNode) {
                 Edge -To VBRRepoPoint -From ObjectRepos @{minlen = 2; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
-
             }
 
             # Connect Veeam Wan Accelerator to the Dummy line

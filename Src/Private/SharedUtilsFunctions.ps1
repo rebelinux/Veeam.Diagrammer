@@ -38,10 +38,10 @@ function Get-IconType {
         'CSV' { 'VBR_AGENT_CSV' }
         'CifsShare' { 'VBR_NAS' }
         'Nfs' { 'VBR_NAS' }
-        'Netapp' {'VBR_NetApp'}
-        'Dell' {'VBR_Dell'}
-        'VirtualLab' {'VBR_Virtual_Lab'}
-        'ApplicationGroups' {'VBR_Application_Groups'}
+        'Netapp' { 'VBR_NetApp' }
+        'Dell' { 'VBR_Dell' }
+        'VirtualLab' { 'VBR_Virtual_Lab' }
+        'ApplicationGroups' { 'VBR_Application_Groups' }
         default { 'VBR_No_Icon' }
     }
 
@@ -75,7 +75,7 @@ function Get-RoleType {
         'SanSnapshotOnly' { 'SAN' }
         "vmware" { 'VMware Backup Proxy' }
         "hyperv" { 'HyperV Backup Proxy' }
-        "agent" { 'Agent & Files Backup Proxy' }
+        "agent" { 'Agent and Files Backup Proxy' }
         "nas" { 'NAS Backup Proxy' }
         "CifsShare" { 'SMB Share' }
         'Nfs' { 'NFS Share' }
@@ -114,4 +114,36 @@ function ConvertTo-TextYN {
         "False" { "No"; break }
         default { $TEXT }
     }
+} # end
+
+function ConvertTo-FileSizeString {
+    <#
+    .SYNOPSIS
+    Used by As Built Report to convert bytes automatically to GB or TB based on size.
+    .DESCRIPTION
+    .NOTES
+        Version:        0.1.0
+        Author:         Jonathan Colon
+    .EXAMPLE
+    .LINK
+    #>
+    [CmdletBinding()]
+    [OutputType([String])]
+    Param
+    (
+        [Parameter (
+            Position = 0,
+            Mandatory)]
+        [int64]
+        $Size
+    )
+
+    $Unit = Switch ($Size) {
+        { $Size -gt 1PB } { 'PB' ; Break }
+        { $Size -gt 1TB } { 'TB' ; Break }
+        { $Size -gt 1GB } { 'GB' ; Break }
+        { $Size -gt 1Mb } { 'MB' ; Break }
+        Default { 'KB' }
+    }
+    return "$([math]::Round(($Size / $("1" + $Unit)), 0)) $Unit"
 } # end
