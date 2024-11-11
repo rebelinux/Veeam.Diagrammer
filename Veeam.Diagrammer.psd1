@@ -12,7 +12,7 @@
     RootModule = 'Veeam.Diagrammer.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.6.12'
+    ModuleVersion = '0.6.13'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -58,7 +58,7 @@
         },
         @{
             ModuleName = 'Diagrammer.Core';
-            ModuleVersion = '0.2.11';
+            ModuleVersion = '0.2.12';
         }
     )
 

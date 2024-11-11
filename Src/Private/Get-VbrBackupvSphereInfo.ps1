@@ -28,7 +28,7 @@ function Get-VbrBackupvSphereInfo {
                 foreach ($HyObj in $HyObjs) {
 
                     $Rows = @{
-                        IP = Get-NodeIP -Hostname $HyObjS.Name
+                        IP = Get-NodeIP -Hostname $HyObj.Info.DnsName
                         Version = $HyObj.Info.ViVersion
                     }
 
@@ -39,7 +39,7 @@ function Get-VbrBackupvSphereInfo {
                         Childs = & {
                             foreach ($Esxi in $HyObj.GetChilds() ) {
                                 $Rows = @{
-                                    IP = Get-NodeIP -Hostname $Esxi.Name
+                                    IP = Get-NodeIP -Hostname $Esxi.Info.DnsName
                                     Version = $Esxi.Info.ViVersion
                                 }
                                 [PSCustomObject]@{
