@@ -103,8 +103,8 @@ function Get-VbrInfraDiagram {
                 }
             }
 
-            # HyperVisors Graphviz Cluster
-            if ($vSphereObj = Get-VbrBackupvSphereInfo) {
+            # vCenter Graphviz Cluster
+            if ($vSphereObj = Get-VbrBackupvSphereInfo | Sort-Object) {
                 $vSphereNode = try {
                     Node vCenterServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $vSphereObj.Name -Align "Center" -iconType "VBR_vCenter_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $vSphereObj.AditionalInfo -Subgraph -SubgraphLabel "vCenter Servers" -SubgraphLabelPos "top" -SubgraphIconType "VBR_vCenter_Server" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1"); shape = 'plain'; fontname = "Segoe Ui" }
                 } catch {
@@ -116,7 +116,32 @@ function Get-VbrInfraDiagram {
                 $vSphereNode
             }
 
-            SubGraph OnpremStorage -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Backup Infrastructure" -IconType "VBR_Veeam_Repository" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
+            # vSphere Graphviz Cluster
+            $ViClustersNodes = @()
+            foreach ($vCenter in $vSphereObj) {
+                $ViClustersChildsNodes = try {
+                    foreach ($ViCluster in $vCenter.Childs) {
+                        Get-DiaHTMLTable -ImagesObj $Images -Rows $ViCluster.EsxiHost.Name -Align 'Center' -ColumnSize 3 -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_ESXi_Server" -SubgraphLabel $ViCluster.Name -SubgraphLabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold
+                    }
+                } catch {
+                    Write-PScriboMessage "Error: Unable to create vSphere Clusters Objects. Disabling the section"
+                    Write-PScriboMessage "Error Message: $($_.Exception.Message)"
+                }
+                if ($ViClustersChildsNodes) {
+                    $ViClustersNodes += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ViClustersChildsNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_vCenter_Server' -Label $vCenter.Name -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 2
+                }
+            }
+
+            if ($ViClustersNodes) {
+                $ViClustersSubgraphNode = Node -Name "ViCluster" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ViClustersNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_vSphere_Cluster' -Label 'vSphere Clusters' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+
+                if ($ViClustersSubgraphNode) {
+                    $ViClustersSubgraphNode
+                }
+            }
+
+            # Repository Graphviz Cluster
+            SubGraph OnpremStorage -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Repository Infrastructure" -IconType "VBR_Veeam_Repository" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
                 # Repositories Graphviz Cluster
                 if ($RepositoriesInfo = Get-VbrRepositoryInfo) {
                     $RepositoriesNode = try {
@@ -253,11 +278,6 @@ function Get-VbrInfraDiagram {
                 }
             }
             if ($TapeServerInfo -and $TapeServerNode) {
-                # SubGraph TapeInfra -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Tape Infrastructure" -IconType "VBR_Tape" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
-
-
-                # }
-
                 $TapeServerNode
 
                 if ($TapeLibraryInfo -and $TapeLibraryNode) {
@@ -272,17 +292,23 @@ function Get-VbrInfraDiagram {
             # ServiceProvider Graphviz Cluster
             if ($ServiceProviderInfo = Get-VbrServiceProviderInfo) {
                 $ServiceProviderNode = try {
-                    Node ServiceProvider @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ServiceProviderInfo.Name -Align "Center" -iconType "VBR_Service_Providers_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $ServiceProviderInfo.AditionalInfo); shape = 'plain'; fontname = "Segoe Ui" }
+                    Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ServiceProviderInfo.Name -Align "Center" -iconType "VBR_Service_Providers_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $ServiceProviderInfo.AditionalInfo
                 } catch {
                     Write-Verbose "Error: Unable to create ServiceProvider Objects. Disabling the section"
                     Write-Verbose "Error Message: $($_.Exception.Message)"
                 }
             }
             if ($ServiceProviderInfo -and $ServiceProviderNode) {
-                SubGraph ServiceProviders -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Service Providers" -IconType "VBR_Service_Providers" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
 
-                    $ServiceProviderNode
+                $ServiceProviderSubgraphNode = try {
+                    Node -Name ServiceProviders -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ServiceProviderNode -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Service_Providers' -Label 'Service Providers' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 2); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                } catch {
+                    Write-Verbose "Error: Unable to create ServiceProviders SubGraph Objects. Disabling the section"
+                    Write-Verbose "Error Message: $($_.Exception.Message)"
+                }
 
+                if ($ServiceProviderSubgraphNode) {
+                    $ServiceProviderSubgraphNode
                 }
             }
 
@@ -504,13 +530,21 @@ function Get-VbrInfraDiagram {
 
             # Connect Veeam Proxies Server to the Dummy line
             if ($ProxiesSubgraphNode) {
-                Edge -From VBRProxyPoint -To Proxies @{minlen = 2; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
+                Edge -From VBRProxyPoint -To Proxies @{minlen = 1; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
             }
+
+            # Connect vCenter Servers Cluster to the Dummy line
             if ($vSphereNode) {
                 Edge -From Proxies -To vCenterServer @{minlen = 1; arrowtail = 'dot'; arrowhead = 'dot'; style = 'dashed' }
             }
+
+            # Connect vSphere Cluster to the Dummy line
+            if ($vSphereNode -and $ViClustersSubgraphNode) {
+                Edge -From vCenterServer -To ViCluster @{minlen = 1; arrowtail = 'dot'; arrowhead = 'dot'; style = 'dashed' }
+            }
+
             # Connect Veeam Repository to the Dummy line
-            Edge -From VBRRepoPoint -To Repositories @{minlen = 2; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
+            Edge -From VBRRepoPoint -To Repositories @{minlen = 1; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
 
             # Connect Veeam Object Repository to the Dummy line
             if ($ObjStorageSubgraphNode) {
@@ -524,19 +558,19 @@ function Get-VbrInfraDiagram {
 
             # Connect Veeam Tape Infra to VBRTapePoint Dummy line
             if ($TapeServerInfo -and $TapeServerNode) {
-                Edge -From VBRTapePoint -To TapeServer @{minlen = 2; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
+                Edge -From VBRTapePoint -To TapeServer @{minlen = 1; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
                 if ($TapeLibraryNode) {
                     Rank TapeServer, TapeLibrary
-                    Edge -From TapeServer -To TapeLibrary @{minlen = 2; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
+                    Edge -From TapeServer -To TapeLibrary @{minlen = 1; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
                 }
                 if ($TapeVaultNode) {
-                    Edge -From TapeLibrary -To TapeVault @{minlen = 2; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
+                    Edge -From TapeLibrary -To TapeVault @{minlen = 1; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
                 }
             }
 
             # Connect Veeam ServiceProvider Infra to VBRServiceProviderPoint Dummy line
-            if ($ServiceProviderInfo -and $ServiceProviderNode) {
-                Edge -From ServiceProvider -To VBRServiceProviderPoint @{minlen = 2; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
+            if ($ServiceProviderSubgraphNode) {
+                Edge -From ServiceProviders -To VBRServiceProviderPoint @{minlen = 2; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
             }
 
             # Connect Veeam Object Repository to the Dummy line

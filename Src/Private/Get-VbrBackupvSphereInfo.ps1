@@ -26,7 +26,7 @@ function Get-VbrBackupvSphereInfo {
             $HyObjsInfo = @()
             if ($HyObjs) {
                 foreach ($HyObj in $HyObjs) {
-
+                    $ESXis = Find-VBRViEntity -Server $HyObj | Where-Object { ($_.type -eq "esx") }
                     $Rows = @{
                         IP = Get-NodeIP -Hostname $HyObj.Info.DnsName
                         Version = $HyObj.Info.ViVersion
@@ -37,15 +37,21 @@ function Get-VbrBackupvSphereInfo {
                         Label = Get-DiaNodeIcon -Name $HyObj.Name -IconType "VBR_vCenter_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
                         AditionalInfo = $Rows
                         Childs = & {
-                            foreach ($Esxi in $HyObj.GetChilds() ) {
-                                $Rows = @{
-                                    IP = Get-NodeIP -Hostname $Esxi.Info.DnsName
-                                    Version = $Esxi.Info.ViVersion
-                                }
+                            foreach ($Cluster in (Find-VBRViEntity -Server $HyObj | Where-Object { ($_.type -eq "cluster") }) ) {
                                 [PSCustomObject]@{
-                                    Name = $Esxi.Name
-                                    Label = Get-DiaNodeIcon -Name $Esxi.Name -IconType "VBR_ESXi_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
-                                    AditionalInfo = $Rows
+                                    Name = $Cluster.Name
+                                    Label = Get-DiaNodeIcon -Name $Esxi.Name -IconType "VBR_vSphere_Cluster" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                                    EsxiHost = foreach ($Esxi in $ESXis | Where-Object { $_.path -match $Cluster.Name }) {
+                                        $Rows = @{
+                                            IP = Get-NodeIP -Hostname $Esxi.Info.DnsName
+                                            Version = $Esxi.Info.ViVersion
+                                        }
+                                        [PSCustomObject]@{
+                                            Name = $Esxi.Name
+                                            Label = Get-DiaNodeIcon -Name $Esxi.Name -IconType "VBR_ESXi_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                                            AditionalInfo = $Rows
+                                        }
+                                    }
                                 }
                             }
                         }

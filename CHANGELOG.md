@@ -9,7 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add support for vCenter Information (Infrastructure Diagram)
+- Add support for HyperVisor Information (Infrastructure Diagram)
+  - vCenter information
+  - vSphere Cluster Information
+    - Esxi Host information
 
 ### Changed
 
