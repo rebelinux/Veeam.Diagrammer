@@ -104,7 +104,7 @@ function Get-VbrBackupProxyInfo {
 
             return $BackupProxyInfo
         } catch {
-            Write-Verbose $_.Exception.Message
+            Write-Verbose -Message $_.Exception.Message
         }
     }
     end {}

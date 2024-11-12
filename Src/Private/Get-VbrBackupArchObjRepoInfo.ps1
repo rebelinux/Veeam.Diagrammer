@@ -73,7 +73,7 @@ function Get-VbrBackupArchObjRepoInfo {
 
             return $ArchObjStorageInfo
         } catch {
-            Write-Verbose $_.Exception.Message
+            Write-Verbose -Message $_.Exception.Message
         }
     }
     end {}

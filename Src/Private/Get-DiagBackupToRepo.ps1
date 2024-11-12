@@ -83,7 +83,7 @@ function Get-DiagBackupToRepo {
                 }
             }
         } catch {
-            Write-Verbose $_.Exception.Message
+            Write-Verbose -Message $_.Exception.Message
         }
     }
     end {}

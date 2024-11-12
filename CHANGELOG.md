@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Increase Diagrammer.Core minimum version requirement
+- Improve logging
 
 ## [0.6.12] - 2024-10-30
 

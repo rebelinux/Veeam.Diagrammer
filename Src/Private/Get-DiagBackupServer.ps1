@@ -135,7 +135,7 @@ function Get-DiagBackupServer {
                 }
             }
         } catch {
-            Write-Verbose $_.Exception.Message
+            Write-Verbose -Message $_.Exception.Message
         }
     }
     end {}
