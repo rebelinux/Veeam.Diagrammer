@@ -50,4 +50,5 @@ $script:Images = @{
     "VBR_Virtual_Lab" = "Virtual_host.png"
     "VBR_SureBackup" = "SureBackup.png"
     "VBR_Application_Groups" = "Service-Application.png"
+    "VBR_vSphere_Cluster" = "Server_Cluster.png"
 }

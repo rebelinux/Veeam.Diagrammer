@@ -70,7 +70,7 @@ function Get-VbrBackupObjectRepoInfo {
 
             return $ObjStorageInfo
         } catch {
-            Write-Verbose $_.Exception.Message
+            Write-Verbose -Message $_.Exception.Message
         }
     }
     end {}

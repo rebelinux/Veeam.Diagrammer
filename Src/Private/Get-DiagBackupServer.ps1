@@ -5,7 +5,7 @@ function Get-DiagBackupServer {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.9
+        Version:        0.6.13
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -73,7 +73,7 @@ function Get-DiagBackupServer {
                             Edge -From $BackupServerInfo.Name -To $DatabaseServerInfo.Name @{arrowtail = "normal"; arrowhead = "normal"; minlen = 3; xlabel = $DatabaseServerInfo.DBPort }
                         }
                     } elseif (($EMServerInfo.Name -eq $BackupServerInfo.Name) -and ($DatabaseServerInfo.Name -eq $BackupServerInfo.Name)) {
-                        Write-Verbose -Message "Database and Enterprise Maneger server colocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
+                        Write-Verbose -Message "Database and Enterprise Manager server collocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
                         $BSHASHTABLE = @{}
 
                         $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
@@ -135,7 +135,7 @@ function Get-DiagBackupServer {
                 }
             }
         } catch {
-            Write-Verbose $_.Exception.Message
+            Write-Verbose -Message $_.Exception.Message
         }
     }
     end {}

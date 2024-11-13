@@ -144,7 +144,7 @@ function Get-VbrBackupServerInfo {
                 Write-Verbose "Unabe to create EMServer Object"
             }
         } catch {
-            Write-Verbose $_.Exception.Message
+            Write-Verbose -Message $_.Exception.Message
         }
     }
     end {

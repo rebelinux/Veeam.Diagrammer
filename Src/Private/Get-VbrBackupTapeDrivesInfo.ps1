@@ -53,7 +53,7 @@ function Get-VbrBackupTapeDrivesInfo {
 
             return $BackupTapeDriveInfo
         } catch {
-            Write-Verbose $_.Exception.Message
+            Write-Verbose -Message $_.Exception.Message
         }
     }
     end {}

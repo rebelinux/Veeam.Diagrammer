@@ -55,7 +55,7 @@ function Get-DiagBackupToProtectedGroup {
                     }
                 }
             } catch {
-                Write-Verbose $_.Exception.Message
+                Write-Verbose -Message $_.Exception.Message
             }
 
             if ($ProtectedGroups.Container) {
@@ -343,7 +343,7 @@ function Get-DiagBackupToProtectedGroup {
                 }
             }
         } catch {
-            Write-Verbose $_.Exception.Message
+            Write-Verbose -Message $_.Exception.Message
         }
     }
     end {}
