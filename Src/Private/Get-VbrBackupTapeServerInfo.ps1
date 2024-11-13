@@ -50,7 +50,7 @@ function Get-VbrBackupTapeServerInfo {
 
             return $BackupTapeServersInfo
         } catch {
-            Write-Verbose $_.Exception.Message
+            Write-Verbose -Message $_.Exception.Message
         }
     }
     end {}
