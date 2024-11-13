@@ -52,16 +52,25 @@ function Get-DiagBackupToViProxy {
                             }
                         }
                     } catch {
+                        Write-Verbose "Error: Unable to create vSphere Esxi table Objects. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
+                    }
+                    try {
+                        if ($ViClustersChildsNodes) {
+                            $ViClustersNodes += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ViClustersChildsNodes -Align 'Center' -IconDebug $IconDebug -Label 'vSphere Clusters' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3
+                            $vCenterNodeArray += $ViClustersNodes
+                        }
+                    } catch {
                         Write-Verbose "Error: Unable to create vSphere Clusters Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
                     }
-                    if ($ViClustersChildsNodes) {
-                        $ViClustersNodes += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ViClustersChildsNodes -Align 'Center' -IconDebug $IconDebug -Label 'vSphere Clusters' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3
-                        $vCenterNodeArray += $ViClustersNodes
-                    }
-                    if ($vCenterNodeArray) {
-                        $VivCenterNodes += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $vCenterNodeArray -Align 'Center' -IconDebug $IconDebug -Label 'vCenter Server' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1
-
+                    try {
+                        if ($vCenterNodeArray) {
+                            $VivCenterNodes += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $vCenterNodeArray -Align 'Center' -IconDebug $IconDebug -Label 'vCenter Server' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1
+                        }
+                    } catch {
+                        Write-Verbose "Error: Unable to create vCenter Server Objects. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
                     }
                 }
 
