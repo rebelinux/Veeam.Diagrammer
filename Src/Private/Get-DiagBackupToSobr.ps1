@@ -44,7 +44,7 @@ function Get-DiagBackupToSobr {
 
                         if ($SOBROBJ.Performance) {
                             try {
-                                $Performance = Get-DiaHTMLNodeTable -ImagesObj $Image -inputObject $SOBROBJ.Performance.Name -Align "Center" -iconType $SOBROBJ.Performance.IconType -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Performance.AditionalInfo -Subgraph -SubgraphLabel "Performance Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1"
+                                $Performance = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBROBJ.Performance.Name -Align "Center" -iconType $SOBROBJ.Performance.IconType -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Performance.AditionalInfo -Subgraph -SubgraphLabel "Performance Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1"
                             } catch {
                                 Write-Verbose "Error: Unable to create SOBR Performance Objects. Disabling the section"
                                 Write-Debug "Error Message: $($_.Exception.Message)"
