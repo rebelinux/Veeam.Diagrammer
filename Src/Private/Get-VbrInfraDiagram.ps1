@@ -103,48 +103,55 @@ function Get-VbrInfraDiagram {
                 }
             }
 
-            # vCenter Graphviz Cluster
-            if ($vSphereObj = Get-VbrBackupvSphereInfo | Sort-Object) {
-                try {
-                    $vSphereNode = Node vCenterServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $vSphereObj.Name -Align "Center" -iconType "VBR_vCenter_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $vSphereObj.AditionalInfo -Subgraph -SubgraphLabel "vCenter Servers" -SubgraphLabelPos "top" -SubgraphIconType "VBR_vCenter_Server" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1"); shape = 'plain'; fontname = "Segoe Ui" }
-                } catch {
-                    Write-Verbose "Error: Unable to create vSphere HyperVisors Objects. Disabling the section"
-                    Write-Debug "Error Message: $($_.Exception.Message)"
-                }
-            } else {
-                Write-Verbose "Info: No vCenter information to diagram"
-            }
-
-            if ($vSphereNode) {
-                $vSphereNode
-            }
-
             # vSphere Graphviz Cluster
-            $ViClustersNodes = @()
-            foreach ($vCenter in $vSphereObj) {
-                try {
-                    $ViClustersChildsNodes = foreach ($ViCluster in $vCenter.Childs) {
-                        Get-DiaHTMLTable -ImagesObj $Images -Rows $ViCluster.EsxiHost.Name -Align 'Center' -ColumnSize 3 -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_ESXi_Server" -SubgraphLabel $ViCluster.Name -SubgraphLabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold
+            if ($vSphereObj = Get-VbrBackupvSphereInfo | Sort-Object) {
+                $VivCenterNodes = @()
+                foreach ($vCenter in $vSphereObj | Where-Object { $_.Name -ne '192.168.5.2' }) {
+                    $vCenterNodeArray = @()
+                    $ViClustersNodes = @()
+                    $vCenterNodeArray += $vCenter.Label
+                    try {
+                        $ViClustersChildsNodes = foreach ($ViCluster in $vCenter.Childs) {
+                            if ($ViCluster.EsxiHost.Name) {
+                                Get-DiaHTMLTable -ImagesObj $Images -Rows $ViCluster.EsxiHost.Name -Align 'Center' -ColumnSize 3 -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_ESXi_Server" -SubgraphLabel $ViCluster.Name -SubgraphLabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold
+                            } else {
+                                Get-DiaHTMLTable -ImagesObj $Images -Rows 'No Esxi Host' -Align 'Center' -ColumnSize 3 -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_ESXi_Server" -SubgraphLabel $ViCluster.Name -SubgraphLabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold
+                            }
+                        }
+                    } catch {
+                        Write-Verbose "Error: Unable to create vSphere Esxi table Objects. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
                     }
-                } catch {
-                    Write-Verbose "Error: Unable to create vSphere Clusters Objects. Disabling the section"
-                    Write-Debug "Error Message: $($_.Exception.Message)"
+                    try {
+                        if ($ViClustersChildsNodes) {
+                            $ViClustersNodes += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ViClustersChildsNodes -Align 'Center' -IconDebug $IconDebug -Label 'vSphere Clusters' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3
+                            $vCenterNodeArray += $ViClustersNodes
+                        }
+                    } catch {
+                        Write-Verbose "Error: Unable to create vSphere Clusters Objects. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
+                    }
+                    try {
+                        if ($vCenterNodeArray) {
+                            $VivCenterNodes += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $vCenterNodeArray -Align 'Center' -IconDebug $IconDebug -Label 'vCenter Server' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1
+                        }
+                    } catch {
+                        Write-Verbose "Error: Unable to create vCenter Server Objects. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
+                    }
                 }
-                if ($ViClustersChildsNodes) {
-                    $ViClustersNodes += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ViClustersChildsNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_vCenter_Server' -Label $vCenter.Name -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 2
-                }
-            }
 
-            if ($ViClustersNodes) {
-                try {
-                    $ViClustersSubgraphNode = Node -Name "ViCluster" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ViClustersNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_vSphere_Cluster' -Label 'vSphere Clusters' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
-                } catch {
-                    Write-Verbose "Error: Unable to create ViCluster Objects. Disabling the section"
-                    Write-Debug "Error Message: $($_.Exception.Message)"
-                }
+                if ($VivCenterNodes) {
+                    try {
+                        $ViClustersSubgraphNode = Node -Name "ViInfra" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $VivCenterNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_vSphere' -Label 'VMware vSphere Infrastructure' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                    } catch {
+                        Write-Verbose "Error: Unable to create ViCluster Objects. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
+                    }
 
-                if ($ViClustersSubgraphNode) {
-                    $ViClustersSubgraphNode
+                    if ($ViClustersSubgraphNode) {
+                        $ViClustersSubgraphNode
+                    }
                 }
             }
 
@@ -542,13 +549,8 @@ function Get-VbrInfraDiagram {
             }
 
             # Connect vCenter Servers Cluster to the Dummy line
-            if ($vSphereNode) {
-                Edge -From Proxies -To vCenterServer @{minlen = 1; arrowtail = 'dot'; arrowhead = 'dot'; style = 'dashed' }
-            }
-
-            # Connect vSphere Cluster to the Dummy line
-            if ($vSphereNode -and $ViClustersSubgraphNode) {
-                Edge -From vCenterServer -To ViCluster @{minlen = 1; arrowtail = 'dot'; arrowhead = 'dot'; style = 'dashed' }
+            if ($ViClustersSubgraphNode) {
+                Edge -From Proxies -To ViInfra @{minlen = 1; arrowtail = 'dot'; arrowhead = 'dot'; style = 'dashed' }
             }
 
             # Connect Veeam Repository to the Dummy line
