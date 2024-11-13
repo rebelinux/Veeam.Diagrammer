@@ -26,7 +26,9 @@ function Get-VbrBackupvSphereInfo {
             $HyObjsInfo = @()
             if ($HyObjs) {
                 foreach ($HyObj in $HyObjs) {
-                    $ESXis = Find-VBRViEntity -Server $HyObj | Where-Object { ($_.type -eq "esx") }
+                    $ESXis = try { Find-VBRViEntity -Server $HyObj | Where-Object { ($_.type -eq "esx") } } catch {
+                        Write-Verbose -Message $_.Exception.Message
+                    }
                     $Rows = @{
                         IP = Get-NodeIP -Hostname $HyObj.Info.DnsName
                         Version = $HyObj.Info.ViVersion
@@ -37,7 +39,12 @@ function Get-VbrBackupvSphereInfo {
                         Label = Get-DiaNodeIcon -Name $HyObj.Name -IconType "VBR_vCenter_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
                         AditionalInfo = $Rows
                         Childs = & {
-                            foreach ($Cluster in (Find-VBRViEntity -Server $HyObj | Where-Object { ($_.type -eq "cluster") }) ) {
+                            $VIClusters = try {
+                                (Find-VBRViEntity -Server $HyObj | Where-Object { ($_.type -eq "cluster") })
+                            } catch {
+                                Write-Verbose -Message $_.Exception.Message
+                            }
+                            foreach ($Cluster in $VIClusters) {
                                 [PSCustomObject]@{
                                     Name = $Cluster.Name
                                     Label = Get-DiaNodeIcon -Name $Esxi.Name -IconType "VBR_vSphere_Cluster" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
