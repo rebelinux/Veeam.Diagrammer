@@ -5,7 +5,7 @@ function Get-DiagBackupToProtectedGroup {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.9
+        Version:        0.6.16
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -36,19 +36,8 @@ function Get-DiagBackupToProtectedGroup {
                 $FileBackupProxy = Get-VbrBackupProxyInfo -Type 'nas'
                 if ($BackupServerInfo) {
                     if ($FileBackupProxy) {
-                        $ProxiesAttr = @{
-                            Label = 'File Backup Proxies'
-                            fontsize = 18
-                            penwidth = 1.5
-                            labelloc = 't'
-                            color = $SubGraphDebug.color
-                            style = 'dashed,rounded'
-                        }
-                        SubGraph MainSubGraphFileProxy -Attributes $ProxiesAttr -ScriptBlock {
 
-                            Node FileProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($FileBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($FileBackupProxy.AditionalInfo )); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
-
-                        }
+                        Node FileProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($FileBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo $FileBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_Proxy" -SubgraphLabel "File Backup Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1"); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
                         Edge $BackupServerInfo.Name -To FileProxies @{minlen = 3 }
 
@@ -59,287 +48,174 @@ function Get-DiagBackupToProtectedGroup {
             }
 
             if ($ProtectedGroups.Container) {
-                if ($Dir -eq 'LR') {
-                    $DiagramLabel = 'Protected Groups'
-                    $DiagramDummyLabel = ' '
-                } else {
-                    $DiagramLabel = ' '
-                    $DiagramDummyLabel = 'Protected Groups'
-                }
-
                 if ($ProtectedGroups) {
-                    SubGraph MainSubGraph -Attributes @{Label = $DiagramLabel; fontsize = 22; penwidth = 1; labelloc = 't'; style = 'dashed,rounded'; color = $SubGraphDebug.color } {
-                        if ($ADContainer) {
-                            SubGraph ADContainer -Attributes @{Label = (Get-DiaHTMLLabel -Label 'Active Directory Computers' -IconType "VBR_AGENT_AD_Logo" -ImagesObj $Images -IconDebug $IconDebug -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
-                                # Node used for subgraph centering
-                                Node DummyADContainer @{Label = 'DummyADC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if (($ADContainer | Measure-Object).count -le 2) {
-                                    foreach ($PGOBJ in ($ADContainer | Sort-Object -Property Name)) {
-                                        $PGHASHTABLE = @{}
-                                        $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
+                    $ComputerAgentsArray = @()
+                    if ($ADContainer) {
+                        try {
+                            $ADCNodes = foreach ($PGOBJ in ($ADContainer | Sort-Object -Property Name)) {
+                                $PGHASHTABLE = @{}
+                                $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
 
-                                        $Ous = @()
+                                $Ous = @()
 
-                                        $Status = Switch ($PGOBJ.Object.Enabled) {
-                                            $true { 'Enabled' }
-                                            $false { 'Disabled' }
-                                            default { 'Unknown' }
-                                        }
-
-                                        $Ous += $PGOBJ.Object.Container.Entity | ForEach-Object {
-                                            "<B>OUs</B> : $($_.DistinguishedName)"
-                                        }
-                                        $Rows = @(
-                                            "<B>Type</B>: $($PGOBJ.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($PGOBJ.Object.ScheduleOptions.PolicyType)"
-                                            "<B>Domain</B> : $($PGOBJ.Object.Container.Domain) <B>Distribution Server</B> : $($PGOBJ.Object.DeploymentOptions.DistributionServer.Name)"
-                                            $Ous
-                                        )
-
-                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
-
-                                        Edge -From DummyADContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                    }
-                                } else {
-                                    $Group = Split-array -inArray ($ADContainer | Sort-Object -Property Name) -size 2
-                                    $Number = 0
-                                    while ($Number -ne $Group.Length) {
-                                        $Random = Get-Random
-                                        SubGraph "ADGroup$($Number)_$Random" -Attributes @{Label = ' '; style = $SubGraphDebug.style; color = $SubGraphDebug.color; fontsize = 18; penwidth = 1 } {
-                                            $Group[$Number] | ForEach-Object {
-                                                $PGHASHTABLE = @{}
-                                                $_.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
-
-                                                $Status = Switch ($_.Object.Enabled) {
-                                                    $true { 'Enabled' }
-                                                    $false { 'Disabled' }
-                                                    default { 'Unknown' }
-                                                }
-
-                                                $Ous = @()
-                                                $Ous += $_.Object.Container.Entity | ForEach-Object {
-                                                    "<B>OUs</B> : $($_.DistinguishedName)"
-                                                }
-                                                $Rows = @(
-                                                    "<B>Type</B>: $($_.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($_.Object.ScheduleOptions.PolicyType)"
-                                                    "<B>Domain</B> : $($_.Object.Container.Domain) <B>Distribution Server</B> : $($_.Object.DeploymentOptions.DistributionServer.Name)"
-                                                    $Ous
-                                                )
-
-                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
-                                            }
-                                        }
-                                        $Number++
-                                    }
-
-                                    Edge -From DummyADContainer -To $Group[0].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                    $Start = 0
-                                    $LocalPGNum = 1
-                                    while ($LocalPGNum -ne $Group.Length) {
-                                        Edge -From $Group[$Start].Name -To $Group[$LocalPGNum].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                        $Start++
-                                        $LocalPGNum++
-                                    }
+                                $Status = Switch ($PGOBJ.Object.Enabled) {
+                                    $true { 'Enabled' }
+                                    $false { 'Disabled' }
+                                    default { 'Unknown' }
                                 }
+
+                                $Ous += $PGOBJ.Object.Container.Entity | ForEach-Object {
+                                    "<B>OUs</B> : $($_.DistinguishedName)"
+                                }
+                                $Rows = @(
+                                    "<B>Type</B>: $($PGOBJ.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($PGOBJ.Object.ScheduleOptions.PolicyType)"
+                                    "<B>Domain</B> : $($PGOBJ.Object.Container.Domain) <B>Distribution Server</B> : $($PGOBJ.Object.DeploymentOptions.DistributionServer.Name)"
+                                    $Ous
+                                )
+
+                                Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug -HTMLOutput $true
                             }
-                            Edge -From MainSubGraph:s -To DummyADContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                        } catch {
+                            Write-Verbose "Error: Unable to create ADCNodes Objects. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
                         }
-                        if ($ManualContainer) {
-                            SubGraph MCContainer -Attributes @{Label = (Get-DiaHTMLLabel -Label 'Manual Computers' -IconType "VBR_AGENT_MC" -ImagesObj $Images -IconDebug $IconDebug -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
-                                # Node used for subgraph centering
-                                Node DummyMCContainer @{Label = 'DummyMC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if (($ManualContainer | Measure-Object).count -le 2) {
-                                    'Backup-to-All'
-                                    foreach ($PGOBJ in ($ManualContainer | Sort-Object -Property Name)) {
-                                        $PGHASHTABLE = @{}
-                                        $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
 
-                                        $Status = Switch ($PGOBJ.Enabled) {
-                                            $true { 'Enabled' }
-                                            $false { 'Disabled' }
-                                            default { 'Unknown' }
-                                        }
-
-                                        $Rows = @(
-                                            "<B>Type</B>: $($PGOBJ.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($PGOBJ.Object.ScheduleOptions.PolicyType)"
-                                        )
-
-                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
-
-                                        Edge -From DummyMCContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                    }
-
-                                } else {
-                                    $Group = Split-array -inArray ($ManualContainer | Sort-Object -Property Name) -size 2
-                                    $Number = 0
-                                    while ($Number -ne $Group.Length) {
-                                        $Random = Get-Random
-                                        SubGraph "MCGroup$($Number)_$Random" -Attributes @{Label = ' '; style = $SubGraphDebug.style; color = $SubGraphDebug.color; fontsize = 18; penwidth = 1 } {
-                                            $Group[$Number] | ForEach-Object {
-                                                $PGHASHTABLE = @{}
-                                                $_.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
-
-                                                $Status = Switch ($_.Object.Enabled) {
-                                                    $true { 'Enabled' }
-                                                    $false { 'Disabled' }
-                                                    default { 'Unknown' }
-                                                }
-
-                                                $Rows = @(
-                                                    "<B>Type</B>: $($_.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($_.Object.ScheduleOptions.PolicyType)"
-                                                )
-
-                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
-                                            }
-                                        }
-                                        $Number++
-                                    }
-
-                                    Edge -From DummyMCContainer -To $Group[0].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                    $Start = 0
-                                    $LocalPGNum = 1
-                                    while ($LocalPGNum -ne $Group.Length) {
-                                        Edge -From $Group[$Start].Name -To $Group[$LocalPGNum].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                        $Start++
-                                        $LocalPGNum++
-                                    }
-                                }
+                        if ($ADCNodes) {
+                            try {
+                                $ADCNodesSubgraph = Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ADCNodes -Align 'Center' -IconDebug $IconDebug -Label 'Active Directory Computers' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 2 -IconType "VBR_AGENT_AD"
+                            } catch {
+                                Write-Verbose "Error: Unable to create ADCNodesSubgraph Objects. Disabling the section"
+                                Write-Debug "Error Message: $($_.Exception.Message)"
                             }
-                            Edge -From MainSubGraph:s -To DummyMCContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            $ComputerAgentsArray += $ADCNodesSubgraph
                         }
-                        if ($IndividualContainer) {
-                            SubGraph ICContainer -Attributes @{Label = (Get-DiaHTMLLabel -Label 'Individual Computers' -IconType "VBR_AGENT_IC" -ImagesObj $Images -IconDebug $IconDebug -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
-                                # Node used for subgraph centering
-                                Node DummyICContainer @{Label = 'DummyIC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if (($IndividualContainer | Measure-Object).count -le 2) {
-                                    foreach ($PGOBJ in ($IndividualContainer | Sort-Object -Property Name)) {
-                                        $PGHASHTABLE = @{}
-                                        $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
+                    }
+                    if ($ManualContainer) {
+                        try {
+                            $MCNodes = foreach ($PGOBJ in ($ManualContainer | Sort-Object -Property Name)) {
+                                $PGHASHTABLE = @{}
+                                $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
 
-                                        $Status = Switch ($PGOBJ.Enabled) {
-                                            $true { 'Enabled' }
-                                            $false { 'Disabled' }
-                                            default { 'Unknown' }
-                                        }
-
-
-                                        $Entities = @()
-                                        $Entities += $PGOBJ.Object.Container.CustomCredentials | ForEach-Object {
-                                            "<B>Host Name</B> : $($_.HostName)"
-                                        }
-
-                                        $Rows = @(
-                                            "<B>Type</B>: $($PGOBJ.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($PGOBJ.Object.ScheduleOptions.PolicyType)"
-                                            "<B>Distribution Server</B> : $($PGOBJ.Object.DeploymentOptions.DistributionServer.Name)"
-                                            $Entities
-                                        )
-
-                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
-
-                                        Edge -From DummyICContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                    }
-                                } else {
-                                    $Group = Split-array -inArray ($IndividualContainer | Sort-Object -Property Name) -size 2
-                                    $Number = 0
-                                    while ($Number -ne $Group.Length) {
-                                        $Random = Get-Random
-                                        SubGraph "ICGroup$($Number)_$Random" -Attributes @{Label = ' '; style = $SubGraphDebug.style; color = $SubGraphDebug.color; fontsize = 18; penwidth = 1 } {
-                                            $Group[$Number] | ForEach-Object {
-                                                $PGHASHTABLE = @{}
-                                                $_.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
-
-                                                $Status = Switch ($_.Object.Enabled) {
-                                                    $true { 'Enabled' }
-                                                    $false { 'Disabled' }
-                                                    default { 'Unknown' }
-                                                }
-
-                                                $Entities = @()
-                                                $Entities += $_.Object.Container.CustomCredentials | ForEach-Object {
-                                                    "$($_.HostName)<br />"
-                                                }
-
-                                                $Rows = @(
-                                                    "<B>Type</B>: $($_.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($_.Object.ScheduleOptions.PolicyType)"
-                                                    "<B>Distribution Server</B> : $($_.Object.DeploymentOptions.DistributionServer.Name)"
-                                                    "<B>Host Name</B>:
-                                                    <br /> $Entities"
-                                                )
-
-                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
-                                            }
-                                        }
-                                        $Number++
-                                    }
-
-                                    Edge -From DummyICContainer -To $Group[0].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                    $Start = 0
-                                    $LocalPGNum = 1
-                                    while ($LocalPGNum -ne $Group.Length) {
-                                        Edge -From $Group[$Start].Name -To $Group[$LocalPGNum].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                        $Start++
-                                        $LocalPGNum++
-                                    }
+                                $Status = Switch ($PGOBJ.Enabled) {
+                                    $true { 'Enabled' }
+                                    $false { 'Disabled' }
+                                    default { 'Unknown' }
                                 }
+
+                                $Rows = @(
+                                    "<B>Type</B>: $($PGOBJ.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($PGOBJ.Object.ScheduleOptions.PolicyType)"
+                                )
+
+                                Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug -HTMLOutput $true
                             }
-                            Edge -From MainSubGraph:s -To DummyICContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                        } catch {
+                            Write-Verbose "Error: Unable to create MCNodes Objects. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
                         }
-                        if ($CSVContainer) {
-                            SubGraph CSVContainer -Attributes @{Label = (Get-DiaHTMLLabel -Label 'CSV Computers' -IconType "VBR_AGENT_CSV_Logo" -ImagesObj $Images -IconDebug $IconDebug -SubgraphLabel); fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
-                                # Node used for subgraph centering
-                                Node DummyCSVContainer @{Label = 'DummyCSVC'; style = $SubGraphDebug.style; color = $SubGraphDebug.color; shape = 'plain' }
-                                if (($CSVContainer | Measure-Object).count -le 2) {
-                                    foreach ($PGOBJ in ($CSVContainer | Sort-Object -Property Name)) {
-                                        $PGHASHTABLE = @{}
-                                        $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
-                                        $Rows = @(
-                                            "<B>Type</B>: $($PGOBJ.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($PGOBJ.Object.ScheduleOptions.PolicyType)"
-                                            "<B>Distribution Server</B> : $($PGOBJ.Object.DeploymentOptions.DistributionServer.Name)"
-                                            "<B>CSV File</B> : $($PGOBJ.Object.Container.Path)"
-                                            "<B>Credential</B> : $($PGOBJ.Object.Container.MasterCredentials.Name)"
-                                        )
 
-                                        Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
-
-                                        Edge -From DummyCSVContainer -To $PGOBJ.Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                    }
-
-                                } else {
-                                    $Group = Split-array -inArray ($CSVContainer | Sort-Object -Property Name) -size 2
-                                    $Number = 0
-                                    while ($Number -ne $Group.Length) {
-                                        $Random = Get-Random
-                                        SubGraph "CSVGroup$($Number)_$Random" -Attributes @{Label = ' '; style = $SubGraphDebug.style; color = $SubGraphDebug.color; fontsize = 18; penwidth = 1 } {
-                                            $Group[$Number] | ForEach-Object {
-                                                $PGHASHTABLE = @{}
-                                                $_.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
-                                                $Rows = @(
-                                                    "<B>Type</B>: $($_.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($_.Object.ScheduleOptions.PolicyType)"
-                                                    "<B>Distribution Server</B> : $($_.Object.DeploymentOptions.DistributionServer.Name)"
-                                                    "<B>CSV File</B> : $($_.Object.Container.Path)"
-                                                    "<B>Credential</B> : $($_.Object.Container.MasterCredentials.Name)"
-                                                )
-
-                                                Convert-DiaTableToHTML -Label $_.Name -Name $_.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug
-                                            }
-                                        }
-                                        $Number++
-                                    }
-
-                                    Edge -From DummyCSVContainer -To $Group[0].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                    $Start = 0
-                                    $LocalPGNum = 1
-                                    while ($LocalPGNum -ne $Group.Length) {
-                                        Edge -From $Group[$Start].Name -To $Group[$LocalPGNum].Name @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-                                        $Start++
-                                        $LocalPGNum++
-                                    }
-                                }
+                        if ($MCNodes) {
+                            try {
+                                $MCNodesSubgraph = Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $MCNodes -Align 'Center' -IconDebug $IconDebug -Label 'Manual Computers' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 2 -IconType "VBR_AGENT_MC"
+                            } catch {
+                                Write-Verbose "Error: Unable to create MCNodesSubgraph Objects. Disabling the section"
+                                Write-Debug "Error Message: $($_.Exception.Message)"
                             }
-                            Edge -From MainSubGraph:s -To DummyCSVContainer @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            $ComputerAgentsArray += $MCNodesSubgraph
+                        }
+                    }
+                    if ($IndividualContainer) {
+                        try {
+                            $ICCNodes = foreach ($PGOBJ in ($IndividualContainer | Sort-Object -Property Name)) {
+                                $PGHASHTABLE = @{}
+                                $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
+
+                                $Status = Switch ($PGOBJ.Enabled) {
+                                    $true { 'Enabled' }
+                                    $false { 'Disabled' }
+                                    default { 'Unknown' }
+                                }
+
+
+                                $Entities = @()
+                                $Entities += $PGOBJ.Object.Container.CustomCredentials | ForEach-Object {
+                                    "<B>Host Name</B> : $($_.HostName)"
+                                }
+
+                                $Rows = @(
+                                    "<B>Type</B>: $($PGOBJ.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($PGOBJ.Object.ScheduleOptions.PolicyType)"
+                                    "<B>Distribution Server</B> : $($PGOBJ.Object.DeploymentOptions.DistributionServer.Name)"
+                                    $Entities
+                                )
+
+                                Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug -HTMLOutput $true
+                            }
+                        } catch {
+                            Write-Verbose "Error: Unable to create ICCNodes Objects. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
+                        }
+
+                        if ($ICCNodes) {
+                            try {
+                                $ICCNodesSubgraph = Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ICCNodes -Align 'Center' -IconDebug $IconDebug -Label 'Individual Computers' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 2 -IconType "VBR_AGENT_IC"
+                            } catch {
+                                Write-Verbose "Error: Unable to create ICCNodesSubgraph Objects. Disabling the section"
+                                Write-Debug "Error Message: $($_.Exception.Message)"
+                            }
+                            $ComputerAgentsArray += $ICCNodesSubgraph
+                        }
+                    }
+                    if ($CSVContainer) {
+                        try {
+                            $CSVCNodes = foreach ($PGOBJ in ($CSVContainer | Sort-Object -Property Name)) {
+                                $PGHASHTABLE = @{}
+                                $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
+                                $Rows = @(
+                                    "<B>Type</B>: $($PGOBJ.Object.Type) <B>Status</B>: $($Status) <B>Schedule</B>: $($PGOBJ.Object.ScheduleOptions.PolicyType)"
+                                    "<B>Distribution Server</B> : $($PGOBJ.Object.DeploymentOptions.DistributionServer.Name)"
+                                    "<B>CSV File</B> : $($PGOBJ.Object.Container.Path)"
+                                    "<B>Credential</B> : $($PGOBJ.Object.Container.MasterCredentials.Name)"
+                                )
+
+                                Convert-DiaTableToHTML -Label $PGOBJ.Name -Name $PGOBJ.Name -Row $Rows -HeaderColor "#005f4b" -HeaderFontColor "white" -BorderColor "black" -FontSize 14 -IconDebug $IconDebug -HTMLOutput $true
+                            }
+                        } catch {
+                            Write-Verbose "Error: Unable to create CSVCNodes Objects. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
+                        }
+
+                        if ($CSVCNodes) {
+                            try {
+                                $CSVCNodesSubgraph = Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CSVCNodes -Align 'Center' -IconDebug $IconDebug -Label 'CSV Computers' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 2 -IconType "VBR_AGENT_CSV_Logo"
+                            } catch {
+                                Write-Verbose "Error: Unable to create CSVCNodesSubgraph Objects. Disabling the section"
+                                Write-Debug "Error Message: $($_.Exception.Message)"
+                            }
+                            $ComputerAgentsArray += $CSVCNodesSubgraph
                         }
                     }
 
-                    Edge -From FileProxies -To MainSubGraph @{minlen = 3 }
+                    if ($ComputerAgentsArray) {
+                        if ($Dir -eq 'LR') {
+                            try {
+                                $ComputerAgentSubGraph = Node -Name "ComputerAgentsSubgraph" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ComputerAgentsArray -Align 'Center' -IconDebug $IconDebug -Label 'Protected Groups' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                            } catch {
+                                Write-Verbose "Error: Unable to create ComputerAgentsSubgraph Objects. Disabling the section"
+                                Write-Debug "Error Message: $($_.Exception.Message)"
+                            }
+                        } else {
+                            try {
+                                $ComputerAgentSubGraph = Node -Name "ComputerAgentsSubgraph" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ComputerAgentsArray -Align 'Center' -IconDebug $IconDebug -Label 'Protected Groups' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 4); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                            } catch {
+                                Write-Verbose "Error: Unable to create ComputerAgentsSubgraph Objects. Disabling the section"
+                                Write-Debug "Error Message: $($_.Exception.Message)"
+                            }
+                        }
+                    }
+
+                    if ($ComputerAgentSubGraph) {
+                        $ComputerAgentSubGraph
+                        Edge -From FileProxies -To ComputerAgentsSubgraph @{minlen = 3 }
+                    }
                 }
             }
         } catch {

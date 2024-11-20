@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.16] - 2024-11-20
+
+### Changed
+
+- Increase Diagrammer.Core minimum version requirement
+- Migrated Protection Group diagram to use Get-DiaHTMLSubGraph cmdlet
+
+### Fixed
+
+- Remove hardcoded vCenter server from query
+
+## [0.6.15] - 2024-11-13
+
+### Fixed
+
+- Improve Graphviz Cluster space with less than 1 object to display
+
 ## [0.6.14] - 2024-11-13
 
 ### Fixed
