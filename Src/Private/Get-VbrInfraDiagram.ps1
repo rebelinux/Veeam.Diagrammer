@@ -5,7 +5,7 @@ function Get-VbrInfraDiagram {
     .DESCRIPTION
         Diagram the configuration of Veeam Backup & Replication infrastructure in PDF/SVG/DOT/PNG formats using PSGraph and Graphviz.
     .NOTES
-        Version:        0.6.13
+        Version:        0.6.17
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -44,14 +44,18 @@ function Get-VbrInfraDiagram {
             if ($Proxies = Get-VbrProxyInfo) {
 
                 try {
-                    $ProxiesVi = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "vSphere" }) | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($Proxies.AditionalInfo | Where-Object { $_.Type -eq "vSphere" }) -Subgraph -SubgraphIconType "VBR_vSphere" -SubgraphLabel "VMware Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1"
+                    if (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "vSphere" }).Name) {
+                        $ProxiesVi = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "vSphere" }) | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($Proxies.AditionalInfo | Where-Object { $_.Type -eq "vSphere" }) -Subgraph -SubgraphIconType "VBR_vSphere" -SubgraphLabel "VMware Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1"
+                    }
                 } catch {
                     Write-Verbose "Error: Unable to create ProxiesVSphere Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
                 }
 
                 try {
-                    $ProxiesHv = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "Off host" -or $_.AditionalInfo.Type -eq "On host" }).Name | ForEach-Object { $_.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($Proxies.AditionalInfo | Where-Object { $_.Type -eq "Off host" -or $_.Type -eq "On host" }) -Subgraph -SubgraphIconType "VBR_HyperV" -SubgraphLabel "Hyper-V Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1"
+                    if (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "Off host" -or $_.AditionalInfo.Type -eq "On host" }).Name) {
+                        $ProxiesHv = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "Off host" -or $_.AditionalInfo.Type -eq "On host" }).Name | ForEach-Object { $_.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($Proxies.AditionalInfo | Where-Object { $_.Type -eq "Off host" -or $_.Type -eq "On host" }) -Subgraph -SubgraphIconType "VBR_HyperV" -SubgraphLabel "Hyper-V Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1"
+                    }
                 } catch {
                     Write-Verbose "Error: Unable to create ProxiesHyperV Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -423,6 +427,8 @@ function Get-VbrInfraDiagram {
             #                      Graphviz: https://graphviz.org/docs/edges/                             #
             #---------------------------------------------------------------------------------------------#
 
+            # LastPoint Min length
+            $LastPointMinLen = 30
             # Connect the Dummy Node in a straight line
             # VBRStartPoint --- VBRServerPointSpace --- VBRProxyPoint --- VBRProxyPointSpace --- VBRRepoPoint --- VBREndPointSpace
             Edge -From VBRStartPoint -To VBRServerPointSpace @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
@@ -473,7 +479,8 @@ function Get-VbrInfraDiagram {
                 $LastPoint = 'VBRSureBackupPoint'
 
             } elseif ((-Not $TapeServerNode) -and (-Not $WanAccelsNode) -and (-Not $ServiceProviderNode) -and (-Not ($VirtualLabNode -or $ApplicationGroupsNode))) {
-                $LastPoint = 'VBRTapePoint'
+                $LastPoint = 'VBRRepoPointSpace'
+                $LastPointMinLen = 12
 
             } elseif ((-Not $TapeServerNode) -and $WanAccelsNode -and $ServiceProviderNode -and (($VirtualLabNode -or $ApplicationGroupsNode))) {
                 Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
@@ -532,6 +539,7 @@ function Get-VbrInfraDiagram {
                 $LastPoint = 'VBRTapePoint'
             } elseif ((-Not $TapeServerNode) -and (-Not $WanAccelsNode) -and (-Not $ServiceProviderNode)) {
                 $LastPoint = 'VBRRepoPointSpace'
+                $LastPointMinLen = 12
             }
 
             ####################################################################################
@@ -595,7 +603,7 @@ function Get-VbrInfraDiagram {
             ####################################################################################
 
             if ($LastPoint) {
-                Edge -From $LastPoint -To VBREndPointSpace @{minlen = 30; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+                Edge -From $LastPoint -To VBREndPointSpace @{minlen = $LastPointMinLen; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
             }
         }
     }
