@@ -36,14 +36,6 @@ body:
     validations:
       required: true
   - type: textarea
-    id: expected-behaviour
-    attributes:
-      label: Expected behaviour
-      description: >-
-        Please provide a clear and concise description of what you expected to happen.
-    validations:
-      required: true
-  - type: textarea
     id: screenshots
     attributes:
       label: Screenshots
@@ -75,11 +67,6 @@ body:
       placeholder: Get-Module -ListAvailable @("Veeam.Diagrammer";"PSGraph") | Select Name, Version
     validations:
       required: true
-  - type: textarea
-    id: additional-context
-    attributes:
-      label: Additional Context
-      description: This field is optional. You may provide additional context for the bug you wish to report. You may wish to include links to any related [issues](https://github.com/rebelinux/Veeam.Diagrammer/issues) or other relevant information.
   - type: checkboxes
     id: checklist
     attributes:
