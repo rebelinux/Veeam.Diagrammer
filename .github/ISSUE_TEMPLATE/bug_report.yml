@@ -19,6 +19,7 @@ body:
       label: Log Generation
       description: >-
         Please provide the Output.log as described in [Run cmdlet with debugging options](https://github.com/rebelinux/Veeam.Diagrammer/wiki/Run-cmdlet-with-debugging-options)
+        Attach the file in the text area.
     validations:
       required: true
   - type: textarea
