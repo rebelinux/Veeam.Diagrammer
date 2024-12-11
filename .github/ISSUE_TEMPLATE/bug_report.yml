@@ -13,13 +13,14 @@ body:
         Please provide a clear and concise description of the bug.
     validations:
       required: true
-  - type: input
-    id: command-line-input
+  - type: textarea
+    id: output-log-generation
     attributes:
-      label: Command-line input
+      label: Log Generation
       description: >-
-        Please provide the command line input you are using to run AsBuiltReport. Please ensure that you obscure any sensitive information.
-      placeholder: New-VeeamDiagram -Target backupserver.domain.local -Username "domain\username" -Password password -Format pdf -Direction top-to-bottom -OutputFolderPath C:\Users\username\ -EdgeType polyline -DiagramType Diagram-Type
+        Please provide the Output.log as described in [Run cmdlet with debugging options](https://github.com/rebelinux/Veeam.Diagrammer/wiki/Run-cmdlet-with-debugging-options). Attach the file in the text area.
+      placeholder: |-
+        Drag & drop the file in the Here.
     validations:
       required: true
   - type: textarea
@@ -32,14 +33,6 @@ body:
         1. ....
         2. ....
         3. ....
-    validations:
-      required: true
-  - type: textarea
-    id: expected-behaviour
-    attributes:
-      label: Expected behaviour
-      description: >-
-        Please provide a clear and concise description of what you expected to happen.
     validations:
       required: true
   - type: textarea
@@ -74,11 +67,6 @@ body:
       placeholder: Get-Module -ListAvailable @("Veeam.Diagrammer";"PSGraph") | Select Name, Version
     validations:
       required: true
-  - type: textarea
-    id: additional-context
-    attributes:
-      label: Additional Context
-      description: This field is optional. You may provide additional context for the bug you wish to report. You may wish to include links to any related [issues](https://github.com/rebelinux/Veeam.Diagrammer/issues) or other relevant information.
   - type: checkboxes
     id: checklist
     attributes:

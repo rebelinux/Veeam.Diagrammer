@@ -19,6 +19,7 @@ function Get-IconType {
         'LinuxHardened' { 'VBR_Linux_Repository' }
         'WinLocal' { 'VBR_Windows_Repository' }
         'Cloud' { 'VBR_Cloud_Repository' }
+        'GoogleCloudStorage' { 'VBR_Amazon_S3_Compatible' }
         'AmazonS3Compatible' { 'VBR_Amazon_S3_Compatible' }
         'AmazonS3Glacier' { 'VBR_Amazon_S3_Compatible' }
         'AmazonS3' { 'VBR_Amazon_S3' }
