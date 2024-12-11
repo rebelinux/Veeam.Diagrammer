@@ -40,6 +40,19 @@ function Get-VbrInfraDiagram {
             # Build Backup Server Graphviz Cluster
             Get-DiagBackupServer
 
+            # EntraID Graphviz Cluster
+            if ($EntraID = Get-VbrBackupEntraIDInfo) {
+                try {
+                    $EntraIDNode = Node EntraID @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $EntraID.Name -Align "Center" -iconType "VBR_Microsoft_Entra_ID" -columnSize 2 -IconDebug $IconDebug -MultiIcon -AditionalInfo $EntraID.AditionalInfo -Subgraph -SubgraphLabel "Entra ID Tenants" -SubgraphLabelPos "top" -SubgraphIconType "VBR_Microsoft_Entra_ID" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1"); shape = 'plain'; fontname = "Segoe Ui" }
+                } catch {
+                    Write-Verbose "Error: Unable to create EntraID Objects. Disabling the section"
+                    Write-Debug "Error Message: $($_.Exception.Message)"
+                }
+            }
+            if ($EntraID -and $EntraIDNode) {
+                $EntraIDNode
+            }
+
             # Proxy Graphviz Cluster
             if ($Proxies = Get-VbrProxyInfo) {
 
@@ -432,7 +445,7 @@ function Get-VbrInfraDiagram {
             # Connect the Dummy Node in a straight line
             # VBRStartPoint --- VBRServerPointSpace --- VBRProxyPoint --- VBRProxyPointSpace --- VBRRepoPoint --- VBREndPointSpace
             Edge -From VBRStartPoint -To VBRServerPointSpace @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-            Edge -From VBRServerPointSpace -To VBRProxyPoint @{minlen = 12; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
+            Edge -From VBRServerPointSpace -To VBRProxyPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
             if ($ProxiesVi -and $ProxiesHv -and $ProxiesNas ) {
                 Edge -From VBRProxyPoint -To VBRProxyPointSpace @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
             } else {
@@ -550,6 +563,11 @@ function Get-VbrInfraDiagram {
 
             # Connect Veeam Backup server to the Dummy line
             Edge -From $BackupServerInfo.Name -To VBRServerPointSpace @{minlen = 2; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
+
+            # Connect Microsoft Entra ID Node to the Dummy line
+            if ($EntraIDNode) {
+                Edge -From EntraID -To VBRProxyPoint @{minlen = 2; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
+            }
 
             # Connect Veeam Proxies Server to the Dummy line
             if ($ProxiesSubgraphNode) {
