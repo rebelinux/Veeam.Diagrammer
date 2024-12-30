@@ -205,7 +205,7 @@ function ConvertTo-TextYN {
         Maybe
 
     .LINK
-        https://github.com/AsBuiltReport/AsBuiltReport
+        https://github.com/rebelinux/Veeam.Diagrammer
     #>
     [OutputType([String])]
     Param (
@@ -246,8 +246,19 @@ function ConvertTo-FileSizeString {
         PS> ConvertTo-FileSizeString -Size 1073741824
         1 GB
     .LINK
-        https://github.com/your-repository-link
+        https://github.com/rebelinux/Veeam.Diagrammer
     #>
+
+    [CmdletBinding()]
+    [OutputType([String])]
+    Param
+    (
+        [Parameter (
+            Position = 0,
+            Mandatory)]
+        [int64]
+        $Size
+    )
 
     $Unit = Switch ($Size) {
         { $Size -gt 1PB } { 'PB' ; Break }

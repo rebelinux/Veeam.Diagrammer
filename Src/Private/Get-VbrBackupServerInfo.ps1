@@ -29,119 +29,95 @@ function Get-VbrBackupServerInfo {
                 Write-Verbose "Backup Server Section: New-PSSession: Unable to connect to $($VBRServer.Name): $ErrorMessage"
             }
             Write-Verbose -Message "Collecting Backup Server information from $($VBRServer.Name)."
-            try {
-                $VeeamVersion = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { Get-ChildItem -Recurse HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -match 'Veeam Backup & Replication Server' } | Select-Object -Property DisplayVersion }
-            } catch { Write-Verbose "Unabe to retreive Veeam Backup & Replication Version" }
-            try {
-                $VeeamDBFlavor = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations' }
-            } catch { Write-Verbose "Unabe to retreive Veeam Backup & Replication Database Flavor" }
-            try {
-                $VeeamDBInfo12 = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { Get-ItemProperty -Path "HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations\$(($Using:VeeamDBFlavor).SqlActiveConfiguration)" }
-            } catch { Write-Verbose "Unabe to retreive Veeam Backup & Replication 12 Database Information" }
-            try {
-                $VeeamDBInfo11 = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication' }
-            } catch { Write-Verbose "Unabe to retreive Veeam Backup & Replication 11 Database Information" }
 
-            if ($VeeamDBInfo11.SqlServerName) {
-                $VeeamDBInfo = $VeeamDBInfo11.SqlServerName
-            } elseif ($VeeamDBInfo12.SqlServerName) {
-                $VeeamDBInfo = $VeeamDBInfo12.SqlServerName
-            } elseif ($VeeamDBInfo12.SqlHostName) {
-                $VeeamDBInfo = Switch ($VeeamDBInfo12.SqlHostName) {
+            $VeeamInfo = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock {
+                $VeeamVersion = Get-ChildItem -Recurse HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -match 'Veeam Backup & Replication Server' } | Select-Object -Property DisplayVersion
+                $VeeamDBFlavor = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations'
+                $VeeamDBInfo12 = Get-ItemProperty -Path "HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations\$($VeeamDBFlavor.SqlActiveConfiguration)"
+                $VeeamDBInfo11 = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication'
+                return [PSCustomObject]@{
+                    Version = $VeeamVersion.DisplayVersion
+                    DBFlavor = $VeeamDBFlavor
+                    DBInfo12 = $VeeamDBInfo12
+                    DBInfo11 = $VeeamDBInfo11
+                }
+            }
+
+            $VeeamDBInfo = if ($VeeamInfo.DBInfo11.SqlServerName) {
+                $VeeamInfo.DBInfo11.SqlServerName
+            } elseif ($VeeamInfo.DBInfo12.SqlServerName) {
+                $VeeamInfo.DBInfo12.SqlServerName
+            } elseif ($VeeamInfo.DBInfo12.SqlHostName) {
+                Switch ($VeeamInfo.DBInfo12.SqlHostName) {
                     'localhost' { $VBRServer.Name }
-                    default { $VeeamDBInfo12.SqlHostName }
+                    default { $VeeamInfo.DBInfo12.SqlHostName }
                 }
             } else {
-                $VeeamDBInfo = $VBRServer.Name
+                $VBRServer.Name
             }
 
-            try {
-                if ($VBRServer) {
+            if ($VBRServer) {
+                $Roles = if ($VeeamDBInfo -eq $VBRServer.Name) { 'Backup and Database' } else { 'Backup Server' }
+                $DBType = if ($VeeamDBInfo -eq $VBRServer.Name) { $VeeamInfo.DBFlavor.SqlActiveConfiguration } else { $null }
 
-                    if ($VeeamDBInfo -eq $VBRServer.Name) {
-                        $Roles = 'Backup and Database'
-                        $DBType = $VeeamDBFlavor.SqlActiveConfiguration
-                    } else {
-                        $Roles = 'Backup Server'
-                    }
-
-                    $Rows = @{
-                        Role = $Roles
-                        IP = Get-NodeIP -Hostname $VBRServer.Name
-                    }
-
-                    if ($VeeamVersion) {
-                        $Rows.add('Version', $VeeamVersion.DisplayVersion)
-                    }
-
-                    if ($VeeamDBInfo -eq $VBRServer.Name) {
-                        $Rows.add('DB Type', $DBType)
-                    }
-
-                    $script:BackupServerInfo = [PSCustomObject]@{
-                        Name = $VBRServer.Name.split(".")[0]
-                        Label = Get-DiaNodeIcon -Name "$($VBRServer.Name.split(".")[0])" -IconType "VBR_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
-                    }
-                }
-            } catch {
-                Write-Verbose "Unabe to create BackupServerInfo Object"
-            }
-            try {
-                $DatabaseServer = $VeeamDBInfo
-                if ($VeeamDBFlavor.SqlActiveConfiguration -eq "PostgreSql") {
-                    $DBPort = "$($VeeamDBInfo12.SqlHostPort)/TCP"
-                } else {
-                    $DBPort = "1433/TCP"
+                $Rows = @{
+                    Role = $Roles
+                    IP = Get-NodeIP -Hostname $VBRServer.Name
                 }
 
-                if ($DatabaseServer) {
-                    $DatabaseServerIP = Get-NodeIP -Hostname $DatabaseServer
-
-                    $Rows = @{
-                        Role = 'Database Server'
-                        IP = $DatabaseServerIP
-                    }
-
-                    if ($VeeamDBInfo.SqlInstanceName) {
-                        $Rows.add('Instance', $VeeamDBInfo.SqlInstanceName)
-                    }
-                    if ($VeeamDBInfo.SqlDatabaseName) {
-                        $Rows.add('Database', $VeeamDBInfo.SqlDatabaseName)
-                    }
-
-                    if ($VeeamDBFlavor.SqlActiveConfiguration -eq "PostgreSql") {
-                        $DBIconType = "VBR_Server_DB_PG"
-                    } else {
-                        $DBIconType = "VBR_Server_DB"
-                    }
-
-                    $script:DatabaseServerInfo = [PSCustomObject]@{
-                        Name = $DatabaseServer.split(".")[0]
-                        Label = Get-DiaNodeIcon -Name "$($DatabaseServer.split(".")[0])" -IconType $DBIconType -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
-                        DBPort = $DBPort
-                    }
+                if ($VeeamInfo.Version) {
+                    $Rows.add('Version', $VeeamInfo.Version)
                 }
-            } catch {
-                Write-Verbose "Unabe to create DatabaseServer Object"
+
+                if ($DBType) {
+                    $Rows.add('DB Type', $DBType)
+                }
+
+                $script:BackupServerInfo = [PSCustomObject]@{
+                    Name = $VBRServer.Name.split(".")[0]
+                    Label = Get-DiaNodeIcon -Name "$($VBRServer.Name.split(".")[0])" -IconType "VBR_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                }
             }
 
-            try {
-                $EMServer = [Veeam.Backup.Core.SBackupOptions]::GetEnterpriseServerInfo()
-                if ($EMServer.ServerName) {
-                    $EMServerIP = Get-NodeIP -Hostname $EMServer.ServerName
+            $DatabaseServer = $VeeamDBInfo
+            if ($DatabaseServer) {
+                $DBPort = if ($VeeamInfo.DBFlavor.SqlActiveConfiguration -eq "PostgreSql") { "$($VeeamInfo.DBInfo12.SqlHostPort)/TCP" } else { "1433/TCP" }
+                $DatabaseServerIP = Get-NodeIP -Hostname $DatabaseServer
 
-                    $Rows = @{
-                        Role = 'Enterprise Manager Server'
-                        IP = $EMServerIP
-                    }
-
-                    $script:EMServerInfo = [PSCustomObject]@{
-                        Name = $EMServer.ServerName.split(".")[0]
-                        Label = Get-DiaNodeIcon -Name "$($EMServer.ServerName.split(".")[0])" -IconType "VBR_Server_EM" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
-                    }
+                $Rows = @{
+                    Role = 'Database Server'
+                    IP = $DatabaseServerIP
                 }
-            } catch {
-                Write-Verbose "Unabe to create EMServer Object"
+
+                if ($VeeamInfo.DBInfo12.SqlInstanceName) {
+                    $Rows.add('Instance', $VeeamInfo.DBInfo12.SqlInstanceName)
+                }
+                if ($VeeamInfo.DBInfo12.SqlDatabaseName) {
+                    $Rows.add('Database', $VeeamInfo.DBInfo12.SqlDatabaseName)
+                }
+
+                $DBIconType = if ($VeeamInfo.DBFlavor.SqlActiveConfiguration -eq "PostgreSql") { "VBR_Server_DB_PG" } else { "VBR_Server_DB" }
+
+                $script:DatabaseServerInfo = [PSCustomObject]@{
+                    Name = $DatabaseServer.split(".")[0]
+                    Label = Get-DiaNodeIcon -Name "$($DatabaseServer.split(".")[0])" -IconType $DBIconType -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                    DBPort = $DBPort
+                }
+            }
+
+            $EMServer = [Veeam.Backup.Core.SBackupOptions]::GetEnterpriseServerInfo()
+            if ($EMServer.ServerName) {
+                $EMServerIP = Get-NodeIP -Hostname $EMServer.ServerName
+
+                $Rows = @{
+                    Role = 'Enterprise Manager Server'
+                    IP = $EMServerIP
+                }
+
+                $script:EMServerInfo = [PSCustomObject]@{
+                    Name = $EMServer.ServerName.split(".")[0]
+                    Label = Get-DiaNodeIcon -Name "$($EMServer.ServerName.split(".")[0])" -IconType "VBR_Server_EM" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                }
             }
         } catch {
             Write-Verbose -Message $_.Exception.Message

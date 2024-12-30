@@ -32,11 +32,6 @@ function Get-VbrInfraDiagram {
             #                     Graphviz: https://graphviz.org/doc/info/shapes.html                       #
             #-----------------------------------------------------------------------------------------------#
 
-            # Get Veeam Backup Server Infrastructure Information
-            # This create the Backup Server, Database and Enterprise Manager Objects
-            # Here Veeam Pwershell Module are used to retreive the information
-            Get-VBRBackupServerInfo
-
             # Build Backup Server Graphviz Cluster
             Get-DiagBackupServer
 

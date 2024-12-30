@@ -476,7 +476,7 @@ function New-VeeamDiagram {
 
                 $script:VBRServer = Get-VBRServer -Type Local
 
-            } Catch { throw "Unable to get Veeam B&R Server" }
+            } Catch { throw "Unable to get Veeam Backup & Replication Server: $System" }
 
             Get-VBRBackupServerInfo
 

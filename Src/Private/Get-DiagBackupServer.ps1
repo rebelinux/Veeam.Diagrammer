@@ -5,7 +5,7 @@ function Get-DiagBackupServer {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.13
+        Version:        0.6.19
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -14,10 +14,8 @@ function Get-DiagBackupServer {
     #>
     [CmdletBinding()]
 
-    Param
-    (
+    Param()
 
-    )
     process {
         try {
             SubGraph BackupServers -Attributes @{Label = 'Management'; labelloc = 'b'; labeljust = "r"; style = "rounded"; bgcolor = $BackupServerBGColor; fontcolor = '#696969'; fontsize = 14; penwidth = 2; color = 'DarkGray' } {
