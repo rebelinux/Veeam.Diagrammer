@@ -1,8 +1,32 @@
 # Proxy Graphviz Cluster
 function Get-VbrProxyInfo {
+    <#
+    .SYNOPSIS
+    Retrieves information about Veeam Backup & Replication proxies.
+
+    .DESCRIPTION
+    The Get-VbrProxyInfo function collects information about Veeam Backup & Replication proxies from the VBR server.
+    It retrieves both vSphere and Hyper-V proxies and formats the information into a custom object with additional details.
+
+    .PARAMETER None
+    This function does not take any parameters.
+
+    .OUTPUTS
+    System.Object
+    Returns a collection of custom objects containing proxy information, including the proxy type, maximum tasks, and icon type.
+
+    .EXAMPLE
+    PS C:\> Get-VbrProxyInfo
+    Collects and returns information about Veeam Backup & Replication proxies from the VBR server.
+
+    .NOTES
+    Author: Jonathan Colon
+    Date: 2024-12-30
+    Version: 1.0
+    #>
     param ()
     try {
-        Write-Verbose "Collecting Proxy information from $($VBRServer.Name)."
+        Write-Verbose "Collecting proxy information from $($VBRServer.Name)."
         $Proxies = @(Get-VBRViProxy) + @(Get-VBRHvProxy)
 
         if ($Proxies) {
@@ -36,6 +60,36 @@ function Get-VbrProxyInfo {
 
 # Nas Proxy Graphviz Cluster
 function Get-VbrNASProxyInfo {
+    <#
+    .SYNOPSIS
+    Retrieves information about NAS proxies from the Veeam Backup & Replication server.
+
+    .DESCRIPTION
+    The Get-VbrNASProxyInfo function collects and returns information about NAS proxies configured on the Veeam Backup & Replication server.
+    It retrieves the proxy server details, including whether they are enabled and the maximum number of concurrent tasks they can handle.
+
+    .PARAMETERS
+    This function does not take any parameters.
+
+    .OUTPUTS
+    System.Object
+    Returns a collection of PSCustomObject containing the following properties:
+    - Name: The name of the NAS proxy server.
+    - AditionalInfo: An ordered dictionary with the following keys:
+        - Enabled: Indicates whether the proxy server is enabled ('Yes' or 'No').
+        - Max Tasks: The maximum number of concurrent tasks the proxy server can handle.
+    - IconType: The icon type associated with the proxy server.
+
+    .EXAMPLE
+    PS C:\> Get-VbrNASProxyInfo
+    Collects and displays information about NAS proxies from the Veeam Backup & Replication server.
+
+    .NOTES
+    This function uses the Get-VBRNASProxyServer cmdlet to retrieve the NAS proxy server information and the Get-IconType function to determine the icon type.
+    Author: Jonathan Colon
+    Date: 2024-12-30
+    Version: 1.0
+    #>
     param ()
     try {
         Write-Verbose "Collecting NAS Proxy information from $($VBRServer.Name)."
@@ -67,6 +121,32 @@ function Get-VbrNASProxyInfo {
 
 # Wan Accel Graphviz Cluster
 function Get-VbrWanAccelInfo {
+    <#
+    .SYNOPSIS
+        Retrieves information about WAN Accelerators from the Veeam Backup & Replication server.
+
+    .DESCRIPTION
+        The Get-VbrWanAccelInfo function collects and returns information about WAN Accelerators configured on the Veeam Backup & Replication server.
+        It retrieves details such as cache size and traffic port for each WAN Accelerator.
+
+    .PARAMETER None
+        This function does not take any parameters.
+
+    .OUTPUTS
+        System.Object
+            Returns a collection of PSCustomObject containing the name and additional information (cache size and traffic port) of each WAN Accelerator.
+
+    .EXAMPLE
+        PS C:\> Get-VbrWanAccelInfo
+        Retrieves and displays information about all WAN Accelerators from the Veeam Backup & Replication server.
+
+    .NOTES
+        This function requires the Veeam Backup & Replication PowerShell module to be installed and imported.
+        Ensure that you have the necessary permissions to access the Veeam Backup & Replication server.
+        Author: Jonathan Colon
+        Date: 2024-12-30
+        Version: 1.0
+    #>
     param ()
     try {
         Write-Verbose "Collecting Wan Accel information from $($VBRServer.Name)."
@@ -95,6 +175,30 @@ function Get-VbrWanAccelInfo {
 
 # Repositories Graphviz Cluster
 function Get-VbrRepositoryInfo {
+    <#
+    .SYNOPSIS
+        Retrieves information about Veeam Backup & Replication repositories.
+
+    .DESCRIPTION
+        The Get-VbrRepositoryInfo function collects and returns detailed information about Veeam Backup & Replication repositories, excluding certain types such as SanSnapshotOnly, AmazonS3Compatible, WasabiS3, and SmartObjectS3. It also includes information about Scale-Out Backup Repositories and their extents.
+
+    .PARAMETERS
+        None
+
+    .OUTPUTS
+        System.Object
+            Returns a collection of PSCustomObject containing repository information including server name, repository type, total space, used space, and icon type.
+
+    .NOTES
+        This function requires the Veeam Backup & Replication PowerShell module to be installed and configured.
+        Author: Jonathan Colon
+        Date: 2024-12-30
+        Version: 1.0
+    .EXAMPLE
+        PS C:\> Get-VbrRepositoryInfo
+        Retrieves and displays information about all Veeam Backup & Replication repositories.
+
+    #>
     param ()
     try {
         Write-Verbose "Collecting Repository information from $($VBRServer.Name)."
@@ -140,6 +244,31 @@ function Get-VbrRepositoryInfo {
 
 # Object Repositories Graphviz Cluster
 function Get-VbrObjectRepoInfo {
+    <#
+    .SYNOPSIS
+        Retrieves information about Veeam Backup & Replication object repositories.
+
+    .DESCRIPTION
+        The Get-VbrObjectRepoInfo function queries and returns detailed information about object repositories configured in Veeam Backup & Replication.
+        This includes details such as repository name, type, capacity, and other relevant properties.
+
+    .PARAMETER RepoName
+        The name of the repository to retrieve information for. If not specified, information for all repositories will be returned.
+
+    .EXAMPLE
+        Get-VbrObjectRepoInfo -RepoName "MyRepository"
+        Retrieves information about the repository named "MyRepository".
+
+    .EXAMPLE
+        Get-VbrObjectRepoInfo
+        Retrieves information about all configured object repositories.
+
+    .NOTES
+        Author: Jonathan Colon
+        Date: 2024-12-30
+        Version: 1.0
+    #>
+
     param ()
     try {
         Write-Verbose "Collecting Object Repository information from $($VBRServer.Name)."
@@ -191,6 +320,27 @@ function Get-VbrObjectRepoInfo {
 
 # Archive Object Repositories Graphviz Cluster
 function Get-VbrArchObjectRepoInfo {
+    <#
+    .SYNOPSIS
+    Retrieves information about Veeam Backup & Replication archive object repositories.
+
+    .DESCRIPTION
+    The Get-VbrArchObjectRepoInfo function retrieves detailed information about the archive object repositories configured in Veeam Backup & Replication.
+
+    .EXAMPLE
+    Get-VbrArchObjectRepoInfo
+
+    This example retrieves information about all archive object repositories.
+
+    .OUTPUTS
+    System.Object
+    Returns objects containing information about the archive object repositories.
+
+    .NOTES
+    Author: Jonathan Colon
+    Date: 2024-12-30
+    Version: 1.0
+    #>
     param ()
     try {
         Write-Verbose "Collecting Archive Object Repository information from $($VBRServer.Name)."
@@ -237,6 +387,31 @@ function Get-VbrArchObjectRepoInfo {
 
 # Scale-Out Backup Repository Graphviz Cluster
 function Get-VbrSOBRInfo {
+    <#
+    .SYNOPSIS
+        Retrieves information about Scale-Out Backup Repositories (SOBR) from a Veeam Backup & Replication server.
+
+    .DESCRIPTION
+        The Get-VbrSOBRInfo function collects and returns information about Scale-Out Backup Repositories (SOBR) from a Veeam Backup & Replication server.
+        It retrieves the SOBR details, including the placement policy and encryption status, and returns them as a custom PowerShell object.
+
+    .PARAMETER None
+        This function does not take any parameters.
+
+    .OUTPUTS
+        System.Object
+            Returns a custom PowerShell object containing the name of the SOBR and additional information such as placement policy and encryption status.
+
+    .EXAMPLE
+        PS C:\> Get-VbrSOBRInfo
+        Retrieves and displays information about all Scale-Out Backup Repositories from the connected Veeam Backup & Replication server.
+
+    .NOTES
+        This function requires the Veeam Backup & Replication PowerShell module to be installed and connected to a Veeam Backup & Replication server.
+        Author: Jonathan Colon
+        Date: 2024-12-30
+        Version: 1.0
+    #>
     param ()
     try {
         Write-Verbose "Collecting Scale-Out Backup Repository information from $($VBRServer.Name)."
@@ -260,9 +435,32 @@ function Get-VbrSOBRInfo {
         Write-Verbose -Message $_.Exception.Message
     }
 }
-
 # Storage Infrastructure Graphviz Cluster
 function Get-VbrSANInfo {
+    <#
+    .SYNOPSIS
+        Retrieves information about SAN (Storage Area Network) hosts from the Veeam Backup & Replication server.
+
+    .DESCRIPTION
+        The Get-VbrSANInfo function collects and returns information about SAN hosts, specifically NetApp and Dell Isilon hosts, from the Veeam Backup & Replication server. It gathers the host names and their types, processes additional information, and returns a custom object with the collected data.
+
+    .PARAMETER None
+        This function does not take any parameters.
+
+    .OUTPUTS
+        System.Object
+            Returns a collection of custom objects containing the SAN host name, additional information, and icon type.
+
+    .EXAMPLE
+        PS C:\> Get-VbrSANInfo
+        Retrieves and displays information about SAN hosts from the Veeam Backup & Replication server.
+
+    .NOTES
+        This function uses the Get-NetAppHost and Get-VBRIsilonHost cmdlets to retrieve SAN host information. It processes the data to include additional information and icon types for each host.
+        Author: Jonathan Colon
+        Date: 2024-12-30
+        Version: 1.0
+    #>
     param ()
     try {
         Write-Verbose "Collecting Storage Infrastructure information from $($VBRServer.Name)."
@@ -303,6 +501,32 @@ function Get-VbrSANInfo {
 
 # Tape Servers Graphviz Cluster
 function Get-VbrTapeServersInfo {
+    <#
+    .SYNOPSIS
+        Retrieves information about Veeam Backup & Replication Tape Servers.
+
+    .DESCRIPTION
+        The Get-VbrTapeServersInfo function collects and returns information about Tape Servers from the Veeam Backup & Replication server.
+        It sorts the Tape Servers by their name and provides additional availability information.
+
+    .PARAMETERS
+        None
+
+    .OUTPUTS
+        System.Object
+            Returns a collection of PSCustomObject with the following properties:
+            - Name: The name of the Tape Server.
+            - AditionalInfo: An ordered dictionary containing the availability status of the Tape Server.
+
+    .EXAMPLE
+        PS C:\> Get-VbrTapeServersInfo
+        Retrieves and displays information about all Tape Servers from the Veeam Backup & Replication server.
+
+    .NOTES
+        Author: Jonathan Colon
+        Date: 2024-12-31
+        Version: 1.0
+    #>
     param ()
     try {
         Write-Verbose "Collecting Tape Servers information from $($VBRServer.Name)."
@@ -329,6 +553,32 @@ function Get-VbrTapeServersInfo {
 
 # Tape Library Graphviz Cluster
 function Get-VbrTapeLibraryInfo {
+    <#
+    .SYNOPSIS
+        Retrieves information about Veeam Backup & Replication (VBR) Tape Libraries.
+
+    .DESCRIPTION
+        The Get-VbrTapeLibraryInfo function collects and returns information about Tape Libraries from a Veeam Backup & Replication server.
+        It retrieves the Tape Libraries, sorts them by name, and formats the information into a custom object.
+
+    .PARAMETERS
+        None
+
+    .OUTPUTS
+        PSCustomObject
+            A custom object containing the name and additional information (state, type, model) of each Tape Library.
+
+    .EXAMPLE
+        PS C:\> Get-VbrTapeLibraryInfo
+        Retrieves and displays information about all Tape Libraries from the VBR server.
+
+    .NOTES
+        This function requires the Veeam Backup & Replication PowerShell module to be installed and imported.
+        Ensure that you have the necessary permissions to access the VBR server and retrieve Tape Library information.
+        Author: Jonathan Colon
+        Date: 2024-12-31
+        Version: 1.0
+    #>
     param ()
     try {
         Write-Verbose "Collecting Tape Library information from $($VBRServer.Name)."
@@ -355,6 +605,32 @@ function Get-VbrTapeLibraryInfo {
 
 # Tape Library Graphviz Cluster
 function Get-VbrTapeVaultInfo {
+    <#
+    .SYNOPSIS
+        Retrieves information about Tape Vaults from the Veeam Backup & Replication server.
+
+    .DESCRIPTION
+        The Get-VbrTapeVaultInfo function collects and returns information about Tape Vaults from the Veeam Backup & Replication server.
+        It sorts the Tape Vaults by their names and provides additional information about their protection status.
+
+    .PARAMETERS
+        None
+
+    .OUTPUTS
+        System.Object
+        Returns a collection of PSCustomObject with the following properties:
+            - Name: The name of the Tape Vault.
+            - AditionalInfo: A hashtable containing the protection status of the Tape Vault.
+
+    .EXAMPLE
+        PS C:\> Get-VbrTapeVaultInfo
+        Retrieves and displays information about all Tape Vaults from the Veeam Backup & Replication server.
+
+    .NOTES
+        Author: Jonathan Colon
+        Date: 2024-12-31
+        Version: 1.0
+    #>
     param ()
     try {
         Write-Verbose "Collecting Tape Vault information from $($VBRServer.Name)."
@@ -379,6 +655,31 @@ function Get-VbrTapeVaultInfo {
 
 # Service Provider Graphviz Cluster
 function Get-VbrServiceProviderInfo {
+    <#
+    .SYNOPSIS
+        Retrieves information about Veeam Backup & Replication (VBR) service providers.
+
+    .DESCRIPTION
+        The Get-VbrServiceProviderInfo function collects and returns information about service providers configured in Veeam Backup & Replication.
+        It sorts the service providers by their DNS name and categorizes them based on the types of resources they have enabled (BaaS, DRaaS, vCD, or Unknown).
+
+    .PARAMETERS
+        None
+
+    .OUTPUTS
+        System.Object
+            Returns a collection of PSCustomObject containing the DNS name and additional information about each service provider.
+
+    .EXAMPLE
+        PS C:\> Get-VbrServiceProviderInfo
+        Retrieves and displays information about the service providers configured in Veeam Backup & Replication.
+
+    .NOTES
+        This function requires the Veeam Backup & Replication PowerShell module to be installed and imported.
+        Author: Jonathan Colon
+        Date: 2024-12-31
+        Version: 1.0
+    #>
     param ()
     try {
         Write-Verbose "Collecting Service Provider information from $($VBRServer.Name)."
@@ -416,6 +717,32 @@ function Get-VbrServiceProviderInfo {
 
 # SureBackup Virtual Lab Graphviz Cluster
 function Get-VbrVirtualLabInfo {
+    <#
+    .SYNOPSIS
+        Retrieves information about Veeam Backup & Replication Virtual Labs.
+
+    .DESCRIPTION
+        The Get-VbrVirtualLabInfo function collects and returns information about Virtual Labs configured in Veeam Backup & Replication.
+        It retrieves the Virtual Lab details, including platform type and server name, and formats the information into a custom object.
+
+    .PARAMETER None
+        This function does not take any parameters.
+
+    .OUTPUTS
+        System.Object
+            Returns a custom object containing the name, additional information, and icon type of each Virtual Lab.
+
+    .EXAMPLE
+        PS C:\> Get-VbrVirtualLabInfo
+        Retrieves and displays information about all Virtual Labs configured in Veeam Backup & Replication.
+
+    .NOTES
+        This function requires the Veeam Backup & Replication PowerShell module to be installed and configured.
+        The function uses the Get-VBRVirtualLab cmdlet to retrieve Virtual Lab information.
+        Author: Jonathan Colon
+        Date: 2024-12-31
+        Version: 1.0
+    #>
     param ()
     try {
         Write-Verbose "Collecting VirtualLab information from $($VBRServer.Name)."
@@ -450,6 +777,38 @@ function Get-VbrVirtualLabInfo {
 
 # SureBackup Application Groups Graphviz Cluster
 function Get-VbrApplicationGroupsInfo {
+    <#
+    .SYNOPSIS
+    Retrieves information about Veeam Backup & Replication (VBR) Application Groups.
+
+    .DESCRIPTION
+    The Get-VbrApplicationGroupsInfo function collects and returns detailed information about
+    the Application Groups configured in the Veeam Backup & Replication server. It includes
+    the name of each Application Group, the count of machines in each group, and an icon type
+    associated with the Application Groups.
+
+    .PARAMETER None
+    This function does not take any parameters.
+
+    .OUTPUTS
+    System.Object
+    Returns a collection of custom objects containing the following properties:
+    - Name: The name of the Application Group.
+    - AditionalInfo: An ordered dictionary containing additional information such as the machine count.
+    - IconType: The icon type associated with the Application Groups.
+
+    .EXAMPLE
+    PS C:\> Get-VbrApplicationGroupsInfo
+    This example retrieves and displays information about all Application Groups in the Veeam Backup & Replication server.
+
+    .NOTES
+    This function uses the Get-VBRApplicationGroup cmdlet to retrieve the Application Groups and
+    the Get-IconType function to determine the icon type.
+
+    Author: Jonathan Colon
+    Date: 2024-12-31
+    Version: 1.0
+    #>
     param ()
     try {
         Write-Verbose "Collecting Application Groups information from $($VBRServer.Name)."

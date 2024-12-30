@@ -1,87 +1,112 @@
 function New-VeeamDiagram {
     <#
     .SYNOPSIS
-        Diagram the configuration of Veeam Backup & Replication infrastructure in PDF/SVG/DOT/PNG formats using PSGraph and Graphviz.
+        Diagram the configuration of Veeam Backup & Replication infrastructure in PDF, SVG, DOT, and PNG formats using PSGraph and Graphviz.
+
     .DESCRIPTION
-        Diagram the configuration of Veeam Backup & Replication infrastructure in PDF/SVG/DOT/PNG formats using PSGraph and Graphviz.
+        This script generates diagrams of the Veeam Backup & Replication infrastructure in various formats (PDF, SVG, DOT, PNG) using PSGraph and Graphviz. It provides detailed visualization of the backup infrastructure, including different components and their relationships.
+
     .PARAMETER DiagramType
-        Specifies the type of veeam vbr diagram that will be generated.
-        The supported output diagrams are:
+        Specifies the type of Veeam VBR diagram to generate.
+        Supported types:
             'Backup-to-Sobr', 'Backup-to-vSphere-Proxy', 'Backup-to-HyperV-Proxy',
             'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-Tape',
-            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup', 'Backup-Infrastructure
+            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup', 'Backup-Infrastructure'
+
     .PARAMETER Target
-        Specifies the IP/FQDN of the system to connect.
-        Multiple targets may be specified, separated by a comma.
+        Specifies the IP address or FQDN of the system to connect to.
+        Multiple targets can be specified, separated by commas.
+
     .PARAMETER Port
-        Specifies a optional port to connect to Veeam VBR Service.
-        By default, port will be set to 9392
+        Specifies an optional port to connect to the Veeam VBR Service.
+        Default: 9392
+
     .PARAMETER Credential
-        Specifies the stored credential of the target system.
+        Specifies the stored credential for the target system.
+
     .PARAMETER Username
         Specifies the username for the target system.
+
     .PARAMETER Password
         Specifies the password for the target system.
+
     .PARAMETER Format
         Specifies the output format of the diagram.
-        The supported output formats are PDF, PNG, DOT & SVG.
-        Multiple output formats may be specified, separated by a comma.
+        Supported formats: PDF, PNG, DOT, SVG
+        Multiple formats can be specified, separated by commas.
+
     .PARAMETER Direction
-        Set the direction in which resource are plotted on the visualization
-        The supported directions are:
-            'top-to-bottom', 'left-to-right'
-        By default, direction will be set to top-to-bottom.
-    .PARAMETER DiagramType
-        Use it to set the diagram theme.
-        The supported themes are:
-            'Black', 'White', 'Neon'
-        By default, theme will be set to White.
+        Sets the direction in which resources are plotted in the visualization.
+        Supported directions: 'top-to-bottom', 'left-to-right'
+        Default: top-to-bottom
+
+    .PARAMETER Theme
+        Sets the theme of the diagram.
+        Supported themes: 'Black', 'White', 'Neon'
+        Default: White
+
     .PARAMETER NodeSeparation
-        Controls Node separation ratio in visualization
-        By default, NodeSeparation will be set to .60.
+        Controls the node separation ratio in the visualization.
+        Default: 0.60
+
     .PARAMETER SectionSeparation
-        Controls Section (Subgraph) separation ratio in visualization
-        By default, NodeSeparation will be set to .75.
+        Controls the section (subgraph) separation ratio in the visualization.
+        Default: 0.75
+
     .PARAMETER EdgeType
-        Controls how edges lines appear in visualization
-        The supported edge type are:
-            'polyline', 'curved', 'ortho', 'line', 'spline'
-        By default, EdgeType will be set to spline.
+        Controls how edge lines appear in the visualization.
+        Supported types: 'polyline', 'curved', 'ortho', 'line', 'spline'
+        Default: spline
         References: https://graphviz.org/docs/attrs/splines/
+
     .PARAMETER OutputFolderPath
         Specifies the folder path to save the diagram.
+
     .PARAMETER Filename
         Specifies a filename for the diagram.
+
     .PARAMETER EnableEdgeDebug
-        Control to enable edge debugging ( Dummy Edge and Node lines ).
+        Enables edge debugging (dummy edge and node lines).
+
     .PARAMETER EnableSubGraphDebug
-        Control to enable subgraph debugging ( Subgraph Lines ).
+        Enables subgraph debugging (subgraph lines).
+
     .PARAMETER EnableErrorDebug
-        Control to enable error debugging.
+        Enables error debugging.
+
     .PARAMETER AuthorName
-        Allow to set footer signature Author Name.
+        Sets the footer signature author name.
+
     .PARAMETER CompanyName
-        Allow to set footer signature Company Name.
+        Sets the footer signature company name.
+
     .PARAMETER Logo
-        Allow to change the Veeam logo to a custom one.
-        Image should be 400px x 100px or less in size.
+        Changes the Veeam logo to a custom one.
+        Image should be 400px x 100px or smaller.
+
     .PARAMETER SignatureLogo
-        Allow to change the Veeam.Diagrammer signature logo to a custom one.
-        Image should be 120px x 130px or less in size.
+        Changes the Veeam.Diagrammer signature logo to a custom one.
+        Image should be 120px x 130px or smaller.
+
     .PARAMETER Signature
-        Allow the creation of footer signature.
+        Creates a footer signature.
         AuthorName and CompanyName must be set to use this property.
+
     .PARAMETER WatermarkText
-        Allow to add a watermark to the output image (Not supported in svg format).
+        Adds a watermark to the output image (not supported in SVG format).
+
     .PARAMETER WatermarkColor
-        Allow to specified the color used for the watermark text. Default: Green.
+        Specifies the color used for the watermark text.
+        Default: Green
+
     .NOTES
         Version:        0.6.9
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
-        Credits:        Kevin Marquette (@KevinMarquette) -  PSGraph module
-        Credits:        Prateek Singh (@PrateekKumarSingh) - AzViz module
+        Credits:        Kevin Marquette (@KevinMarquette) - PSGraph module
+                        Prateek Singh (@PrateekKumarSingh) - AzViz module
+
     .LINK
         https://github.com/rebelinux/Veeam.Diagrammer
         https://github.com/KevinMarquette/PSGraph
