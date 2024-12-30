@@ -1,12 +1,9 @@
 # Proxy Graphviz Cluster
 function Get-VbrProxyInfo {
-    param (
-    )
+    param ()
     try {
         Write-Verbose "Collecting Proxy information from $($VBRServer.Name)."
-        $Proxies = @()
-        $Proxies += Get-VBRViProxy
-        $Proxies += Get-VBRHvProxy
+        $Proxies = @(Get-VBRViProxy) + @(Get-VBRHvProxy)
 
         if ($Proxies) {
             $ProxiesInfo = $Proxies | ForEach-Object {
@@ -22,7 +19,7 @@ function Get-VbrProxyInfo {
 
                 $IconType = Get-IconType -String 'ProxyServer'
 
-                [PSCustomObject]@{
+                [PSCustomObject] @{
                     Name = $_.Host.Name
                     AditionalInfo = $inobj
                     IconType = $IconType
@@ -39,8 +36,7 @@ function Get-VbrProxyInfo {
 
 # Nas Proxy Graphviz Cluster
 function Get-VbrNASProxyInfo {
-    param (
-    )
+    param ()
     try {
         Write-Verbose "Collecting NAS Proxy information from $($VBRServer.Name)."
         $Proxies = Get-VBRNASProxyServer
@@ -54,7 +50,7 @@ function Get-VbrNASProxyInfo {
 
                 $IconType = Get-IconType -String 'ProxyServer'
 
-                [PSCustomObject]@{
+                [PSCustomObject] @{
                     Name = $_.Server.Name
                     AditionalInfo = $inobj
                     IconType = $IconType
@@ -71,8 +67,7 @@ function Get-VbrNASProxyInfo {
 
 # Wan Accel Graphviz Cluster
 function Get-VbrWanAccelInfo {
-    param (
-    )
+    param ()
     try {
         Write-Verbose "Collecting Wan Accel information from $($VBRServer.Name)."
         $WanAccels = Get-VBRWANAccelerator
@@ -100,9 +95,7 @@ function Get-VbrWanAccelInfo {
 
 # Repositories Graphviz Cluster
 function Get-VbrRepositoryInfo {
-    param (
-    )
-
+    param ()
     try {
         Write-Verbose "Collecting Repository information from $($VBRServer.Name)."
         $Repositories = Get-VBRBackupRepository | Where-Object { $_.Type -notin @("SanSnapshotOnly", "AmazonS3Compatible", "WasabiS3", "SmartObjectS3") } | Sort-Object -Property Name
@@ -117,7 +110,7 @@ function Get-VbrRepositoryInfo {
             $RepositoriesInfo = $Repositories | ForEach-Object {
                 $Role = Get-RoleType -String $_.Type
 
-                $Rows = [ordered]@{
+                $Rows = [ordered] @{
                     'Server' = if ($_.Host.Name) { $_.Host.Name.Split('.')[0] } else { 'N/A' }
                     'Repo Type' = $Role
                     'Total Space' = (ConvertTo-FileSizeString -Size $_.GetContainer().CachedTotalSpace.InBytesAsUInt64)
@@ -130,7 +123,7 @@ function Get-VbrRepositoryInfo {
 
                 $IconType = Get-IconType -String $BackupType
 
-                [PSCustomObject]@{
+                [PSCustomObject] @{
                     Name = "$((Remove-SpecialChar -String $_.Name -SpecialChars '\').toUpper()) "
                     AditionalInfo = $Rows
                     IconType = $IconType
@@ -147,15 +140,13 @@ function Get-VbrRepositoryInfo {
 
 # Object Repositories Graphviz Cluster
 function Get-VbrObjectRepoInfo {
-    param (
-    )
-
+    param ()
     try {
         Write-Verbose "Collecting Object Repository information from $($VBRServer.Name)."
         $ObjectRepositories = Get-VBRObjectStorageRepository
         if ($ObjectRepositories) {
             $ObjectRepositoriesInfo = $ObjectRepositories | ForEach-Object {
-                $inobj = [ordered]@{
+                $inobj = [ordered] @{
                     'Type' = $_.Type
                     'Folder' = if ($_.AmazonS3Folder) {
                         $_.AmazonS3Folder
@@ -185,7 +176,7 @@ function Get-VbrObjectRepoInfo {
 
                 $IconType = Get-IconType -String $_.Type
 
-                [PSCustomObject]@{
+                [PSCustomObject] @{
                     Name = $_.Name
                     AditionalInfo = $inobj
                     IconType = $IconType
@@ -198,18 +189,15 @@ function Get-VbrObjectRepoInfo {
     }
 }
 
-
 # Archive Object Repositories Graphviz Cluster
 function Get-VbrArchObjectRepoInfo {
-    param (
-    )
-
+    param ()
     try {
         Write-Verbose "Collecting Archive Object Repository information from $($VBRServer.Name)."
         $ArchObjStorages = Get-VBRArchiveObjectStorageRepository | Sort-Object -Property Name
         if ($ArchObjStorages) {
             $ArchObjRepositoriesInfo = $ArchObjStorages | ForEach-Object {
-                $inobj = [ordered]@{
+                $inobj = [ordered] @{
                     'Type' = $_.ArchiveType
                     'Gateway' = if (-Not $_.UseGatewayServer) {
                         switch ($_.GatewayMode) {
@@ -234,7 +222,7 @@ function Get-VbrArchObjectRepoInfo {
 
                 $IconType = Get-IconType -String $_.ArchiveType
 
-                [PSCustomObject]@{
+                [PSCustomObject] @{
                     Name = $_.Name
                     AditionalInfo = $inobj
                     IconType = $IconType
@@ -249,20 +237,19 @@ function Get-VbrArchObjectRepoInfo {
 
 # Scale-Out Backup Repository Graphviz Cluster
 function Get-VbrSOBRInfo {
-    param (
-    )
+    param ()
     try {
         Write-Verbose "Collecting Scale-Out Backup Repository information from $($VBRServer.Name)."
         $SOBR = Get-VBRBackupRepository -ScaleOut | Sort-Object -Property Name
 
         if ($SOBR) {
             $SOBRInfo = $SOBR | ForEach-Object {
-                $inobj = [ordered]@{
+                $inobj = [ordered] @{
                     'Placement Policy' = $_.PolicyType
                     'Encryption Enabled' = if ($_.EncryptionEnabled) { 'Yes' } else { 'No' }
                 }
 
-                [PSCustomObject]@{
+                [PSCustomObject] @{
                     Name = $_.Name
                     AditionalInfo = $inobj
                 }
@@ -276,8 +263,7 @@ function Get-VbrSOBRInfo {
 
 # Storage Infrastructure Graphviz Cluster
 function Get-VbrSANInfo {
-    param (
-    )
+    param ()
     try {
         Write-Verbose "Collecting Storage Infrastructure information from $($VBRServer.Name)."
         $SANHost = @(
@@ -297,7 +283,7 @@ function Get-VbrSANInfo {
                         }
                     }
 
-                    [PSCustomObject]@{
+                    [PSCustomObject] @{
                         Name = $_.Name
                         AditionalInfo = $inobj
                         IconType = $IconType
@@ -317,8 +303,7 @@ function Get-VbrSANInfo {
 
 # Tape Servers Graphviz Cluster
 function Get-VbrTapeServersInfo {
-    param (
-    )
+    param ()
     try {
         Write-Verbose "Collecting Tape Servers information from $($VBRServer.Name)."
         $TapeServers = Get-VBRTapeServer | Sort-Object -Property Name
@@ -329,7 +314,7 @@ function Get-VbrTapeServersInfo {
                     'Is Available' = if ($_.IsAvailable) { "Yes" } elseif (-Not $_.IsAvailable) { "No" } else { "--" }
                 }
 
-                [PSCustomObject]@{
+                [PSCustomObject] @{
                     Name = $_.Name.split('.')[0]
                     AditionalInfo = $inobj
                 }
@@ -344,17 +329,16 @@ function Get-VbrTapeServersInfo {
 
 # Tape Library Graphviz Cluster
 function Get-VbrTapeLibraryInfo {
-    param (
-    )
+    param ()
     try {
         Write-Verbose "Collecting Tape Library information from $($VBRServer.Name)."
         $TapeLibraries = Get-VBRTapeLibrary | Sort-Object -Property Name
 
         if ($TapeLibraries) {
             $TapeLibrariesInfo = $TapeLibraries | ForEach-Object {
-                [PSCustomObject]@{
+                [PSCustomObject] @{
                     Name = $_.Name
-                    AditionalInfo = [ordered]@{
+                    AditionalInfo = [ordered] @{
                         'State' = $_.State
                         'Type' = $_.Type
                         'Model' = $_.Model
@@ -371,17 +355,16 @@ function Get-VbrTapeLibraryInfo {
 
 # Tape Library Graphviz Cluster
 function Get-VbrTapeVaultInfo {
-    param (
-    )
+    param ()
     try {
         Write-Verbose "Collecting Tape Vault information from $($VBRServer.Name)."
         $TapeVaults = Get-VBRTapeVault | Sort-Object -Property Name
 
         if ($TapeVaults) {
             $TapeVaultsInfo = $TapeVaults | ForEach-Object {
-                [PSCustomObject]@{
+                [PSCustomObject] @{
                     Name = $_.Name
-                    AditionalInfo = [ordered]@{
+                    AditionalInfo = [ordered] @{
                         'Protect' = if ($_.Protect) { 'Yes' } else { 'No' }
                     }
                 }
@@ -396,8 +379,7 @@ function Get-VbrTapeVaultInfo {
 
 # Service Provider Graphviz Cluster
 function Get-VbrServiceProviderInfo {
-    param (
-    )
+    param ()
     try {
         Write-Verbose "Collecting Service Provider information from $($VBRServer.Name)."
         $ServiceProviders = Get-VBRCloudProvider | Sort-Object -Property 'DNSName'
@@ -414,12 +396,12 @@ function Get-VbrServiceProviderInfo {
                     'vCD'
                 } else { 'Unknown' }
 
-                $inobj = [ordered]@{
+                $inobj = [ordered] @{
                     'Cloud Connect Type' = $cloudConnectType
                     'Managed By Provider' = ConvertTo-TextYN $_.IsManagedByProvider
                 }
 
-                [PSCustomObject]@{
+                [PSCustomObject] @{
                     Name = $_.DNSName
                     AditionalInfo = $inobj
                 }
@@ -434,15 +416,14 @@ function Get-VbrServiceProviderInfo {
 
 # SureBackup Virtual Lab Graphviz Cluster
 function Get-VbrVirtualLabInfo {
-    param (
-    )
+    param ()
     try {
         Write-Verbose "Collecting VirtualLab information from $($VBRServer.Name)."
         $VirtualLab = Get-VBRVirtualLab
 
         if ($VirtualLab) {
             $VirtualLabInfo = $VirtualLab | ForEach-Object {
-                $inobj = [ordered]@{
+                $inobj = [ordered] @{
                     'Platform' = Switch ($_.Platform) {
                         'HyperV' { 'Microsoft Hyper-V' }
                         'VMWare' { 'VMWare vSphere' }
@@ -453,7 +434,7 @@ function Get-VbrVirtualLabInfo {
 
                 $IconType = Get-IconType -String 'VirtualLab'
 
-                [PSCustomObject]@{
+                [PSCustomObject] @{
                     Name = $_.Name
                     AditionalInfo = $inobj
                     IconType = $IconType
@@ -469,34 +450,27 @@ function Get-VbrVirtualLabInfo {
 
 # SureBackup Application Groups Graphviz Cluster
 function Get-VbrApplicationGroupsInfo {
-    param (
-    )
+    param ()
     try {
         Write-Verbose "Collecting Application Groups information from $($VBRServer.Name)."
         $ApplicationGroups = Get-VBRApplicationGroup
 
         if ($ApplicationGroups) {
-
-            $ApplicationGroupsInfo = @()
-
-            $ApplicationGroups | ForEach-Object {
+            $ApplicationGroupsInfo = $ApplicationGroups | ForEach-Object {
                 $inobj = [ordered] @{
                     'Machine Count' = ($_.VM | Measure-Object).Count
                 }
 
                 $IconType = Get-IconType -String 'ApplicationGroups'
 
-                $TempApplicationGroupsInfo = [PSCustomObject]@{
+                [PSCustomObject] @{
                     Name = $_.Name
                     AditionalInfo = $inobj
                     IconType = $IconType
                 }
-
-                $ApplicationGroupsInfo += $TempApplicationGroupsInfo
             }
+            return $ApplicationGroupsInfo
         }
-
-        return $ApplicationGroupsInfo
 
     } catch {
         Write-Verbose -Message $_.Exception.Message
