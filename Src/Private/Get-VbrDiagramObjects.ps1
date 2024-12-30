@@ -9,10 +9,7 @@ function Get-VbrProxyInfo {
         $Proxies += Get-VBRHvProxy
 
         if ($Proxies) {
-
-            $ProxiesInfo = @()
-
-            $Proxies | ForEach-Object {
+            $ProxiesInfo = $Proxies | ForEach-Object {
                 $inobj = [ordered] @{
                     'Type' = Switch ($_.Type) {
                         'Vi' { 'vSphere' }
@@ -25,13 +22,11 @@ function Get-VbrProxyInfo {
 
                 $IconType = Get-IconType -String 'ProxyServer'
 
-                $TempProxyInfo = [PSCustomObject]@{
+                [PSCustomObject]@{
                     Name = $_.Host.Name
                     AditionalInfo = $inobj
                     IconType = $IconType
                 }
-
-                $ProxiesInfo += $TempProxyInfo
             }
         }
 
@@ -40,7 +35,6 @@ function Get-VbrProxyInfo {
     } catch {
         Write-Verbose -Message $_.Exception.Message
     }
-
 }
 
 # Nas Proxy Graphviz Cluster
@@ -49,33 +43,22 @@ function Get-VbrNASProxyInfo {
     )
     try {
         Write-Verbose "Collecting NAS Proxy information from $($VBRServer.Name)."
-        $Proxies = @()
-        $Proxies += Get-VBRNASProxyServer
-
+        $Proxies = Get-VBRNASProxyServer
 
         if ($Proxies) {
-
-            $ProxiesInfo = @()
-
-            $Proxies | ForEach-Object {
+            $ProxiesInfo = $Proxies | ForEach-Object {
                 $inobj = [ordered] @{
-                    'Enabled' = Switch ($_.IsEnabled) {
-                        'True' { 'Yes' }
-                        'False' { 'No' }
-                        default { 'Unknown' }
-                    }
+                    'Enabled' = if ($_.IsEnabled) { 'Yes' } else { 'No' }
                     'Max Tasks' = $_.ConcurrentTaskNumber
                 }
 
                 $IconType = Get-IconType -String 'ProxyServer'
 
-                $TempProxyInfo = [PSCustomObject]@{
+                [PSCustomObject]@{
                     Name = $_.Server.Name
                     AditionalInfo = $inobj
                     IconType = $IconType
                 }
-
-                $ProxiesInfo += $TempProxyInfo
             }
         }
 
@@ -84,7 +67,6 @@ function Get-VbrNASProxyInfo {
     } catch {
         Write-Verbose -Message $_.Exception.Message
     }
-
 }
 
 # Wan Accel Graphviz Cluster
@@ -96,21 +78,16 @@ function Get-VbrWanAccelInfo {
         $WanAccels = Get-VBRWANAccelerator
 
         if ($WanAccels) {
-
-            $WanAccelsInfo = @()
-
-            $WanAccels | ForEach-Object {
+            $WanAccelsInfo = $WanAccels | ForEach-Object {
                 $inobj = [ordered] @{
                     'CacheSize' = "$($_.FindWaHostComp().Options.MaxCacheSize) $($_.FindWaHostComp().Options.SizeUnit)"
                     'TrafficPort' = "$($_.GetWaTrafficPort())/TCP"
                 }
 
-                $TempWanAccelInfo = [PSCustomObject]@{
+                [PSCustomObject] @{
                     Name = $_.Name
                     AditionalInfo = $inobj
                 }
-
-                $WanAccelsInfo += $TempWanAccelInfo
             }
         }
 
@@ -119,7 +96,6 @@ function Get-VbrWanAccelInfo {
     } catch {
         Write-Verbose -Message $_.Exception.Message
     }
-
 }
 
 # Repositories Graphviz Cluster
@@ -127,46 +103,46 @@ function Get-VbrRepositoryInfo {
     param (
     )
 
-    [Array]$Repositories = Get-VBRBackupRepository | Where-Object { $_.Type -notin @("SanSnapshotOnly", "AmazonS3Compatible", "WasabiS3", "SmartObjectS3") } | Sort-Object -Property Name
-    [Array]$ScaleOuts = Get-VBRBackupRepository -ScaleOut | Sort-Object -Property Name
-    if ($ScaleOuts) {
-        $Extents = Get-VBRRepositoryExtent -Repository $ScaleOuts | Sort-Object -Property Name
-        $Repositories += $Extents.Repository
-    }
-    if ($Repositories) {
-        $RepositoriesInfo = @()
+    try {
+        Write-Verbose "Collecting Repository information from $($VBRServer.Name)."
+        $Repositories = Get-VBRBackupRepository | Where-Object { $_.Type -notin @("SanSnapshotOnly", "AmazonS3Compatible", "WasabiS3", "SmartObjectS3") } | Sort-Object -Property Name
+        $ScaleOuts = Get-VBRBackupRepository -ScaleOut | Sort-Object -Property Name
 
-        foreach ($Repository in $Repositories) {
-            $Role = Get-RoleType -String $Repository.Type
-
-            $Rows = [ordered]@{}
-
-            if ($Repository.Host.Name) {
-                $Rows.add('Server', $Repository.Host.Name.Split('.')[0])
-            } else {
-                $Rows.add('Server', 'N/A')
-            }
-            $Rows.add('Repo Type', $Role)
-            $Rows.add('Total Space', (ConvertTo-FileSizeString -Size $Repository.GetContainer().CachedTotalSpace.InBytesAsUInt64))
-            $Rows.add('Used Space', (ConvertTo-FileSizeString -Size $Repository.GetContainer().CachedFreeSpace.InBytesAsUInt64))
-
-            if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($Repository.Host.Name -in $ViBackupProxy.Host.Name -or $Repository.Host.Name -in $HvBackupProxy.Host.Name)) {
-                $BackupType = 'Proxy'
-            } else { $BackupType = $Repository.Type }
-
-            $IconType = Get-IconType -String $BackupType
-
-            $TempBackupRepoInfo = [PSCustomObject]@{
-                Name = "$((Remove-SpecialChar -String $Repository.Name -SpecialChars '\').toUpper()) "
-                AditionalInfo = $Rows
-                IconType = $IconType
-            }
-
-            $RepositoriesInfo += $TempBackupRepoInfo
+        if ($ScaleOuts) {
+            $Extents = Get-VBRRepositoryExtent -Repository $ScaleOuts | Sort-Object -Property Name
+            $Repositories += $Extents.Repository
         }
-        return $RepositoriesInfo
-    }
 
+        if ($Repositories) {
+            $RepositoriesInfo = $Repositories | ForEach-Object {
+                $Role = Get-RoleType -String $_.Type
+
+                $Rows = [ordered]@{
+                    'Server' = if ($_.Host.Name) { $_.Host.Name.Split('.')[0] } else { 'N/A' }
+                    'Repo Type' = $Role
+                    'Total Space' = (ConvertTo-FileSizeString -Size $_.GetContainer().CachedTotalSpace.InBytesAsUInt64)
+                    'Used Space' = (ConvertTo-FileSizeString -Size $_.GetContainer().CachedFreeSpace.InBytesAsUInt64)
+                }
+
+                $BackupType = if (($Role -ne 'Dedup Appliances') -and ($Role -ne 'SAN') -and ($_.Host.Name -in $ViBackupProxy.Host.Name -or $_.Host.Name -in $HvBackupProxy.Host.Name)) {
+                    'Proxy'
+                } else { $_.Type }
+
+                $IconType = Get-IconType -String $BackupType
+
+                [PSCustomObject]@{
+                    Name = "$((Remove-SpecialChar -String $_.Name -SpecialChars '\').toUpper()) "
+                    AditionalInfo = $Rows
+                    IconType = $IconType
+                }
+            }
+
+            return $RepositoriesInfo
+        }
+
+    } catch {
+        Write-Verbose -Message $_.Exception.Message
+    }
 }
 
 # Object Repositories Graphviz Cluster
@@ -174,54 +150,51 @@ function Get-VbrObjectRepoInfo {
     param (
     )
 
-    $ObjectRepositories = Get-VBRObjectStorageRepository
-    if ($ObjectRepositories) {
-
-        $ObjectRepositoriesInfo = @()
-
-        $ObjectRepositories | ForEach-Object {
-            $inobj = @{
-                'Type' = $_.Type
-                'Folder' = & {
-                    if ($_.AmazonS3Folder) {
+    try {
+        Write-Verbose "Collecting Object Repository information from $($VBRServer.Name)."
+        $ObjectRepositories = Get-VBRObjectStorageRepository
+        if ($ObjectRepositories) {
+            $ObjectRepositoriesInfo = $ObjectRepositories | ForEach-Object {
+                $inobj = [ordered]@{
+                    'Type' = $_.Type
+                    'Folder' = if ($_.AmazonS3Folder) {
                         $_.AmazonS3Folder
                     } elseif ($_.AzureBlobFolder) {
                         $_.AzureBlobFolder
                     } else { 'Unknown' }
-                }
-                'Gateway' = & {
-                    if (-Not $_.UseGatewayServer) {
-                        Switch ($_.ConnectionType) {
+                    'Gateway' = if (-Not $_.UseGatewayServer) {
+                        switch ($_.ConnectionType) {
                             'Gateway' {
-                                switch (($_.GatewayServer | Measure-Object).count) {
+                                switch (($_.GatewayServer | Measure-Object).Count) {
                                     0 { "Disable" }
                                     1 { $_.GatewayServer.Name.Split('.')[0] }
-                                    Default { 'Automatic' }
+                                    default { 'Automatic' }
                                 }
                             }
                             'Direct' { 'Direct' }
                             default { 'Unknown' }
                         }
                     } else {
-                        switch (($_.GatewayServer | Measure-Object).count) {
+                        switch (($_.GatewayServer | Measure-Object).Count) {
                             0 { "Disable" }
                             1 { $_.GatewayServer.Name.Split('.')[0] }
-                            Default { 'Automatic' }
+                            default { 'Automatic' }
                         }
                     }
                 }
-            }
 
-            $IconType = Get-IconType -String $_.Type
+                $IconType = Get-IconType -String $_.Type
 
-            $TempObjectRepositoriesInfo = [PSCustomObject]@{
-                Name = $_.Name
-                AditionalInfo = $inobj
-                IconType = $IconType
+                [PSCustomObject]@{
+                    Name = $_.Name
+                    AditionalInfo = $inobj
+                    IconType = $IconType
+                }
             }
-            $ObjectRepositoriesInfo += $TempObjectRepositoriesInfo
+            return $ObjectRepositoriesInfo
         }
-        return $ObjectRepositoriesInfo
+    } catch {
+        Write-Verbose -Message $_.Exception.Message
     }
 }
 
@@ -231,47 +204,46 @@ function Get-VbrArchObjectRepoInfo {
     param (
     )
 
-    $ArchObjStorages = Get-VBRArchiveObjectStorageRepository | Sort-Object -Property Name
-    if ($ArchObjStorages) {
-
-        $ArchObjRepositoriesInfo = @()
-
-        $ArchObjStorages | ForEach-Object {
-            $inobj = @{
-                Type = $_.ArchiveType
-                Gateway = & {
-                    if (-Not $_.UseGatewayServer) {
-                        Switch ($_.GatewayMode) {
+    try {
+        Write-Verbose "Collecting Archive Object Repository information from $($VBRServer.Name)."
+        $ArchObjStorages = Get-VBRArchiveObjectStorageRepository | Sort-Object -Property Name
+        if ($ArchObjStorages) {
+            $ArchObjRepositoriesInfo = $ArchObjStorages | ForEach-Object {
+                $inobj = [ordered]@{
+                    'Type' = $_.ArchiveType
+                    'Gateway' = if (-Not $_.UseGatewayServer) {
+                        switch ($_.GatewayMode) {
                             'Gateway' {
-                                switch (($_.GatewayServer | Measure-Object).count) {
+                                switch (($_.GatewayServer | Measure-Object).Count) {
                                     0 { "Disable" }
                                     1 { $_.GatewayServer.Name.Split('.')[0] }
-                                    Default { 'Automatic' }
+                                    default { 'Automatic' }
                                 }
                             }
                             'Direct' { 'Direct' }
                             default { 'Unknown' }
                         }
                     } else {
-                        switch (($_.GatewayServer | Measure-Object).count) {
+                        switch (($_.GatewayServer | Measure-Object).Count) {
                             0 { "Disable" }
                             1 { $_.GatewayServer.Name.Split('.')[0] }
-                            Default { 'Automatic' }
+                            default { 'Automatic' }
                         }
                     }
                 }
-            }
 
-            $IconType = Get-IconType -String $_.ArchiveType
+                $IconType = Get-IconType -String $_.ArchiveType
 
-            $TempArchObjectRepositoriesInfo = [PSCustomObject]@{
-                Name = $_.Name
-                AditionalInfo = $inobj
-                IconType = $IconType
+                [PSCustomObject]@{
+                    Name = $_.Name
+                    AditionalInfo = $inobj
+                    IconType = $IconType
+                }
             }
-            $ArchObjRepositoriesInfo += $TempArchObjectRepositoriesInfo
+            return $ArchObjRepositoriesInfo
         }
-        return $ArchObjRepositoriesInfo
+    } catch {
+        Write-Verbose -Message $_.Exception.Message
     }
 }
 
@@ -284,40 +256,22 @@ function Get-VbrSOBRInfo {
         $SOBR = Get-VBRBackupRepository -ScaleOut | Sort-Object -Property Name
 
         if ($SOBR) {
+            $SOBRInfo = $SOBR | ForEach-Object {
+                $inobj = [ordered]@{
+                    'Placement Policy' = $_.PolicyType
+                    'Encryption Enabled' = if ($_.EncryptionEnabled) { 'Yes' } else { 'No' }
+                }
 
-            $SOBRInfo = @()
-
-            $SOBR | ForEach-Object {
-                try {
-                    $inobj = [ordered] @{
-                        'Placement Policy' = $_.PolicyType
-                        'Encryption Enabled' = switch ($_.EncryptionEnabled) {
-                            "" { "--" }
-                            $Null { "--" }
-                            "True" { "Yes"; break }
-                            "False" { "No"; break }
-                            default { $_.EncryptionEnabled }
-                        }
-                    }
-
-                    $TempSOBRInfo = [PSCustomObject]@{
-                        Name = $_.Name
-                        AditionalInfo = $inobj
-                    }
-
-                    $SOBRInfo += $TempSOBRInfo
-                } catch {
-                    Write-Verbose "Error: Unable to process $($_.Name) from SOBR table: $($_.Exception.Message)"
+                [PSCustomObject]@{
+                    Name = $_.Name
+                    AditionalInfo = $inobj
                 }
             }
+            return $SOBRInfo
         }
-
-        return $SOBRInfo
-
     } catch {
         Write-Verbose -Message $_.Exception.Message
     }
-
 }
 
 # Storage Infrastructure Graphviz Cluster
@@ -326,15 +280,13 @@ function Get-VbrSANInfo {
     )
     try {
         Write-Verbose "Collecting Storage Infrastructure information from $($VBRServer.Name)."
-        $SANHost = @()
-        $SANHost += Get-NetAppHost | Select-Object -Property Name, @{ Name = 'Type'; Expression = { 'Netapp' } }
-        $SANHost += Get-VBRIsilonHost | Select-Object -Property Name, @{ Name = 'Type'; Expression = { 'Dell' } }
+        $SANHost = @(
+            Get-NetAppHost | Select-Object -Property Name, @{ Name = 'Type'; Expression = { 'Netapp' } }
+            Get-VBRIsilonHost | Select-Object -Property Name, @{ Name = 'Type'; Expression = { 'Dell' } }
+        )
 
         if ($SANHost) {
-
-            $SANHostInfo = @()
-
-            $SANHost | ForEach-Object {
+            $SANHostInfo = $SANHost | ForEach-Object {
                 try {
                     $IconType = Get-IconType -String $_.Type
                     $inobj = [ordered] @{
@@ -345,13 +297,11 @@ function Get-VbrSANInfo {
                         }
                     }
 
-                    $TempSanInfo = [PSCustomObject]@{
+                    [PSCustomObject]@{
                         Name = $_.Name
                         AditionalInfo = $inobj
                         IconType = $IconType
                     }
-
-                    $SANHostInfo += $TempSanInfo
                 } catch {
                     Write-Verbose "Error: Unable to process $($_.Name) from Storage Infrastructure table: $($_.Exception.Message)"
                 }
@@ -374,35 +324,22 @@ function Get-VbrTapeServersInfo {
         $TapeServers = Get-VBRTapeServer | Sort-Object -Property Name
 
         if ($TapeServers) {
-
-            $TapeServernfo = @()
-
-            $TapeServers | ForEach-Object {
+            $TapeServersInfo = $TapeServers | ForEach-Object {
                 $inobj = [ordered] @{
-                    'Is Available' = switch ($_.IsAvailable) {
-                        "" { "--" }
-                        $Null { "--" }
-                        "True" { "Yes"; break }
-                        "False" { "No"; break }
-                        default { $_.IsAvailable }
-                    }
+                    'Is Available' = if ($_.IsAvailable) { "Yes" } elseif (-Not $_.IsAvailable) { "No" } else { "--" }
                 }
 
-                $TempTapeServernfo = [PSCustomObject]@{
+                [PSCustomObject]@{
                     Name = $_.Name.split('.')[0]
                     AditionalInfo = $inobj
                 }
-
-                $TapeServernfo += $TempTapeServernfo
             }
+            return $TapeServersInfo
         }
-
-        return $TapeServernfo
 
     } catch {
         Write-Verbose -Message $_.Exception.Message
     }
-
 }
 
 # Tape Library Graphviz Cluster
@@ -414,31 +351,22 @@ function Get-VbrTapeLibraryInfo {
         $TapeLibraries = Get-VBRTapeLibrary | Sort-Object -Property Name
 
         if ($TapeLibraries) {
-
-            $TapeLibrariesInfo = @()
-
-            $TapeLibraries | ForEach-Object {
-                $inobj = [ordered] @{
-                    'State' = $_.State
-                    'Type' = $_.Type
-                    'Model' = $_.Model
-                }
-
-                $TempTapeLibrariesInfo = [PSCustomObject]@{
+            $TapeLibrariesInfo = $TapeLibraries | ForEach-Object {
+                [PSCustomObject]@{
                     Name = $_.Name
-                    AditionalInfo = $inobj
+                    AditionalInfo = [ordered]@{
+                        'State' = $_.State
+                        'Type' = $_.Type
+                        'Model' = $_.Model
+                    }
                 }
-
-                $TapeLibrariesInfo += $TempTapeLibrariesInfo
             }
+            return $TapeLibrariesInfo
         }
-
-        return $TapeLibrariesInfo
 
     } catch {
         Write-Verbose -Message $_.Exception.Message
     }
-
 }
 
 # Tape Library Graphviz Cluster
@@ -450,28 +378,16 @@ function Get-VbrTapeVaultInfo {
         $TapeVaults = Get-VBRTapeVault | Sort-Object -Property Name
 
         if ($TapeVaults) {
-
-            $TapeVaultsInfo = @()
-
-            $TapeVaults | ForEach-Object {
-                $inobj = [ordered] @{
-                    'Protect' = Switch ($_.Protect) {
-                        'True' { 'Yes' }
-                        'False' { 'No' }
-                        default { 'Unknown' }
+            $TapeVaultsInfo = $TapeVaults | ForEach-Object {
+                [PSCustomObject]@{
+                    Name = $_.Name
+                    AditionalInfo = [ordered]@{
+                        'Protect' = if ($_.Protect) { 'Yes' } else { 'No' }
                     }
                 }
-
-                $TempTapeVaultsInfo = [PSCustomObject]@{
-                    Name = $_.Name
-                    AditionalInfo = $inobj
-                }
-
-                $TapeVaultsInfo += $TempTapeVaultsInfo
             }
+            return $TapeVaultsInfo
         }
-
-        return $TapeVaultsInfo
 
     } catch {
         Write-Verbose -Message $_.Exception.Message
@@ -487,35 +403,29 @@ function Get-VbrServiceProviderInfo {
         $ServiceProviders = Get-VBRCloudProvider | Sort-Object -Property 'DNSName'
 
         if ($ServiceProviders) {
+            $ServiceProvidersInfo = $ServiceProviders | ForEach-Object {
+                $cloudConnectType = if ($_.ResourcesEnabled -and $_.ReplicationResourcesEnabled) {
+                    'BaaS and DRaaS'
+                } elseif ($_.ResourcesEnabled) {
+                    'BaaS'
+                } elseif ($_.ReplicationResourcesEnabled) {
+                    'DRaas'
+                } elseif ($_.vCDReplicationResources) {
+                    'vCD'
+                } else { 'Unknown' }
 
-            $ServiceProvidersInfo = @()
-
-            $ServiceProviders | ForEach-Object {
-                $inobj = [ordered] @{
-                    'Cloud Connect Type' = & {
-                        if ($_.ResourcesEnabled -and $_.ReplicationResourcesEnabled) {
-                            'BaaS and DRaaS'
-                        } elseif ($_.ResourcesEnabled) {
-                            'BaaS'
-                        } elseif ($_.ReplicationResourcesEnabled) {
-                            'DRaas'
-                        } elseif ($_.vCDReplicationResources) {
-                            'vCD'
-                        } else { 'Unknown' }
-                    }
+                $inobj = [ordered]@{
+                    'Cloud Connect Type' = $cloudConnectType
                     'Managed By Provider' = ConvertTo-TextYN $_.IsManagedByProvider
                 }
 
-                $TempServiceProvidersInfo = [PSCustomObject]@{
+                [PSCustomObject]@{
                     Name = $_.DNSName
                     AditionalInfo = $inobj
                 }
-
-                $ServiceProvidersInfo += $TempServiceProvidersInfo
             }
+            return $ServiceProvidersInfo
         }
-
-        return $ServiceProvidersInfo
 
     } catch {
         Write-Verbose -Message $_.Exception.Message
@@ -531,11 +441,8 @@ function Get-VbrVirtualLabInfo {
         $VirtualLab = Get-VBRVirtualLab
 
         if ($VirtualLab) {
-
-            $VirtualLabInfo = @()
-
-            $VirtualLab | ForEach-Object {
-                $inobj = [ordered] @{
+            $VirtualLabInfo = $VirtualLab | ForEach-Object {
+                $inobj = [ordered]@{
                     'Platform' = Switch ($_.Platform) {
                         'HyperV' { 'Microsoft Hyper-V' }
                         'VMWare' { 'VMWare vSphere' }
@@ -546,17 +453,14 @@ function Get-VbrVirtualLabInfo {
 
                 $IconType = Get-IconType -String 'VirtualLab'
 
-                $TempVirtualLabInfo = [PSCustomObject]@{
+                [PSCustomObject]@{
                     Name = $_.Name
                     AditionalInfo = $inobj
                     IconType = $IconType
                 }
-
-                $VirtualLabInfo += $TempVirtualLabInfo
             }
+            return $VirtualLabInfo
         }
-
-        return $VirtualLabInfo
 
     } catch {
         Write-Verbose -Message $_.Exception.Message
