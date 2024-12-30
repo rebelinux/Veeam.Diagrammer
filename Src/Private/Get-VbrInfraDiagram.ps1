@@ -1,20 +1,20 @@
 function Get-VbrInfraDiagram {
     <#
     .SYNOPSIS
-        Diagram the configuration of Veeam Backup & Replication infrastructure in PDF/SVG/DOT/PNG formats using PSGraph and Graphviz.
+        Generates a diagram of the Veeam Backup & Replication infrastructure configuration in various formats using PSGraph and Graphviz.
     .DESCRIPTION
-        Diagram the configuration of Veeam Backup & Replication infrastructure in PDF/SVG/DOT/PNG formats using PSGraph and Graphviz.
+        This script creates a visual representation of the Veeam Backup & Replication infrastructure configuration. The output can be generated in PDF, SVG, DOT, or PNG formats. It leverages the PSGraph module for PowerShell and Graphviz for rendering the diagrams.
     .NOTES
         Version:        0.6.17
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
-        Github:         rebelinux
-        Credits:        Kevin Marquette (@KevinMarquette) -  PSGraph module
-        Credits:        Prateek Singh (@PrateekKumarSingh) - AzViz module
+        GitHub:         rebelinux
+        Credits:        Kevin Marquette (@KevinMarquette) - PSGraph module
+                        Prateek Singh (@PrateekKumarSingh) - AzViz module
     .LINK
-        https://github.com/rebelinux/
-        https://github.com/KevinMarquette/PSGraph
-        https://github.com/PrateekKumarSingh/AzViz
+        GitHub Repository: https://github.com/rebelinux/
+        PSGraph Module:    https://github.com/KevinMarquette/PSGraph
+        AzViz Module:      https://github.com/PrateekKumarSingh/AzViz
     #>
 
     begin {
