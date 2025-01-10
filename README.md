@@ -26,12 +26,12 @@
     <a href='https://ko-fi.com/F1F8DEV80' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3'            border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 </p>
 
+> [!WARNING]
+> I recently made the decision to not apply to the Veeam Vanguard program which was one of the main reasons for developing and maintaining this project. For this reason I will not be maintaining or updating this tool. At this time until someone is identified to maintain the project, this tool will be frozen in terms of new capabilities.
+
 # Veeam VBR Diagrammer
 
 Veeam Diagrammer is a PowerShell module to automatically generate Veeam Backup & Replication topology diagrams by just typing a PowerShell cmdlet and passing the name of the Backup Server.
-
-> [!WARNING]
-> I recently made the decision to not apply to the Veeam Vanguard program which was one of the main reasons for developing and maintaining this project. For this reason I will not be maintaining or updating this tool. At this time until someone is identified to maintain the project, this tool will be frozen in terms of new capabilities.
 
 ## This project is extensively based on the [`AzViz`](https://github.com/PrateekKumarSingh/AzViz) module.
 
