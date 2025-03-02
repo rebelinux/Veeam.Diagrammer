@@ -27,7 +27,7 @@
     CompanyName = 'Zen PR Solutions'
 
     # Copyright statement for this module
-    Copyright = '(c) 2024 Jonathan Colon. All rights reserved.'
+    Copyright = '(c) 2025 Jonathan Colon. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description = 'A PowerShell module to generate an Veeam Backup & Replication infrastructure diagram'

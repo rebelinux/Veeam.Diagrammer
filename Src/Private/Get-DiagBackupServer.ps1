@@ -20,28 +20,19 @@ function Get-DiagBackupServer {
         try {
             SubGraph BackupServers -Attributes @{Label = 'Management'; labelloc = 'b'; labeljust = "r"; style = "rounded"; bgcolor = $BackupServerBGColor; fontcolor = '#696969'; fontsize = 14; penwidth = 2; color = 'DarkGray' } {
                 SubGraph BackupServer -Attributes @{Label = 'Backup Server'; style = "rounded"; bgcolor = $BackupServerBGColor; fontsize = 18; fontcolor = $BackupServerFontColor ; penwidth = 0; labelloc = 't'; labeljust = "c"; } {
-                    if (( -Not $DatabaseServerInfo.Name ) -and ( -Not $EMServerInfo.Name )) {
+                    if (( -Not $DatabaseServerInfo.Name ) -and ( -Not $EMServerInfo.Name ) -and ($BackupServerInfo.Name)) {
                         Write-Verbose -Message "Collecting Backup Server Information."
-                        $BSHASHTABLE = @{}
-                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
                         Node Left @{Label = 'Left'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; }
                         Node Right @{Label = 'Right'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; }
-                        Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; shape = 'plain' }
+                        Node $BackupServerInfo.Name -Attributes @{Label = $BackupServerInfo.Label; shape = 'plain' }
                         Edge Left, $BackupServerInfo.Name, Right @{style = $EdgeDebug.style; color = $EdgeDebug.color }
                         Rank Left, $BackupServerInfo.Name, Right
                     } elseif (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and ($EMServerInfo.Name -ne $BackupServerInfo.Name )) {
                         Write-Verbose -Message "Collecting Backup Server, Database Server and Enterprise Manager Information."
-                        $BSHASHTABLE = @{}
-                        $DBHASHTABLE = @{}
-                        $EMHASHTABLE = @{}
 
-                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-                        $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
-                        $EMServerInfo.psobject.properties | ForEach-Object { $EMHASHTABLE[$_.Name] = $_.Value }
-
-                        Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; shape = 'plain' }
-                        Node $DatabaseServerInfo.Name -Attributes @{Label = $DBHASHTABLE.Label; shape = 'plain' }
-                        Node $EMServerInfo.Name -Attributes @{Label = $EMHASHTABLE.Label; shape = 'plain' }
+                        Node $BackupServerInfo.Name -Attributes @{Label = $BackupServerInfo.Label; shape = 'plain' }
+                        Node $DatabaseServerInfo.Name -Attributes @{Label = $DatabaseServerInfo.Label; shape = 'plain' }
+                        Node $EMServerInfo.Name -Attributes @{Label = $EMServerInfo.Label; shape = 'plain' }
 
                         if ($Dir -eq 'LR') {
                             Rank $EMServerInfo.Name, $DatabaseServerInfo.Name
@@ -54,14 +45,12 @@ function Get-DiagBackupServer {
                         }
                     } elseif (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and (-Not $EMServerInfo)) {
                         Write-Verbose -Message "Not Enterprise Manager Found: Collecting Backup Server and Database server Information."
-                        $BSHASHTABLE = @{}
-                        $DBHASHTABLE = @{}
 
                         $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
                         $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
 
-                        Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; shape = 'plain' }
-                        Node $DatabaseServerInfo.Name -Attributes @{Label = $DBHASHTABLE.Label; shape = 'plain' }
+                        Node $BackupServerInfo.Name -Attributes @{Label = $BackupServerInfo.Label; shape = 'plain' }
+                        Node $DatabaseServerInfo.Name -Attributes @{Label = $DatabaseServerInfo.Label; shape = 'plain' }
 
                         if ($Dir -eq 'LR') {
                             Rank $BackupServerInfo.Name, $DatabaseServerInfo.Name
@@ -72,11 +61,8 @@ function Get-DiagBackupServer {
                         }
                     } elseif (($EMServerInfo.Name -eq $BackupServerInfo.Name) -and ($DatabaseServerInfo.Name -eq $BackupServerInfo.Name)) {
                         Write-Verbose -Message "Database and Enterprise Manager server collocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
-                        $BSHASHTABLE = @{}
 
-                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-
-                        Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; shape = 'plain' }
+                        Node $BackupServerInfo.Name -Attributes @{Label = $BackupServerInfo.Label; shape = 'plain' }
 
                         Node Left @{Label = 'Left'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; }
                         Node Right @{Label = 'Right'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; }
@@ -85,14 +71,9 @@ function Get-DiagBackupServer {
 
                     } elseif (($EMServerInfo.Name -eq $BackupServerInfo.Name) -and ($DatabaseServerInfo.Name -ne $BackupServerInfo.Name)) {
                         Write-Verbose -Message "Enterprise Maneger server colocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
-                        $BSHASHTABLE = @{}
-                        $DBHASHTABLE = @{}
 
-                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-                        $DatabaseServerInfo.psobject.properties | ForEach-Object { $DBHASHTABLE[$_.Name] = $_.Value }
-
-                        Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; shape = 'plain' }
-                        Node $DatabaseServerInfo.Name -Attributes @{Label = $DBHASHTABLE.Label; shape = 'plain' }
+                        Node $BackupServerInfo.Name -Attributes @{Label = $BackupServerInfo.Label; shape = 'plain' }
+                        Node $DatabaseServerInfo.Name -Attributes @{Label = $DatabaseServerInfo.Label; shape = 'plain' }
 
                         if ($Dir -eq 'LR') {
                             Rank $BackupServerInfo.Name, $DatabaseServerInfo.Name
@@ -104,14 +85,9 @@ function Get-DiagBackupServer {
 
                     } elseif ($EMServerInfo -and ($DatabaseServerInfo.Name -eq $BackupServerInfo.Name)) {
                         Write-Verbose -Message "Database server colocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
-                        $BSHASHTABLE = @{}
-                        $EMHASHTABLE = @{}
 
-                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
-                        $EMServerInfo.psobject.properties | ForEach-Object { $EMHASHTABLE[$_.Name] = $_.Value }
-
-                        Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; shape = 'plain' }
-                        Node $EMServerInfo.Name -Attributes @{Label = $EMHASHTABLE.Label; shape = 'plain' }
+                        Node $BackupServerInfo.Name -Attributes @{Label = $BackupServerInfo.Label; shape = 'plain' }
+                        Node $EMServerInfo.Name -Attributes @{Label = $EMServerInfo.Label; shape = 'plain' }
 
                         if ($Dir -eq 'LR') {
                             Rank $EMServerInfo.Name, $BackupServerInfo.Name
@@ -122,11 +98,9 @@ function Get-DiagBackupServer {
                         }
                     } else {
                         Write-Verbose -Message "Collecting Backup Server Information."
-                        $BSHASHTABLE = @{}
-                        $BackupServerInfo.psobject.properties | ForEach-Object { $BSHASHTABLE[$_.Name] = $_.Value }
                         Node Left @{Label = 'Left'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; }
                         Node Right @{Label = 'Right'; style = $EdgeDebug.style; color = $EdgeDebug.color; shape = 'plain'; }
-                        Node $BackupServerInfo.Name -Attributes @{Label = $BSHASHTABLE.Label; shape = 'plain' }
+                        Node $BackupServerInfo.Name -Attributes @{Label = $BackupServerInfo.Label; shape = 'plain' }
                         Edge Left, $BackupServerInfo.Name, Right @{style = $EdgeDebug.style; color = $EdgeDebug.color }
                         Rank Left, $BackupServerInfo.Name, Right
                     }

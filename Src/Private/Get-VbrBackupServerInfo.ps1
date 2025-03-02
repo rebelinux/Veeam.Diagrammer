@@ -5,7 +5,7 @@ function Get-VbrBackupServerInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.9
+        Version:        0.6.19
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -20,26 +20,27 @@ function Get-VbrBackupServerInfo {
     )
     process {
         try {
-            $CimSession = try { New-CimSession $VBRServer.Name -Credential $Credential -Authentication Negotiate -Name 'CIMBackupServerDiagram' -ErrorAction Stop } catch { Write-Verbose "Backup Server Section: New-CimSession: Unable to connect to $($VBRServer.Name): $($_.Exception.MessageId)" }
 
             $PssSession = try { New-PSSession $VBRServer.Name -Credential $Credential -Authentication Negotiate -ErrorAction Stop -Name 'PSSBackupServerDiagram' } catch {
                 if (-Not $_.Exception.MessageId) {
                     $ErrorMessage = $_.FullyQualifiedErrorId
                 } else { $ErrorMessage = $_.Exception.MessageId }
-                Write-Verbose "Backup Server Section: New-PSSession: Unable to connect to $($VBRServer.Name): $ErrorMessage"
+                Write-Error "Backup Server Section: New-PSSession: Unable to connect to $($VBRServer.Name): $ErrorMessage"
             }
             Write-Verbose -Message "Collecting Backup Server information from $($VBRServer.Name)."
 
-            $VeeamInfo = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock {
-                $VeeamVersion = Get-ChildItem -Recurse HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -match 'Veeam Backup & Replication Server' } | Select-Object -Property DisplayVersion
-                $VeeamDBFlavor = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations'
-                $VeeamDBInfo12 = Get-ItemProperty -Path "HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations\$($VeeamDBFlavor.SqlActiveConfiguration)"
-                $VeeamDBInfo11 = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication'
-                return [PSCustomObject]@{
-                    Version = $VeeamVersion.DisplayVersion
-                    DBFlavor = $VeeamDBFlavor
-                    DBInfo12 = $VeeamDBInfo12
-                    DBInfo11 = $VeeamDBInfo11
+            if ($PssSession) {
+                $VeeamInfo = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock {
+                    $VeeamVersion = Get-ChildItem -Recurse HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -match 'Veeam Backup & Replication Server' } | Select-Object -Property DisplayVersion
+                    $VeeamDBFlavor = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations'
+                    $VeeamDBInfo12 = Get-ItemProperty -Path "HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations\$($VeeamDBFlavor.SqlActiveConfiguration)"
+                    $VeeamDBInfo11 = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication'
+                    return [PSCustomObject]@{
+                        Version = $VeeamVersion.DisplayVersion
+                        DBFlavor = $VeeamDBFlavor
+                        DBInfo12 = $VeeamDBInfo12
+                        DBInfo11 = $VeeamDBInfo11
+                    }
                 }
             }
 
@@ -124,9 +125,6 @@ function Get-VbrBackupServerInfo {
         }
     }
     end {
-        if ($CimSession) {
-            Remove-CimSession $CimSession
-        }
         if ($PssSession) {
             Remove-PSSession $PssSession
         }

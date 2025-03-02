@@ -100,7 +100,7 @@ function New-VeeamDiagram {
         Default: Green
 
     .NOTES
-        Version:        0.6.9
+        Version:        0.6.19
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -480,6 +480,12 @@ function New-VeeamDiagram {
 
             Get-VBRBackupServerInfo
 
+            if ($BackupServerInfo) {
+                Write-Verbose "Backup Server Information collected"
+            } else {
+                throw "No Backup Server Information available to diagram"
+            }
+
             $script:Graph = Graph -Name VeeamVBR -Attributes $MainGraphAttributes {
                 # Node default theme
                 Node @{
@@ -517,6 +523,8 @@ function New-VeeamDiagram {
 
                 SubGraph OUTERDRAWBOARD1 -Attributes @{Label = $Signature; fontsize = 24; penwidth = 1.5; labelloc = 'b'; labeljust = "r"; style = $SubGraphDebug.style; color = $SubGraphDebug.color } {
                     SubGraph MainGraph -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label $MainGraphLabel -IconType $CustomLogo -IconDebug $IconDebug -IconWidth 300 -IconHeight 54); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
+
+                        Get-DiagBackupServer
 
                         if ($DiagramType -eq 'Backup-to-HyperV-Proxy') {
                             $BackuptoHyperVProxy = Get-DiagBackupToHvProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch

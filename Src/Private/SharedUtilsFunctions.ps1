@@ -145,6 +145,10 @@ function Get-RoleType {
         https://github.com/veeam/veeam-diagrammer
     #>
 
+    param(
+        [string]$String
+    )
+
     $RoleType = Switch ($String) {
         'LinuxLocal' { 'Linux Local' }
         'LinuxHardened' { 'Linux Hardened' }

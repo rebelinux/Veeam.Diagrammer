@@ -5,7 +5,7 @@ function Get-VbrInfraDiagram {
     .DESCRIPTION
         This script creates a visual representation of the Veeam Backup & Replication infrastructure configuration. The output can be generated in PDF, SVG, DOT, or PNG formats. It leverages the PSGraph module for PowerShell and Graphviz for rendering the diagrams.
     .NOTES
-        Version:        0.6.17
+        Version:        0.6.19
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         GitHub:         rebelinux
@@ -26,14 +26,11 @@ function Get-VbrInfraDiagram {
 
             #-----------------------------------------------------------------------------------------------#
             #                                Graphviz Node Section                                          #
-            #                 Nodes are Graphviz elements used to define a object entity                    #
-            #                Nodes can have attribues like Shape, HTML Labels, Styles etc..                 #
-            #               PSgraph: https://psgraph.readthedocs.io/en/latest/Command-Node/                 #
+            #                 Nodes are Graphviz elements used to define an object entity                   #
+            #                Nodes can have attributes like Shape, HTML Labels, Styles, etc.                #
+            #               PSGraph: https://psgraph.readthedocs.io/en/latest/Command-Node/                 #
             #                     Graphviz: https://graphviz.org/doc/info/shapes.html                       #
             #-----------------------------------------------------------------------------------------------#
-
-            # Build Backup Server Graphviz Cluster
-            Get-DiagBackupServer
 
             # EntraID Graphviz Cluster
             if ($EntraID = Get-VbrBackupEntraIDInfo) {
@@ -84,16 +81,12 @@ function Get-VbrInfraDiagram {
                 $ProxyNodesArray = @()
 
                 if ($ProxiesVi) {
-
                     $ProxyNodesArray += $ProxiesVi
                 }
                 if ($ProxiesHv) {
-
                     $ProxyNodesArray += $ProxiesHv
                 }
-
                 if ($NASProxies) {
-
                     $ProxyNodesArray += $ProxiesNas
                 }
 
