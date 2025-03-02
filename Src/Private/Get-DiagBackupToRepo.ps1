@@ -33,48 +33,109 @@ function Get-DiagBackupToRepo {
 
             if ($BackupServerInfo) {
                 if ($BackupRepo) {
-                    SubGraph MainSubGraph -Attributes @{Label = 'Backup Repositories'; fontsize = 22; penwidth = 1; labelloc = 't'; style = 'dashed,rounded'; color = $SubGraphDebug.color } {
-                        if ($LocalBackupRepo) {
-                            SubGraph LocalRepos -Attributes @{Label = 'Local Repositories'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
+                    $RepoSubgraphArray = @()
 
-                                Node LocalRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($LocalBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($LocalBackupRepo.AditionalInfo )); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+                    if ($LocalBackupRepo) {
+                        try {
 
-                            }
-                            Edge -From MainSubGraph:s -To LocalRepo @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            $LocalBackupRepoArray = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($LocalBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($LocalBackupRepo.AditionalInfo ))
+                        } catch {
+                            Write-Verbose "Error: Unable to create Local Backup Repositories table Objects. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
                         }
-                        if ($NASBackupRepo) {
-                            SubGraph NasRepos -Attributes @{Label = 'NAS Repositories'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
+                        try {
 
-                                Node NasRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($NASBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_NAS" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($NASBackupRepo.AditionalInfo )); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
-                            }
-                            Edge -From MainSubGraph:s -To NasRepo @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            $LocalBackupRepoSubgraph = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $LocalBackupRepoArray -Align 'Center' -IconDebug $IconDebug -Label 'Local Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 4)
+                        } catch {
+                            Write-Verbose "Error: Unable to create Local Backup Repositories Subgraph. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
                         }
-                        if ($DedupBackupRepo) {
-                            SubGraph RemoteRepos -Attributes @{Label = 'Deduplicating Storage Appliances'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
 
-                                Node RemoteRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($DedupBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Deduplicating_Storage" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($DedupBackupRepo.AditionalInfo )); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
-
-                            }
-                            Edge -From MainSubGraph:s -To RemoteRepo @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-
+                        if ($LocalBackupRepoSubgraph) {
+                            $RepoSubgraphArray += $LocalBackupRepoSubgraph
                         }
-                        if ($ObjStorage) {
-                            SubGraph ObjectStorages -Attributes @{Label = 'Object Repositories'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
+                    }
+                    if ($NASBackupRepo) {
+                        try {
 
-                                Node ObjectStorage @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($ObjStorage | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($ObjStorage.AditionalInfo )); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
-
-                            }
-                            Edge -From MainSubGraph:s -To ObjectStorage @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
+                            $NASBackupRepoArray = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($NASBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_NAS" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($NASBackupRepo.AditionalInfo ))
+                        } catch {
+                            Write-Verbose "Error: Unable to create NAS Backup Repositories table Objects. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
                         }
-                        if ($ArchiveObjStorage) {
-                            SubGraph ArchiveObjectStorages -Attributes @{Label = 'Archive Object Repositories'; fontsize = 18; penwidth = 1.5; labelloc = 't'; style = 'dashed,rounded' } {
 
-                                Node ArchiveObjectStorage @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($ArchiveObjStorage | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($ArchiveObjStorage.AditionalInfo )); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
-
-                            }
-                            Edge -From MainSubGraph:s -To ArchiveObjectStorage @{minlen = 1; style = $EdgeDebug.style; color = $EdgeDebug.color }
-
+                        try {
+                            $NASBackupRepoSubgraph = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $NASBackupRepoArray -Align 'Center' -IconDebug $IconDebug -Label 'NAS Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 4)
+                        } catch {
+                            Write-Verbose "Error: Unable to create NAS Backup Repositories Subgraph. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
                         }
+
+                        if ($NASBackupRepoSubgraph) {
+                            $RepoSubgraphArray += $NASBackupRepoSubgraph
+                        }
+                    }
+                    if ($DedupBackupRepo) {
+                        try {
+
+                            $DedupBackupRepoArray = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($DedupBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Deduplicating_Storage" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($DedupBackupRepo.AditionalInfo ))
+                        } catch {
+                            Write-Verbose "Error: Unable to create Dedup Backup Repositories table Objects. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
+                        }
+
+                        try {
+                            $DedupBackupRepoSubgraph = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $DedupBackupRepoArray -Align 'Center' -IconDebug $IconDebug -Label 'Deduplicating Storage Appliances' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 4)
+                        } catch {
+                            Write-Verbose "Error: Unable to create Dedup Backup Repositories Subgraph. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
+                        }
+
+                        if ($DedupBackupRepoSubgraph) {
+                            $RepoSubgraphArray += $DedupBackupRepoSubgraph
+                        }
+                    }
+                    if ($ObjStorage) {
+                        try {
+                            $ObjStorageArray = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($ObjStorage | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($ObjStorage.AditionalInfo ))
+                        } catch {
+                            Write-Verbose "Error: Unable to create Object Repositories table Objects. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
+                        }
+
+                        try {
+                            $ObjStorageSubgraph = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ObjStorageArray -Align 'Center' -IconDebug $IconDebug -Label 'Object Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 4)
+                        } catch {
+                            Write-Verbose "Error: Unable to create Object Repositories Subgraph. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
+                        }
+
+                        if ($ObjStorageSubgraph) {
+                            $RepoSubgraphArray += $ObjStorageSubgraph
+                        }
+                    }
+                    if ($ArchiveObjStorage) {
+                        try {
+                            $ArchiveObjStorageArray = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($ArchiveObjStorage | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($ArchiveObjStorage.AditionalInfo ))
+                        } catch {
+                            Write-Verbose "Error: Unable to create Archive Object Repositories table Objects. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
+                        }
+                        try {
+
+                            $ArchiveObjStorageSubgraph = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ArchiveObjStorageArray -Align 'Center' -IconDebug $IconDebug -Label 'Archive Object Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 4)
+                        } catch {
+                            Write-Verbose "Error: Unable to create Archive Object Repositories Subgraph. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
+                        }
+
+                        if ($ArchiveObjStorageSubgraph) {
+                            $RepoSubgraphArray += $ArchiveObjStorageSubgraph
+                        }
+                    }
+
+                    if ($RepoSubgraphArray) {
+                        Node -Name MainSubGraph -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $RepoSubgraphArray -Align 'Center' -IconDebug $IconDebug -Label 'Backup Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                     }
 
                     Edge -From $BackupServerInfo.Name -To MainSubGraph @{minlen = 3 }

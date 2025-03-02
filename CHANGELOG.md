@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Esxi StandAlone servers to the VMware Backup Proxy diagram
 - Add Hyper-V Infrastructure information to the Hyper-V Backup Proxy diagram
 
+### Changed
+
+- Improve Backup Repository diagram layout
+
 ### Fixed
 
 - Fix error when the user used to connect to the Backup Server isn't a Local Administrator on the server.
