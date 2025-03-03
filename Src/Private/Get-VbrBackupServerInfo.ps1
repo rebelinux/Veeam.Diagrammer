@@ -59,9 +59,9 @@ function Get-VbrBackupServerInfo {
 
             if ($VBRServer) {
                 $Roles = if ($VeeamDBInfo -eq $VBRServer.Name) { 'Backup and Database' } else { 'Backup Server' }
-                $DBType = if ($VeeamDBInfo -eq $VBRServer.Name) { $VeeamInfo.DBFlavor.SqlActiveConfiguration } else { $null }
+                $DBType = $VeeamInfo.DBFlavor.SqlActiveConfiguration
 
-                $Rows = @{
+                $Rows = [ordered]@{
                     Role = $Roles
                     IP = Get-NodeIP -Hostname $VBRServer.Name
                 }
@@ -71,12 +71,16 @@ function Get-VbrBackupServerInfo {
                 }
 
                 if ($DBType) {
-                    $Rows.add('DB Type', $DBType)
+                    $Rows.add('Database Type', $DBType)
                 }
+
+                $Rows = [PSCustomObject]$Rows
 
                 $script:BackupServerInfo = [PSCustomObject]@{
                     Name = $VBRServer.Name.split(".")[0]
-                    Label = Get-DiaNodeIcon -Name "$($VBRServer.Name.split(".")[0])" -IconType "VBR_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                    Label = Get-DiaNodeIcon -Name "$($VBRServer.Name.split(".")[0])" -IconType "VBR_Server" -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 16
+                    SpacerLeft = Get-DiaNodeIcon -Name " " -IconType "VBR_Bid_Arrow" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug
+                    SpacerRight = Get-DiaNodeIcon -Name " " -IconType "VBR_Bid_Arrow" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug
                 }
             }
 
@@ -85,23 +89,29 @@ function Get-VbrBackupServerInfo {
                 $DBPort = if ($VeeamInfo.DBFlavor.SqlActiveConfiguration -eq "PostgreSql") { "$($VeeamInfo.DBInfo12.SqlHostPort)/TCP" } else { "1433/TCP" }
                 $DatabaseServerIP = Get-NodeIP -Hostname $DatabaseServer
 
-                $Rows = @{
-                    Role = 'Database Server'
+                $Rows = [ordered] @{
                     IP = $DatabaseServerIP
+                    Role = 'Database Server'
                 }
 
                 if ($VeeamInfo.DBInfo12.SqlInstanceName) {
                     $Rows.add('Instance', $VeeamInfo.DBInfo12.SqlInstanceName)
                 }
+
                 if ($VeeamInfo.DBInfo12.SqlDatabaseName) {
                     $Rows.add('Database', $VeeamInfo.DBInfo12.SqlDatabaseName)
                 }
+
+                $Rows.add('DB Port', $DBPort)
+
+
+                $Rows = [PSCustomObject]$Rows
 
                 $DBIconType = if ($VeeamInfo.DBFlavor.SqlActiveConfiguration -eq "PostgreSql") { "VBR_Server_DB_PG" } else { "VBR_Server_DB" }
 
                 $script:DatabaseServerInfo = [PSCustomObject]@{
                     Name = $DatabaseServer.split(".")[0]
-                    Label = Get-DiaNodeIcon -Name "$($DatabaseServer.split(".")[0])" -IconType $DBIconType -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                    Label = Get-DiaNodeIcon -Name "$($DatabaseServer.split(".")[0])" -IconType $DBIconType -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 16
                     DBPort = $DBPort
                 }
             }
@@ -117,7 +127,7 @@ function Get-VbrBackupServerInfo {
 
                 $script:EMServerInfo = [PSCustomObject]@{
                     Name = $EMServer.ServerName.split(".")[0]
-                    Label = Get-DiaNodeIcon -Name "$($EMServer.ServerName.split(".")[0])" -IconType "VBR_Server_EM" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                    Label = Get-DiaNodeIcon -Name "$($EMServer.ServerName.split(".")[0])" -IconType "VBR_Server_EM" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 16
                 }
             }
         } catch {

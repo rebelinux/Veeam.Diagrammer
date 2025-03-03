@@ -53,4 +53,5 @@ $script:Images = @{
     "VBR_vSphere_Cluster" = "Server_Cluster.png"
     "VBR_HyperV_Cluster" = "Server_Cluster.png"
     "VBR_Microsoft_Entra_ID" = "Microsoft_Entra_ID.png"
+    "VBR_Bid_Arrow" = "BidirectionalArrow.png"
 }

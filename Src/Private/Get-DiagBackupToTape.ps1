@@ -113,7 +113,7 @@ function Get-DiagBackupToTape {
                     }
                     if ($TapeSubgraph) {
                         $TapeSubgraph
-                        Edge -From $BackupServerInfo.Name -To Tape @{minlen = 3 }
+                        Edge -From BackupServers -To Tape @{minlen = 3 }
                     }
                 }
             }

@@ -550,7 +550,7 @@ function Get-VbrInfraDiagram {
             ####################################################################################
 
             # Connect Veeam Backup server to the Dummy line
-            Edge -From $BackupServerInfo.Name -To VBRServerPointSpace @{minlen = 2; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
+            Edge -From BackupServers -To VBRServerPointSpace @{minlen = 2; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
 
             # Connect Microsoft Entra ID Node to the Dummy line
             if ($EntraIDNode) {

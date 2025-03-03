@@ -138,7 +138,7 @@ function Get-DiagBackupToRepo {
                         Node -Name MainSubGraph -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $RepoSubgraphArray -Align 'Center' -IconDebug $IconDebug -Label 'Backup Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                     }
 
-                    Edge -From $BackupServerInfo.Name -To MainSubGraph @{minlen = 3 }
+                    Edge -From BackupServers -To MainSubGraph @{minlen = 3 }
                 }
             }
         } catch {
