@@ -30,16 +30,11 @@ function Get-VbrBackupHyperVClusterInfo {
                         $HvHosts = Get-VBRServer | Where-Object { $_.Type -eq 'HvServer' -and $_.ParentId -match $HyObj.Id }
                         $Rows = @{
                             IP = Get-NodeIP -Hostname $HyObj.Info.DnsName
-                            # Version = switch ([string]::IsNullOrEmpty($HyObj.Info.Info)) {
-                            #     $true { 'Unknown' }
-                            #     $false { $HyObj.Info.Info.Split('()')[1].split('build:')[0] }
-                            #     Default { 'Unknown' }
-                            # }
                         }
 
                         $TempHyObjsInfo = [PSCustomObject]@{
                             Name = $HyObj.Info.HostInstanceIdV2
-                            Label = Get-DiaNodeIcon -Name $HyObj.Name -IconType "VBR_HyperV_Cluster" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                            Label = Get-DiaNodeIcon -Name $HyObj.Name -IconType "VBR_HyperV_Cluster" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
                             AditionalInfo = $Rows
                             Childs = & {
                                 foreach ($HvHost in $HvHosts) {
@@ -49,7 +44,7 @@ function Get-VbrBackupHyperVClusterInfo {
                                     }
                                     [PSCustomObject]@{
                                         Name = $HvHost.Name
-                                        Label = Get-DiaNodeIcon -Name $HvHost.Name -IconType "VBR_HyperV_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                                        Label = Get-DiaNodeIcon -Name $HvHost.Name -IconType "VBR_HyperV_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
                                         AditionalInfo = $Rows
                                     }
                                 }

@@ -78,7 +78,7 @@ function Get-VbrBackupServerInfo {
 
                 $script:BackupServerInfo = [PSCustomObject]@{
                     Name = $VBRServer.Name.split(".")[0]
-                    Label = Get-DiaNodeIcon -Name "$($VBRServer.Name.split(".")[0])" -IconType "VBR_Server" -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 16
+                    Label = Get-DiaNodeIcon -Name "$($VBRServer.Name.split(".")[0])" -IconType "VBR_Server" -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                     SpacerLeft = Get-DiaNodeIcon -Name " " -IconType "VBR_Bid_Arrow" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug
                     SpacerRight = Get-DiaNodeIcon -Name " " -IconType "VBR_Bid_Arrow" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug
                 }
@@ -111,7 +111,7 @@ function Get-VbrBackupServerInfo {
 
                 $script:DatabaseServerInfo = [PSCustomObject]@{
                     Name = $DatabaseServer.split(".")[0]
-                    Label = Get-DiaNodeIcon -Name "$($DatabaseServer.split(".")[0])" -IconType $DBIconType -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 16
+                    Label = Get-DiaNodeIcon -Name "$($DatabaseServer.split(".")[0])" -IconType $DBIconType -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                     DBPort = $DBPort
                 }
             }
@@ -127,7 +127,7 @@ function Get-VbrBackupServerInfo {
 
                 $script:EMServerInfo = [PSCustomObject]@{
                     Name = $EMServer.ServerName.split(".")[0]
-                    Label = Get-DiaNodeIcon -Name "$($EMServer.ServerName.split(".")[0])" -IconType "VBR_Server_EM" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 16
+                    Label = Get-DiaNodeIcon -Name "$($EMServer.ServerName.split(".")[0])" -IconType "VBR_Server_EM" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                 }
             }
         } catch {

@@ -37,7 +37,7 @@ function Get-VbrBackupvSphereInfo {
 
                         $TempHyObjsInfo = [PSCustomObject]@{
                             Name = $HyObj.Name
-                            Label = Get-DiaNodeIcon -Name $HyObj.Name -IconType "VBR_vCenter_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                            Label = Get-DiaNodeIcon -Name $HyObj.Name -IconType "VBR_vCenter_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
                             AditionalInfo = $Rows
                             Childs = & {
                                 $VIClusters = try {
@@ -48,7 +48,7 @@ function Get-VbrBackupvSphereInfo {
                                 foreach ($Cluster in $VIClusters) {
                                     [PSCustomObject]@{
                                         Name = $Cluster.Name
-                                        Label = Get-DiaNodeIcon -Name $Cluster.Name -IconType "VBR_vSphere_Cluster" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                                        Label = Get-DiaNodeIcon -Name $Cluster.Name -IconType "VBR_vSphere_Cluster" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
                                         EsxiHost = foreach ($Esxi in $ESXis | Where-Object { $_.path -match $Cluster.Name }) {
                                             $Rows = @{
                                                 IP = Get-NodeIP -Hostname $Esxi.Info.DnsName
@@ -56,7 +56,7 @@ function Get-VbrBackupvSphereInfo {
                                             }
                                             [PSCustomObject]@{
                                                 Name = $Esxi.Name
-                                                Label = Get-DiaNodeIcon -Name $Esxi.Name -IconType "VBR_ESXi_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                                                Label = Get-DiaNodeIcon -Name $Esxi.Name -IconType "VBR_ESXi_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
                                                 AditionalInfo = $Rows
                                             }
                                         }
