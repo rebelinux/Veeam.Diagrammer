@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.19] - 2025-03-03
+
+### Added
+
+- Add Entra ID Tenant information to the Infrastructure diagram
+- Add Esxi StandAlone servers to the VMware Backup Proxy diagram
+- Add Hyper-V Infrastructure information to the Hyper-V Backup Proxy diagram
+
+### Changed
+
+- Improve Backup Repository diagram layout
+- Increase Diagrammer.Core minimum version requirement (v0.2.17)
+
+### Fixed
+
+- Fix error when the user used to connect to the Backup Server isn't a Local Administrator on the server.
+
 ## [0.6.18] - 2024-12-11
 
 ### Added

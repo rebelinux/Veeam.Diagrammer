@@ -5,7 +5,7 @@ function Get-VbrBackupTapeServerInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.10
+        Version:        0.6.19
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -40,7 +40,7 @@ function Get-VbrBackupTapeServerInfo {
 
                     $TempBackupTapeServersInfo = [PSCustomObject]@{
                         Name = $TapeServer.Name
-                        Label = Get-DiaNodeIcon -Name "$((Remove-SpecialChar -String $TapeServer.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType 'VBR_Tape_Server' -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                        Label = Get-DiaNodeIcon -Name "$((Remove-SpecialChar -String $TapeServer.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType 'VBR_Tape_Server' -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
                         Id = $TapeServer.Id
                     }
 

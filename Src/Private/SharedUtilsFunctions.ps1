@@ -1,13 +1,52 @@
 function Get-IconType {
     <#
     .SYNOPSIS
-        Used by Veeam.Diagrammer to translate repository type to icon type object.
+        Translates repository type to icon type object for Veeam.Diagrammer.
+
     .DESCRIPTION
-    .NOTES
-        Version:        0.6.5
-        Author:         Jonathan Colon
+        The Get-IconType function takes a repository type as input and returns the corresponding icon type object.
+        This is used by Veeam.Diagrammer to map different repository types to their respective icons.
+
+    .PARAMETER String
+        The repository type as a string. Possible values include:
+        - LinuxLocal
+        - Hardened
+        - LinuxHardened
+        - WinLocal
+        - Cloud
+        - GoogleCloudStorage
+        - AmazonS3Compatible
+        - AmazonS3Glacier
+        - AmazonS3
+        - AzureArchive
+        - AzureBlob
+        - DDBoost
+        - HPStoreOnceIntegration
+        - ExaGrid
+        - SanSnapshotOnly
+        - Proxy
+        - ProxyServer
+        - ESXi
+        - HyperVHost
+        - ManuallyDeployed
+        - IndividualComputers
+        - ActiveDirectory
+        - CSV
+        - CifsShare
+        - Nfs
+        - Netapp
+        - Dell
+        - VirtualLab
+        - ApplicationGroups
+
     .EXAMPLE
+        PS C:\> Get-IconType -String 'LinuxLocal'
+        VBR_Linux_Repository
+
+        This example translates the 'LinuxLocal' repository type to its corresponding icon type 'VBR_Linux_Repository'.
+
     .LINK
+        https://github.com/jocolon/Veeam.Diagrammer
     #>
     param(
         [string]$String
@@ -52,14 +91,60 @@ function Get-IconType {
 function Get-RoleType {
     <#
     .SYNOPSIS
-        Used by Veeam.Diagrammer to translate role type to function type object.
+        Translates a role type string to a function type object.
+
     .DESCRIPTION
+        The Get-RoleType function takes a string input representing a role type and translates it into a more descriptive function type object. This is used by Veeam.Diagrammer to provide meaningful role descriptions.
+
+    .PARAMETER String
+        The role type string to be translated. Possible values include:
+        - LinuxLocal
+        - LinuxHardened
+        - WinLocal
+        - DDBoost
+        - HPStoreOnceIntegration
+        - ExaGrid
+        - InfiniGuard
+        - Cloud
+        - SanSnapshotOnly
+        - vmware
+        - hyperv
+        - agent
+        - nas
+        - CifsShare
+        - Nfs
+
+    .RETURNS
+        A string representing the translated function type object. Possible return values include:
+        - Linux Local
+        - Linux Hardened
+        - Windows Local
+        - Dedup Appliances
+        - Cloud
+        - SAN
+        - VMware Backup Proxy
+        - HyperV Backup Proxy
+        - Agent and Files Backup Proxy
+        - NAS Backup Proxy
+        - SMB Share
+        - NFS Share
+        - Unknown
+
     .NOTES
-        Version:        0.6.5
-        Author:         Jonathan Colon
+        Version: 0.6.5
+        Author: Jonathan Colon
+
     .EXAMPLE
+        PS C:\> Get-RoleType -String 'LinuxLocal'
+        Linux Local
+
+        PS C:\> Get-RoleType -String 'vmware'
+        VMware Backup Proxy
+
     .LINK
+        https://github.com/veeam/veeam-diagrammer
     #>
+
     param(
         [string]$String
     )
@@ -87,19 +172,45 @@ function Get-RoleType {
 function ConvertTo-TextYN {
     <#
     .SYNOPSIS
-        Used by As Built Report to convert true or false automatically to Yes or No.
+        Converts a boolean string representation to "Yes" or "No".
+
     .DESCRIPTION
+        This function is used to convert boolean string values ("True" or "False") to their corresponding
+        textual representations ("Yes" or "No"). If the input is an empty string, a space, or null, it returns "--".
+        Any other input is returned as-is.
+
+    .PARAMETER TEXT
+        The string value to be converted. It can be "True", "False", an empty string, a space, or null.
+
+    .OUTPUTS
+        [String] The converted string value.
 
     .NOTES
-        Version:        0.3.0
-        Author:         LEE DAILEY
+        Version: 0.3.0
+        Author: LEE DAILEY
 
     .EXAMPLE
+        PS C:\> ConvertTo-TextYN -TEXT "True"
+        Yes
+
+        PS C:\> ConvertTo-TextYN -TEXT "False"
+        No
+
+        PS C:\> ConvertTo-TextYN -TEXT ""
+        --
+
+        PS C:\> ConvertTo-TextYN -TEXT " "
+        --
+
+        PS C:\> ConvertTo-TextYN -TEXT $Null
+        --
+
+        PS C:\> ConvertTo-TextYN -TEXT "Maybe"
+        Maybe
 
     .LINK
-
+        https://github.com/rebelinux/Veeam.Diagrammer
     #>
-    [CmdletBinding()]
     [OutputType([String])]
     Param (
         [Parameter (
@@ -122,14 +233,26 @@ function ConvertTo-TextYN {
 function ConvertTo-FileSizeString {
     <#
     .SYNOPSIS
-    Used by As Built Report to convert bytes automatically to GB or TB based on size.
+        Converts a size in bytes to a human-readable string representation in KB, MB, GB, TB, or PB.
     .DESCRIPTION
+        This function takes a size in bytes and converts it to a more readable format by automatically
+        selecting the appropriate unit (KB, MB, GB, TB, or PB) based on the size. The result is a string
+        that includes the rounded size and the unit.
+    .PARAMETER Size
+        The size in bytes to be converted. This parameter is mandatory and must be a 64-bit integer.
+    .OUTPUTS
+        [String]
+            A string representing the size in the most appropriate unit.
     .NOTES
         Version:        0.1.0
         Author:         Jonathan Colon
     .EXAMPLE
+        PS> ConvertTo-FileSizeString -Size 1073741824
+        1 GB
     .LINK
+        https://github.com/rebelinux/Veeam.Diagrammer
     #>
+
     [CmdletBinding()]
     [OutputType([String])]
     Param

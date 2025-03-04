@@ -5,7 +5,7 @@ function Get-DiagBackupToWanAccel {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.15
+        Version:        0.6.19
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -20,8 +20,6 @@ function Get-DiagBackupToWanAccel {
     )
 
     begin {
-        # Get Veeam Backup Server Object
-        Get-DiagBackupServer
     }
 
     process {
@@ -40,7 +38,7 @@ function Get-DiagBackupToWanAccel {
 
                     Node WanAccelServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($WanAccel | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Wan_Accel" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($WanAccel.AditionalInfo ) -Subgraph -SubgraphIconType "VBR_Wan_Accel" -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1"); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
-                    Edge $BackupServerInfo.Name -To WanAccelServer @{minlen = 3; }
+                    Edge BackupServers -To WanAccelServer @{minlen = 3; }
                 }
             }
         } catch {

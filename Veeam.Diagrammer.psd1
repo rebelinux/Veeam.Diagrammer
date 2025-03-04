@@ -12,7 +12,7 @@
     RootModule = 'Veeam.Diagrammer.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.6.18'
+    ModuleVersion = '0.6.19'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -27,7 +27,7 @@
     CompanyName = 'Zen PR Solutions'
 
     # Copyright statement for this module
-    Copyright = '(c) 2024 Jonathan Colon. All rights reserved.'
+    Copyright = '(c) 2025 Jonathan Colon. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description = 'A PowerShell module to generate an Veeam Backup & Replication infrastructure diagram'
@@ -58,7 +58,7 @@
         },
         @{
             ModuleName = 'Diagrammer.Core';
-            ModuleVersion = '0.2.13';
+            ModuleVersion = '0.2.17';
         }
     )
 
