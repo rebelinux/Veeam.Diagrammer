@@ -100,7 +100,7 @@ function New-VeeamDiagram {
         Default: Green
 
     .NOTES
-        Version:        0.6.19
+        Version:        0.6.20
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -522,7 +522,7 @@ function New-VeeamDiagram {
                 }
 
                 SubGraph OUTERDRAWBOARD1 -Attributes @{Label = $Signature; fontsize = 24; penwidth = 1.5; labelloc = 'b'; labeljust = "r"; style = $SubGraphDebug.style; color = $SubGraphDebug.color } {
-                    SubGraph MainGraph -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label $MainGraphLabel -IconType $CustomLogo -IconDebug $IconDebug -IconWidth 300 -IconHeight 54); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
+                    SubGraph MainGraph -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label $MainGraphLabel -IconType $CustomLogo -IconDebug $IconDebug -IconWidth 300 -IconHeight 54 -fontName "Segoe Ui Black" -fontColor "#565656" -Fontsize 28); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
 
                         Get-DiagBackupServer
 
