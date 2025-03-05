@@ -161,7 +161,7 @@ function Get-VbrInfraDiagram {
             }
 
             # Repository Graphviz Cluster
-            SubGraph OnpremStorage -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Repository Infrastructure" -IconType "VBR_Veeam_Repository" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
+            SubGraph OnpremStorage -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Repository Infrastructure" -IconType "VBR_Veeam_Repository" -SubgraphLabel -IconDebug $IconDebug -Fontsize 22 -fontName "Segoe Ui Black" -fontColor "#565656"); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
                 # Repositories Graphviz Cluster
                 if ($RepositoriesInfo = Get-VbrRepositoryInfo) {
                     try {
@@ -172,7 +172,7 @@ function Get-VbrInfraDiagram {
                     }
                 }
                 if ($RepositoriesInfo -and $RepositoriesNode) {
-                    SubGraph Repos -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Backup Repositories" -IconType "VBR_Repository" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
+                    SubGraph Repos -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Backup Repositories" -IconType "VBR_Repository" -SubgraphLabel -IconDebug $IconDebug -Fontsize 22 -fontName "Segoe Ui Black" -fontColor "#565656"); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
 
                         $RepositoriesNode
 
@@ -195,7 +195,7 @@ function Get-VbrInfraDiagram {
                 }
 
                 if ($SOBR -and $SOBRNode) {
-                    SubGraph SOBR -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Scale-Out Backup Repositories" -IconType "VBR_SOBR" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
+                    SubGraph SOBR -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Scale-Out Backup Repositories" -IconType "VBR_SOBR" -SubgraphLabel -IconDebug $IconDebug -Fontsize 22 -fontName "Segoe Ui Black" -fontColor "#565656"); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
                         $SOBRNode
                     }
                 }
@@ -211,7 +211,7 @@ function Get-VbrInfraDiagram {
                 }
 
                 if ($SAN -and $SANNode) {
-                    SubGraph SAN -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Storage Infrastructure" -IconType "VBR_SAN" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
+                    SubGraph SAN -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Storage Infrastructure" -IconType "VBR_SAN" -SubgraphLabel -IconDebug $IconDebug -Fontsize 22 -fontName "Segoe Ui Black" -fontColor "#565656"); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
                         $SANNode
                     }
                 }
