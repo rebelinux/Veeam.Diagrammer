@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.20] - 2025-03-05
+
+### Changed
+
+- Increase Diagrammer.Core minimum version requirement (v0.2.19)
+
+### Fixed
+
+- Fix diagram label not getting displayed after Diagrammer.Core v0.2.19 update
+
 ## [0.6.19] - 2025-03-03
 
 ### Added
