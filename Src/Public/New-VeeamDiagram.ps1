@@ -100,7 +100,7 @@ function New-VeeamDiagram {
         Default: Green
 
     .NOTES
-        Version:        0.6.20
+        Version:        0.6.22
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -469,6 +469,10 @@ function New-VeeamDiagram {
     process {
 
         foreach ($System in $Target) {
+
+            if (Select-String -InputObject $System -Pattern "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$") {
+                throw "Please use the Fully Qualified Domain Name (FQDN) instead of an IP address when connecting to the Backup Server: $System"
+            }
 
             Get-VbrServerConnection -Port $Port
 
