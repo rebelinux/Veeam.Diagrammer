@@ -32,6 +32,9 @@ function Get-VbrInfraDiagram {
             #                     Graphviz: https://graphviz.org/doc/info/shapes.html                       #
             #-----------------------------------------------------------------------------------------------#
 
+            # Blank Node used as filler
+            $BlankFiller = Get-DiaNodeFiller -IconDebug $IconDebug
+
             # EntraID Graphviz Cluster
             if ($EntraID = Get-VbrBackupEntraIDInfo) {
                 try {
@@ -109,7 +112,7 @@ function Get-VbrInfraDiagram {
             }
 
             # vSphere Graphviz Cluster
-            if ($vSphereOb = Get-VbrBackupvSphereInfo | Sort-Object) {
+            if ($vSphereObj = Get-VbrBackupvSphereInfo | Sort-Object) {
                 $VivCenterNodes = @()
                 foreach ($vCenter in $vSphereObj) {
                     $vCenterNodeArray = @()
@@ -212,6 +215,7 @@ function Get-VbrInfraDiagram {
                     $VirtualNodesArray += $ViClustersSubgraphNode
                 }
                 if ($HyperVObj) {
+                    $VirtualNodesArray += $BlankFiller
                     $VirtualNodesArray += $HvClustersSubgraphNode
                 }
 

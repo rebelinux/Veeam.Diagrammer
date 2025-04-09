@@ -20,6 +20,7 @@ $script:Images = @{
     "VBR_SOBR_Repo" = "Scale_out_Backup_Repository.png"
     "VBR_LOGO" = "Veeam_logo_new.png"
     "VBR_No_Icon" = "no_icon.png"
+    "VBR_Blank_Filler" = "BlankFiller.png"
     'VBR_Storage_NetApp' = "Storage_NetApp.png"
     'VBR_vCenter_Server' = 'vCenter_server.png'
     'VBR_ESXi_Server' = 'ESXi_host.png'
