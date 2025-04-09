@@ -5,7 +5,7 @@ function Get-VbrInfraDiagram {
     .DESCRIPTION
         This script creates a visual representation of the Veeam Backup & Replication infrastructure configuration. The output can be generated in PDF, SVG, DOT, or PNG formats. It leverages the PSGraph module for PowerShell and Graphviz for rendering the diagrams.
     .NOTES
-        Version:        0.6.19
+        Version:        0.6.22
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         GitHub:         rebelinux
@@ -31,6 +31,9 @@ function Get-VbrInfraDiagram {
             #               PSGraph: https://psgraph.readthedocs.io/en/latest/Command-Node/                 #
             #                     Graphviz: https://graphviz.org/doc/info/shapes.html                       #
             #-----------------------------------------------------------------------------------------------#
+
+            # Blank Node used as filler
+            $BlankFiller = Get-DiaNodeFiller -IconDebug $IconDebug
 
             # EntraID Graphviz Cluster
             if ($EntraID = Get-VbrBackupEntraIDInfo) {
@@ -93,7 +96,7 @@ function Get-VbrInfraDiagram {
                 try {
                     $ProxiesSubgraphNode = Node -Name "Proxies" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ProxyNodesArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Proxy' -Label 'Backup Proxies' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3 -fontSize 24); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                 } catch {
-                    Write-Verbose "Error: Unable to create SureBackup SubGraph Objects. Disabling the section"
+                    Write-Verbose "Error: Unable to create Proxies SubGraph Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
                 }
 
@@ -148,16 +151,85 @@ function Get-VbrInfraDiagram {
 
                 if ($VivCenterNodes) {
                     try {
-                        $ViClustersSubgraphNode = Node -Name "ViInfra" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $VivCenterNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_vSphere' -Label 'VMware vSphere Infrastructure' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3 -fontSize 18); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                        $ViClustersSubgraphNode = Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $VivCenterNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_vSphere' -Label 'VMware vSphere Infrastructure' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3 -fontSize 18
                     } catch {
                         Write-Verbose "Error: Unable to create ViCluster Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
                     }
+                }
+            }
 
-                    if ($ViClustersSubgraphNode) {
-                        $ViClustersSubgraphNode
+            # HyperV Graphviz Cluster
+            if ($HyperVObj = Get-VbrBackupHyperVClusterInfo | Sort-Object) {
+                $HvHyperVObjNodes = @()
+                foreach ($HyperV in $HyperVObj) {
+                    $HyperVNodeArray = @()
+                    $HvClustersNodes = @()
+                    $HyperVNodeArray += $HyperV.Label
+                    try {
+                        $HvClustersChildsNodes = & {
+                            if ($HyperV.Childs.Name) {
+                                Get-DiaHTMLTable -ImagesObj $Images -Rows $HyperV.Childs.Name -Align 'Center' -ColumnSize 3 -IconDebug $IconDebug -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "0" -NoFontBold -FontSize 18
+                            } else {
+                                Get-DiaHTMLTable -ImagesObj $Images -Rows 'No HyperV Host' -Align 'Center' -ColumnSize $columnSize -IconDebug $IconDebug -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "0" -NoFontBold -FontSize 18
+                            }
+                        }
+                    } catch {
+                        Write-Verbose "Error: Unable to create HyperV host table Objects. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
+                    }
+                    try {
+                        if ($HvClustersChildsNodes) {
+                            $HvClustersNodes += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $HvClustersChildsNodes -Align 'Center' -IconDebug $IconDebug -Label 'Hyper-V Servers' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3 -fontSize 22
+                            $HyperVNodeArray += $HvClustersNodes
+                        }
+                    } catch {
+                        Write-Verbose "Error: Unable to create HyperV Hosts Objects. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
+                    }
+                    try {
+                        if ($HyperVNodeArray) {
+                            $HvHyperVObjNodes += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $HyperVNodeArray -Align 'Center' -IconDebug $IconDebug -Label 'Hyper-V Cluster' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 22
+                        }
+                    } catch {
+                        Write-Verbose "Error: Unable to create HyperV Server Objects. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
                     }
                 }
+
+                if ($HvHyperVObjNodes) {
+                    try {
+                        $HvClustersSubgraphNode = Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $HvHyperVObjNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_HyperV' -Label 'Microsoft HyperV Infrastructure' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3 -fontSize 18
+                    } catch {
+                        Write-Verbose "Error: Unable to create HvCluster Objects. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
+                    }
+                }
+            }
+
+            if ($HvClustersSubgraphNode -or $ViClustersSubgraphNode) {
+
+                $VirtualNodesArray = @()
+
+                if ($vSphereObj) {
+                    $VirtualNodesArray += $ViClustersSubgraphNode
+                }
+                if ($HyperVObj) {
+                    $VirtualNodesArray += $BlankFiller
+                    $VirtualNodesArray += $HvClustersSubgraphNode
+                }
+
+                try {
+                    $VirtualNodesArraySubgraphNode = Node -Name "VirtualInfra" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $VirtualNodesArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Proxy' -Label 'Virtual Infrastructure' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 24); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                } catch {
+                    Write-Verbose "Error: Unable to create SureBackup SubGraph Objects. Disabling the section"
+                    Write-Debug "Error Message: $($_.Exception.Message)"
+                }
+
+                if ($VirtualNodesArraySubgraphNode) {
+                    $VirtualNodesArraySubgraphNode
+                }
+
             }
 
             # Repository Graphviz Cluster
@@ -563,8 +635,8 @@ function Get-VbrInfraDiagram {
             }
 
             # Connect vCenter Servers Cluster to the Dummy line
-            if ($ViClustersSubgraphNode) {
-                Edge -From Proxies -To ViInfra @{minlen = 1; arrowtail = 'dot'; arrowhead = 'dot'; style = 'dashed' }
+            if ($ViClustersSubgraphNode -or $HvClustersSubgraphNode) {
+                Edge -From Proxies -To VirtualInfra @{minlen = 1; arrowtail = 'dot'; arrowhead = 'dot'; style = 'dashed' }
             }
 
             # Connect Veeam Repository to the Dummy line

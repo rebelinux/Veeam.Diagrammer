@@ -100,7 +100,7 @@ function New-VeeamDiagram {
         Default: Green
 
     .NOTES
-        Version:        0.6.20
+        Version:        0.6.22
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -158,7 +158,7 @@ function New-VeeamDiagram {
 
         [Parameter(
             Position = 3,
-            Mandatory = $true,
+            Mandatory = $false,
             HelpMessage = 'Please provide the password to connect to the target system',
             ParameterSetName = 'UsernameAndPassword'
         )]
@@ -341,10 +341,16 @@ function New-VeeamDiagram {
             $global:DebugPreference = 'SilentlyContinue'
         }
 
-        # If Username and Password parameters used, convert specified Password to secure string and store in $Credential
         #@tpcarman
-        if (($Username -and $Password)) {
-            $SecurePassword = ConvertTo-SecureString $Password -AsPlainText -Force
+        # If Username and Password parameters used, convert specified Password to secure string and store in $Credential
+        if ($Username) {
+            if (-not $Password) {
+                # If the Password parameter is not provided, prompt for it securely
+                $SecurePassword = Read-Host "Password for user '$Username'" -AsSecureString
+            } else {
+                # If the Password parameter is provided, convert it to secure string
+                $SecurePassword = ConvertTo-SecureString $Password -AsPlainText -Force
+            }
             $Credential = New-Object System.Management.Automation.PSCredential ($Username, $SecurePassword)
         }
 
@@ -469,6 +475,10 @@ function New-VeeamDiagram {
     process {
 
         foreach ($System in $Target) {
+
+            if (Select-String -InputObject $System -Pattern "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$") {
+                throw "Please use the Fully Qualified Domain Name (FQDN) instead of an IP address when connecting to the Backup Server: $System"
+            }
 
             Get-VbrServerConnection -Port $Port
 

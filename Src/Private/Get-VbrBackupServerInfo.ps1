@@ -20,12 +20,8 @@ function Get-VbrBackupServerInfo {
     )
     process {
         try {
-
-            $PssSession = try { New-PSSession $VBRServer.Name -Credential $Credential -Authentication Negotiate -ErrorAction Stop -Name 'PSSBackupServerDiagram' } catch {
-                if (-Not $_.Exception.MessageId) {
-                    $ErrorMessage = $_.FullyQualifiedErrorId
-                } else { $ErrorMessage = $_.Exception.MessageId }
-                Write-Error "Backup Server Section: New-PSSession: Unable to connect to $($VBRServer.Name): $ErrorMessage"
+            $PssSession = try { New-PSSession $VBRServer.Name -Credential $Credential -Authentication Negotiate -ErrorAction Stop -Name 'PSSBackupServerDiagram'} catch {
+            Write-Error "Veeam.Diagrammer: New-PSSession: Unable to connect to $($VBRServer.Name), WinRM disabled or not configured."
             }
             Write-Verbose -Message "Collecting Backup Server information from $($VBRServer.Name)."
 
