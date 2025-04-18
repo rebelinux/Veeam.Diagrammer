@@ -75,8 +75,7 @@ function Get-VbrBackupServerInfo {
                 $script:BackupServerInfo = [PSCustomObject]@{
                     Name = $VBRServer.Name.split(".")[0]
                     Label = Get-DiaNodeIcon -Name "$($VBRServer.Name.split(".")[0])" -IconType "VBR_Server" -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
-                    SpacerLeft = Get-DiaNodeIcon -Name " " -IconType "VBR_Bid_Arrow" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug
-                    SpacerRight = Get-DiaNodeIcon -Name " " -IconType "VBR_Bid_Arrow" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug
+                    Spacer = Get-DiaNodeIcon -Name " " -IconType "VBR_Bid_Arrow" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug
                 }
             }
 
