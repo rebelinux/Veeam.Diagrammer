@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Increase minimum Diagrammer.Core version requirement to 0.2.24
 - improve spacing in diagram generation functions.
 - Disable run from PowerShell ISE
+- Improved Infrastructure diagram
 
 ## [0.6.23] - 2025-04-15
 
