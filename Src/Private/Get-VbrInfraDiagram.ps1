@@ -5,7 +5,7 @@ function Get-VbrInfraDiagram {
     .DESCRIPTION
         This script creates a visual representation of the Veeam Backup & Replication infrastructure configuration. The output can be generated in PDF, SVG, DOT, or PNG formats. It leverages the PSGraph module for PowerShell and Graphviz for rendering the diagrams.
     .NOTES
-        Version:        0.6.22
+        Version:        0.6.24
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         GitHub:         rebelinux
@@ -233,59 +233,54 @@ function Get-VbrInfraDiagram {
             }
 
             # Repository Graphviz Cluster
-            SubGraph OnpremStorage -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Repository Infrastructure" -IconType "VBR_Veeam_Repository" -SubgraphLabel -IconDebug $IconDebug -Fontsize 22 -fontName "Segoe Ui Black" -fontColor "#565656"); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
+            $OnpremStorageArray = @()
+
+            # SOBR Graphviz Cluster
+            if ($SOBR = Get-VbrSOBRInfo) {
+                try {
+                    $SOBRNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBR.Name -Align "Center" -iconType "VBR_SOBR_Repo" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBR.AditionalInfo -Subgraph -SubgraphLabel "Scale-Out Backup Repositories"  -SubgraphLabelFontsize 22 -fontSize 18 -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_SOBR"
+                    $OnpremStorageArray += $SOBRNode
+                    $OnpremStorageArray += $BlankFiller
+                } catch {
+                    Write-Verbose "Error: Unable to create SOBR Objects. Disabling the section"
+                    Write-Debug "Error Message: $($_.Exception.Message)"
+                }
+            }
+
+            # SAN Infrastructure Graphviz Cluster
+            if ($SAN = Get-VbrSANInfo) {
+                try {
+                    $SANNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SAN.Name -Align "Center" -iconType $SAN.IconType -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SAN.AditionalInfo -SubgraphLabelFontsize 22 -fontSize 18 -Subgraph -SubgraphLabel "Storage Infrastructure" -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_SAN"
+                    $OnpremStorageArray += $SANNode
+                    $OnpremStorageArray += $BlankFiller
+                } catch {
+                    Write-Verbose "Error: Unable to create SAN Objects. Disabling the section"
+                    Write-Debug "Error Message: $($_.Exception.Message)"
+                }
                 # Repositories Graphviz Cluster
                 if ($RepositoriesInfo = Get-VbrRepositoryInfo) {
                     try {
-                        $RepositoriesNode = Node Repositories @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $RepositoriesInfo.Name -Align "Center" -iconType $RepositoriesInfo.IconType -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo $RepositoriesInfo.AditionalInfo -SubgraphLabelFontsize 22 -fontSize 18); shape = 'plain'; fontname = "Segoe Ui" }
+                        $RepositoriesNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $RepositoriesInfo.Name -Align "Center" -iconType $RepositoriesInfo.IconType -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo $RepositoriesInfo.AditionalInfo -Subgraph -SubgraphLabel "Backup Repositories" -SubgraphLabelFontsize 22 -fontSize 18 -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_Repository"
+                        $OnpremStorageArray += $RepositoriesNode
                     } catch {
                         Write-Verbose "Error: Unable to create Repositories Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
                     }
                 }
-                if ($RepositoriesInfo -and $RepositoriesNode) {
-                    SubGraph Repos -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Backup Repositories" -IconType "VBR_Repository" -SubgraphLabel -IconDebug $IconDebug -Fontsize 22 -fontName "Segoe Ui Black" -fontColor "#565656"); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
 
-                        $RepositoriesNode
-
-                    }
-                } else {
-                    SubGraph Repos -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Backup Repositories" -IconType "VBR_Repository" -SubgraphLabel -IconDebug $IconDebug); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
-
-                        Node -Name Repositories -Attributes @{Label = 'No Backup Repositories'; shape = "rectangle"; labelloc = 'c'; fixedsize = $true; width = "3"; height = "2"; penwidth = 0 }
-                    }
+            }
+            if ($OnpremStorageArray) {
+                try {
+                    $OnpremStorageSubgraphNode = Node -Name "Repositories" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $OnpremStorageArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Proxy' -Label 'On-Premises Storage Infrastructure' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 24); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                } catch {
+                    Write-Verbose "Error: Unable to create OnPremStorage SubGraph Objects. Disabling the section"
+                    Write-Debug "Error Message: $($_.Exception.Message)"
                 }
 
-                # SOBR Graphviz Cluster
-                if ($SOBR = Get-VbrSOBRInfo) {
-                    try {
-                        $SOBRNode = Node SOBRRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBR.Name -Align "Center" -iconType "VBR_SOBR_Repo" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBR.AditionalInfo -SubgraphLabelFontsize 22 -fontSize 18); shape = 'plain'; fontname = "Segoe Ui" }
-                    } catch {
-                        Write-Verbose "Error: Unable to create SOBR Objects. Disabling the section"
-                        Write-Debug "Error Message: $($_.Exception.Message)"
-                    }
-                }
 
-                if ($SOBR -and $SOBRNode) {
-                    SubGraph SOBR -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Scale-Out Backup Repositories" -IconType "VBR_SOBR" -SubgraphLabel -IconDebug $IconDebug -Fontsize 22 -fontName "Segoe Ui Black" -fontColor "#565656"); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
-                        $SOBRNode
-                    }
-                }
 
-                # SAN Infrastructure Graphviz Cluster
-                if ($SAN = Get-VbrSANInfo) {
-                    try {
-                        $SANNode = Node SANRepo @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SAN.Name -Align "Center" -iconType $SAN.IconType -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SAN.AditionalInfo -SubgraphLabelFontsize 22 -fontSize 18); shape = 'plain'; fontname = "Segoe Ui" }
-                    } catch {
-                        Write-Verbose "Error: Unable to create SAN Objects. Disabling the section"
-                        Write-Debug "Error Message: $($_.Exception.Message)"
-                    }
-                }
-
-                if ($SAN -and $SANNode) {
-                    SubGraph SAN -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label "Storage Infrastructure" -IconType "VBR_SAN" -SubgraphLabel -IconDebug $IconDebug -Fontsize 22 -fontName "Segoe Ui Black" -fontColor "#565656"); fontsize = 18; penwidth = 1.5; labelloc = 'b'; style = 'dashed,rounded' } {
-                        $SANNode
-                    }
+                if ($OnpremStorageSubgraphNode) {
+                    $OnpremStorageSubgraphNode
                 }
             }
 
@@ -345,16 +340,24 @@ function Get-VbrInfraDiagram {
             }
 
             # Tapes Graphviz Cluster
+            $TapeInfraArray = @()
+
             if ($TapeServerInfo = Get-VbrTapeServersInfo) {
                 try {
-                    $TapeServerNode = Node TapeServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeServerInfo.Name -Align "Center" -iconType "VBR_Tape_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeServerInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Server" -SubgraphLabel "Tape Servers" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18); shape = 'plain'; fontname = "Segoe Ui" }
+                    $TapeServerNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeServerInfo.Name -Align "Center" -iconType "VBR_Tape_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeServerInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Server" -SubgraphLabel "Tape Servers" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+
+                    $TapeInfraArray += $TapeServerNode
+                    $TapeInfraArray += $BlankFiller
                 } catch {
                     Write-Verbose "Error: Unable to create TapeServers Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
                 }
                 if ($TapeLibraryInfo = Get-VbrTapeLibraryInfo) {
                     try {
-                        $TapeLibraryNode = Node TapeLibrary @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeLibraryInfo.Name -Align "Center" -iconType "VBR_Tape_Library" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeLibraryInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Library" -SubgraphLabel "Tape Libraries" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18); shape = 'plain'; fontname = "Segoe Ui" }
+                        $TapeLibraryNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeLibraryInfo.Name -Align "Center" -iconType "VBR_Tape_Library" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeLibraryInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Library" -SubgraphLabel "Tape Libraries" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+
+                        $TapeInfraArray += $TapeLibraryNode
+                        $TapeInfraArray += $BlankFiller
                     } catch {
                         Write-Verbose "Error: Unable to create TapeLibrary Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
@@ -362,7 +365,8 @@ function Get-VbrInfraDiagram {
                 }
                 if ($TapeVaultInfo = Get-VbrTapeVaultInfo) {
                     try {
-                        $TapeVaultNode = Node TapeVault @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeVaultInfo.Name -Align "Center" -iconType "VBR_Tape_Vaults" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeVaultInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Vaults" -SubgraphLabel "Tape Vaults" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18); shape = 'plain'; fontname = "Segoe Ui" }
+                        $TapeVaultNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeVaultInfo.Name -Align "Center" -iconType "VBR_Tape_Vaults" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeVaultInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Vaults" -SubgraphLabel "Tape Vaults" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+                        $TapeInfraArray += $TapeVaultNode
                     } catch {
                         Write-Verbose "Error: Unable to create TapeVault Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
@@ -370,14 +374,15 @@ function Get-VbrInfraDiagram {
                 }
             }
             if ($TapeServerInfo -and $TapeServerNode) {
-                $TapeServerNode
-
-                if ($TapeLibraryInfo -and $TapeLibraryNode) {
-                    $TapeLibraryNode
+                try {
+                    $TapeServerSubGraph = Node -Name "TapeInfra" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $TapeInfraArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Tape' -Label 'Tape Infrastructure' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 24); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                } catch {
+                    Write-Verbose "Error: Unable to create TapeInfra SubGraph Objects. Disabling the section"
+                    Write-Debug "Error Message: $($_.Exception.Message)"
                 }
 
-                if ($TapeVaultInfo -and $TapeVaultNode) {
-                    $TapeVaultNode
+                if ($TapeServerSubGraph) {
+                    $TapeServerSubGraph
                 }
             }
 
@@ -654,14 +659,7 @@ function Get-VbrInfraDiagram {
 
             # Connect Veeam Tape Infra to VBRTapePoint Dummy line
             if ($TapeServerInfo -and $TapeServerNode) {
-                Edge -From VBRTapePoint -To TapeServer @{minlen = 1; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
-                if ($TapeLibraryNode) {
-                    Rank TapeServer, TapeLibrary
-                    Edge -From TapeServer -To TapeLibrary @{minlen = 1; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
-                }
-                if ($TapeVaultNode) {
-                    Edge -From TapeLibrary -To TapeVault @{minlen = 1; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
-                }
+                Edge -From VBRTapePoint -To TapeInfra @{minlen = 1; arrowtail = 'none'; arrowhead = 'dot'; style = 'dashed' }
             }
 
             # Connect Veeam ServiceProvider Infra to VBRServiceProviderPoint Dummy line

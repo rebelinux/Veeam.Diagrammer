@@ -113,10 +113,10 @@ function New-VeeamDiagram {
         https://github.com/PrateekKumarSingh/AzViz
     #>
 
-    [Diagnostics.CodeAnalysis.SuppressMessage(
-        'PSUseShouldProcessForStateChangingFunctions',
-        ''
-    )]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "", Scope = "Function")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingUserNameAndPassWordParams", "", Scope = "Function")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "", Scope = "Function")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "", Scope = "Function")]
 
     [CmdletBinding(
         PositionalBinding = $false,
@@ -324,8 +324,12 @@ function New-VeeamDiagram {
         [string] $WaterMarkColor = 'Green'
     )
 
-
     begin {
+
+        if ($psISE) {
+            Write-Error -Message "You cannot run this script inside the PowerShell ISE. Please execute it from the PowerShell Command Window."
+            break
+        }
 
         $Verbose = if ($PSBoundParameters.ContainsKey('Verbose')) {
             $PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent
@@ -486,7 +490,7 @@ function New-VeeamDiagram {
 
                 $script:VBRServer = Get-VBRServer -Type Local
 
-            } Catch { throw "Unable to get Veeam Backup & Replication Server: $System" }
+            } Catch { throw "Unable to get Veeam Backup & Replication Server information: $System" }
 
             Get-VBRBackupServerInfo
 
@@ -532,7 +536,7 @@ function New-VeeamDiagram {
                 }
 
                 SubGraph OUTERDRAWBOARD1 -Attributes @{Label = $Signature; fontsize = 24; penwidth = 1.5; labelloc = 'b'; labeljust = "r"; style = $SubGraphDebug.style; color = $SubGraphDebug.color } {
-                    SubGraph MainGraph -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label $MainGraphLabel -IconType $CustomLogo -IconDebug $IconDebug -IconWidth 300 -IconHeight 54 -fontName "Segoe Ui Black" -fontColor "#565656" -Fontsize 28); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
+                    SubGraph MainGraph -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label $MainGraphLabel -IconType $CustomLogo -IconDebug $IconDebug -IconWidth 300 -IconHeight 54 -fontName "Segoe Ui Black" -fontColor $Fontcolor -Fontsize 28); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
 
                         Get-DiagBackupServer
 

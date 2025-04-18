@@ -29,14 +29,15 @@ function Get-DiagBackupServer {
                 Write-Verbose -Message "Collecting Backup Server, Database Server and Enterprise Manager Information."
 
                 $BackupServerInfoArray += $EMServerInfo.Label
-                $BackupServerInfoArray += $BackupServerInfo.SpacerLeft
+                $BackupServerInfoArray += $BackupServerInfo.Spacer
                 $BackupServerInfoArray += $BackupServerInfo.Label
-                $BackupServerInfoArray += $BackupServerInfo.SpacerRight
+                $BackupServerInfoArray += $BackupServerInfo.Spacer
                 $BackupServerInfoArray += $DatabaseServerInfo.Label
             } elseif (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and (-Not $EMServerInfo)) {
                 Write-Verbose -Message "Not Enterprise Manager Found: Collecting Backup Server and Database server Information."
 
                 $BackupServerInfoArray += $BackupServerInfo.Label
+                $BackupServerInfoArray += $BackupServerInfo.Spacer
                 $BackupServerInfoArray += $DatabaseServerInfo.Label
             } elseif (($EMServerInfo.Name -eq $BackupServerInfo.Name) -and ($DatabaseServerInfo.Name -eq $BackupServerInfo.Name)) {
                 Write-Verbose -Message "Database and Enterprise Manager server collocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
@@ -46,11 +47,13 @@ function Get-DiagBackupServer {
                 Write-Verbose -Message "Enterprise Maneger server colocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
 
                 $BackupServerInfoArray += $BackupServerInfo.Label
+                $BackupServerInfoArray += $BackupServerInfo.Spacer
                 $BackupServerInfoArray += $DatabaseServerInfo.Label
             } elseif ($EMServerInfo -and ($DatabaseServerInfo.Name -eq $BackupServerInfo.Name)) {
                 Write-Verbose -Message "Database server colocated with Backup Server: Collecting Backup Server and Enterprise Manager Information."
 
                 $BackupServerInfoArray += $EMServerInfo.Label
+                $BackupServerInfoArray += $BackupServerInfo.Spacer
                 $BackupServerInfoArray += $BackupServerInfo.Label
             } else {
                 Write-Verbose -Message "Collecting Backup Server Information."

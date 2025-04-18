@@ -5,7 +5,7 @@ function Get-VbrRequiredModule {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.1
+        Version:        0.6.24
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -63,7 +63,7 @@ function Get-VbrRequiredModule {
         }
 
         $ModuleVersion = [version]$RequiredModule.Version
-        if ($ModuleVersion -lt [version]$Version) {
+        if ([version]$ModuleVersion -lt [version]$Version) {
             throw "$Name $Version or higher is required to run the Veeam.Diagrammer. Update the Veeam Backup & Replication console that provides the required modules."
         }
     }
