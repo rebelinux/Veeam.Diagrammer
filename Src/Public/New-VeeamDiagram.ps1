@@ -100,7 +100,7 @@ function New-VeeamDiagram {
         Default: Green
 
     .NOTES
-        Version:        0.6.22
+        Version:        0.6.26
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -331,6 +331,7 @@ function New-VeeamDiagram {
             break
         }
 
+
         $Verbose = if ($PSBoundParameters.ContainsKey('Verbose')) {
             $PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent
         } else {
@@ -379,7 +380,28 @@ function New-VeeamDiagram {
             'Backup-Infrastructure' { 'Backup Infrastructure Diagram' }
         }
         if ($Format -ne 'Base64') {
-            Write-ColorOutput -Color 'Green' -String ("Please wait while the '{0}' is being generated." -f $MainGraphLabel)
+            Write-ColorOutput -Color 'Green' -String ("Information: Please wait while the '{0}' is being generated." -f $MainGraphLabel)
+            Write-ColorOutput  -Color 'Yellow' -String "Information: Please refer to the Veeam.Diagrammer github website for more detailed information about this project."
+            Write-ColorOutput  -Color 'Yellow' -String "Information: Documentation: https://github.com/rebelinux/Veeam.Diagrammer"
+            Write-ColorOutput  -Color 'Yellow' -String "Information: Issues or bug reporting: https://github.com/rebelinux/Veeam.Diagrammer/issues"
+            Write-ColorOutput  -Color 'Yellow' -String "Information: This project is community maintained and has no sponsorship from Veeam, its employees or any of its affiliates."
+
+
+            # Check the current Veeam.Diagrammer module
+            Try {
+                $InstalledVersion = Get-Module -ListAvailable -Name Veeam.Diagrammer -ErrorAction SilentlyContinue | Sort-Object -Property Version -Descending | Select-Object -First 1 -ExpandProperty Version
+
+                if ($InstalledVersion) {
+                    Write-ColorOutput  -Color 'Yellow' -String "Information: Veeam.Diagrammer $($InstalledVersion.ToString()) is currently installed."
+                    $LatestVersion = Find-Module -Name Veeam.Diagrammer -Repository PSGallery -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Version
+                    if ([version]$InstalledVersion -lt [version]$LatestVersion) {
+                        Write-ColorOutput  -Color 'Yellow' -String "Information: Veeam.Diagrammer $($LatestVersion.ToString()) update is available."
+                        Write-ColorOutput  -Color 'Yellow' -String "Information: Run 'Update-Module -Name Veeam.Diagrammer -Force' to install the latest version."
+                    }
+                }
+            } Catch {
+                Write-Warning $_.Exception.Message
+            }
         }
 
         $IconDebug = $false
@@ -545,28 +567,28 @@ function New-VeeamDiagram {
                             if ($BackuptoHyperVProxy) {
                                 $BackuptoHyperVProxy
                             } else {
-                                Write-Warning "No HyperV Proxy Infrastructure available to diagram"
+                                throw "No HyperV Proxy Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-vSphere-Proxy') {
                             $BackuptovSphereProxy = Get-DiagBackupToViProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptovSphereProxy) {
                                 $BackuptovSphereProxy
                             } else {
-                                Write-Warning "No vSphere Proxy Infrastructure available to diagram"
+                                throw "No vSphere Proxy Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-File-Proxy') {
                             $BackuptoFileProxy = Get-DiagBackupToFileProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoFileProxy) {
                                 $BackuptoFileProxy
                             } else {
-                                Write-Warning "No File Proxy Infrastructure available to diagram"
+                                throw "No File Proxy Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-WanAccelerator') {
                             $BackuptoWanAccelerator = Get-DiagBackupToWanAccel | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoWanAccelerator) {
                                 $BackuptoWanAccelerator
                             } else {
-                                Write-Warning "No Wan Accelerators available to diagram"
+                                throw "No Wan Accelerators available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-Repository') {
                             $BackuptoRepository = Get-DiagBackupToRepo | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
@@ -587,7 +609,7 @@ function New-VeeamDiagram {
                             if ($BackupToTape) {
                                 $BackupToTape
                             } else {
-                                Write-Warning "No Tape Infrastructure available to diagram"
+                                throw "No Tape Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-Sobr') {
                             $BackuptoSobr = Get-DiagBackupToSobr | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
@@ -610,19 +632,21 @@ function New-VeeamDiagram {
         }
     }
     end {
-        #Export Diagram
-        foreach ($OutputFormat in $Format) {
+        if ($Graph) {
+            #Export Diagram
+            foreach ($OutputFormat in $Format) {
 
-            $OutputDiagram = Export-Diagrammer -GraphObj ($Graph | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch) -ErrorDebug $EnableErrorDebug -Format $OutputFormat -Filename $Filename -OutputFolderPath $OutputFolderPath -WaterMarkText $WaterMarkText -WaterMarkColor $WaterMarkColor -IconPath $IconPath -Verbose:$Verbose -Rotate $Rotate
+                $OutputDiagram = Export-Diagrammer -GraphObj ($Graph | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch) -ErrorDebug $EnableErrorDebug -Format $OutputFormat -Filename $Filename -OutputFolderPath $OutputFolderPath -WaterMarkText $WaterMarkText -WaterMarkColor $WaterMarkColor -IconPath $IconPath -Verbose:$Verbose -Rotate $Rotate
 
-            if ($OutputDiagram) {
-                if ($OutputFormat -ne 'Base64') {
-                    # If not Base64 format return image path
-                    Write-ColorOutput -Color 'White' -String ("Diagrammer diagram '{0}' has been saved to '{1}'" -f $OutputDiagram.Name, $OutputDiagram.Directory)
-                } else {
-                    Write-Verbose "Displaying Base64 string"
-                    # Return Base64 string
-                    $OutputDiagram
+                if ($OutputDiagram) {
+                    if ($OutputFormat -ne 'Base64') {
+                        # If not Base64 format return image path
+                        Write-ColorOutput -Color 'White' -String ("Diagrammer diagram '{0}' has been saved to '{1}'" -f $OutputDiagram.Name, $OutputDiagram.Directory)
+                    } else {
+                        Write-Verbose "Displaying Base64 string"
+                        # Return Base64 string
+                        $OutputDiagram
+                    }
                 }
             }
         }
