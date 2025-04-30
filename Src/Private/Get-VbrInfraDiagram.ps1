@@ -5,7 +5,7 @@ function Get-VbrInfraDiagram {
     .DESCRIPTION
         This script creates a visual representation of the Veeam Backup & Replication infrastructure configuration. The output can be generated in PDF, SVG, DOT, or PNG formats. It leverages the PSGraph module for PowerShell and Graphviz for rendering the diagrams.
     .NOTES
-        Version:        0.6.24
+        Version:        0.6.25
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         GitHub:         rebelinux
@@ -257,18 +257,18 @@ function Get-VbrInfraDiagram {
                     Write-Verbose "Error: Unable to create SAN Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
                 }
-                # Repositories Graphviz Cluster
-                if ($RepositoriesInfo = Get-VbrRepositoryInfo) {
-                    try {
-                        $RepositoriesNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $RepositoriesInfo.Name -Align "Center" -iconType $RepositoriesInfo.IconType -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo $RepositoriesInfo.AditionalInfo -Subgraph -SubgraphLabel "Backup Repositories" -SubgraphLabelFontsize 22 -fontSize 18 -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_Repository"
-                        $OnpremStorageArray += $RepositoriesNode
-                    } catch {
-                        Write-Verbose "Error: Unable to create Repositories Objects. Disabling the section"
-                        Write-Debug "Error Message: $($_.Exception.Message)"
-                    }
-                }
-
             }
+            # Repositories Graphviz Cluster
+            if ($RepositoriesInfo = Get-VbrRepositoryInfo) {
+                try {
+                    $RepositoriesNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $RepositoriesInfo.Name -Align "Center" -iconType $RepositoriesInfo.IconType -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo $RepositoriesInfo.AditionalInfo -Subgraph -SubgraphLabel "Backup Repositories" -SubgraphLabelFontsize 22 -fontSize 18 -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_Repository"
+                    $OnpremStorageArray += $RepositoriesNode
+                } catch {
+                    Write-Verbose "Error: Unable to create Repositories Objects. Disabling the section"
+                    Write-Debug "Error Message: $($_.Exception.Message)"
+                }
+            }
+
             if ($OnpremStorageArray) {
                 try {
                     $OnpremStorageSubgraphNode = Node -Name "Repositories" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $OnpremStorageArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Proxy' -Label 'On-Premises Storage Infrastructure' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 24); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
