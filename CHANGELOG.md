@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Resolve an issue where Backup Repositories fail to display when no SAN infrastructure is present.
+- Resolve an issue where Backup Repositories fail to display when no SAN infrastructure is present
 
 ## [0.6.24] - 2025-04-18
 
