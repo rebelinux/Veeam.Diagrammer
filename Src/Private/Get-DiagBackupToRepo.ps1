@@ -5,7 +5,7 @@ function Get-DiagBackupToRepo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.19
+        Version:        0.6.25
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -30,6 +30,7 @@ function Get-DiagBackupToRepo {
             $ObjStorage = Get-VbrBackupObjectRepoInfo
             $ArchiveObjStorage = Get-VbrBackupArchObjRepoInfo
             $NASBackupRepo = Get-VbrBackupRepoInfo | Where-Object { $_.Role -like '*Share' }
+            $CloudBackupRepo = Get-VbrBackupRepoInfo | Where-Object { $_.Role -like 'Cloud' }
 
             if ($BackupServerInfo) {
                 if ($BackupRepo) {
@@ -131,6 +132,27 @@ function Get-DiagBackupToRepo {
 
                         if ($ArchiveObjStorageSubgraph) {
                             $RepoSubgraphArray += $ArchiveObjStorageSubgraph
+                        }
+                    }
+
+                    if ($CloudBackupRepo) {
+                        try {
+
+                            $CloudBackupRepoArray = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($CloudBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($CloudBackupRepo.AditionalInfo ) -fontSize 18)
+                        } catch {
+                            Write-Verbose "Error: Unable to create Cloud Backup Repositories table Objects. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
+                        }
+                        try {
+
+                            $CloudBackupRepoSubgraph = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CloudBackupRepoArray -Align 'Center' -IconDebug $IconDebug -Label 'Cloud Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 4 -fontSize 24)
+                        } catch {
+                            Write-Verbose "Error: Unable to create Cloud Backup Repositories Subgraph. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
+                        }
+
+                        if ($CloudBackupRepoSubgraph) {
+                            $RepoSubgraphArray += $CloudBackupRepoSubgraph
                         }
                     }
 
