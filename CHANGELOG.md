@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.27] - Unreleased
+
+### Changed
+
+- Update version to 0.6.27
+- Update `Diagrammer.Core` module version to 0.2.25
+
+### Removed
+
+- Eliminate unused rules from `PSScriptAnalyzer` settings to streamline code analysis
+
 ## [0.6.26] - 2025-04-30
 
 ### Added
