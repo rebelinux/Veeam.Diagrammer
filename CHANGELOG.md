@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Update version to 0.6.27
-- Update `Diagrammer.Core` module version to 0.2.25
+- Update `Diagrammer.Core` module version to 0.2.26
 
 ### Removed
 
