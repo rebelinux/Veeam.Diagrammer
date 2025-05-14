@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.28] - Unreleased
+
+### Added
+
+- Add Esxi/HyperV StandAlone Host to the Backup Infrastructure diagram
+
+### Changed
+
+- Bump module version to v0.6.28
+
+### Fixed
+
+- Fix [#65](https://github.com/rebelinux/Veeam.Diagrammer/issues/65)
+- Resolve [#217](https://github.com/AsBuiltReport/AsBuiltReport.Veeam.VBR/issues/217)
+
 ## [0.6.27] - 2025-05-10
 
 ### Changed

@@ -5,7 +5,7 @@ function Get-VbrInfraDiagram {
     .DESCRIPTION
         This script creates a visual representation of the Veeam Backup & Replication infrastructure configuration. The output can be generated in PDF, SVG, DOT, or PNG formats. It leverages the PSGraph module for PowerShell and Graphviz for rendering the diagrams.
     .NOTES
-        Version:        0.6.25
+        Version:        0.6.28
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         GitHub:         rebelinux
@@ -157,6 +157,33 @@ function Get-VbrInfraDiagram {
                         Write-Debug "Error Message: $($_.Exception.Message)"
                     }
                 }
+
+                if ($vSphereServerObj = Get-VbrBackupvSphereStandAloneInfo | Sort-Object) {
+
+                    $columnSize = & {
+                        if (($vSphereServerObj | Measure-Object).count -le 1 ) {
+                            return 1
+                        } else {
+                            return 4
+                        }
+                    }
+
+                    try {
+                        [array]$ViStandAloneNodes = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($vSphereServerObj | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_ESXi_Server" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $vSphereServerObj.AditionalInfo -Subgraph -SubgraphLabel " " -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1")
+                    } catch {
+                        Write-Verbose "Error: Unable to create vSphere StandAlone Table. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
+                    }
+
+                    if ($ViStandAloneNodes) {
+                        try {
+                            $ViStandAloneSubgraph += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ViStandAloneNodes -Align 'Center' -IconDebug $IconDebug -Label 'ESxi StandAlone Hosts' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $columnSize -fontSize 24
+                        } catch {
+                            Write-Verbose "Error: Unable to create vSphere StandAlone Objects. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
+                        }
+                    }
+                }
             }
 
             # HyperV Graphviz Cluster
@@ -205,18 +232,54 @@ function Get-VbrInfraDiagram {
                         Write-Debug "Error Message: $($_.Exception.Message)"
                     }
                 }
+
+                if ($HyperVServerObj = Get-VbrBackupHyperVStandAloneInfo | Sort-Object) {
+
+                    $columnSize = & {
+                        if (($HyperVServerObj | Measure-Object).count -le 1 ) {
+                            return 1
+                        } else {
+                            return 4
+                        }
+                    }
+
+                    try {
+
+                        $HvStandAloneNodes = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($HyperVServerObj | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_HyperV_Server" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $HyperVServerObj.AditionalInfo -Subgraph -SubgraphLabel " " -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1")
+                    } catch {
+                        Write-Verbose "Error: Unable to create Hyper-V StandAlone Hosts Table. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
+                    }
+
+                    if ($HvStandAloneNodes) {
+                        try {
+                            $HvStandAloneNodesSubgraph += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $HvStandAloneNodes -Align 'Center' -IconDebug $IconDebug -Label 'Hyper-V StandAlone Hosts' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $columnSize -fontSize 22
+                        } catch {
+                            Write-Verbose "Error: Unable to create Hyper-V StandAlone Objects. Disabling the section"
+                            Write-Debug "Error Message: $($_.Exception.Message)"
+                        }
+                    }
+                }
             }
 
-            if ($HvClustersSubgraphNode -or $ViClustersSubgraphNode) {
+            if ($HvClustersSubgraphNode -or $ViClustersSubgraphNode -or $ViStandAloneSubgraph -or $HvStandAloneNodesSubgraph) {
 
                 $VirtualNodesArray = @()
 
                 if ($vSphereObj) {
                     $VirtualNodesArray += $ViClustersSubgraphNode
-                }
-                if ($HyperVObj) {
+                    if ($ViStandAloneSubgraph) {
+                        $VirtualNodesArray += $ViStandAloneSubgraph
+                    }
                     $VirtualNodesArray += $BlankFiller
+
+                }
+
+                if ($HyperVObj) {
                     $VirtualNodesArray += $HvClustersSubgraphNode
+                    if ($HvStandAloneNodesSubgraph) {
+                        $VirtualNodesArray += $HvStandAloneNodesSubgraph
+                    }
                 }
 
                 try {
