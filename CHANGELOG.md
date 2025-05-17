@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix column size calculation for VivCenter and VMware backup proxies to ensure accurate representation
+- Fix Get-DiagBackupToProtectedGroup function to improve error handling
 
 ## [0.6.28] - 2025-05-14
 

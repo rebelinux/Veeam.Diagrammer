@@ -30,29 +30,28 @@ function Get-DiagBackupToProtectedGroup {
             $IndividualContainer = $ProtectedGroups | Where-Object { $_.Container -eq 'IndividualComputers' }
             $CSVContainer = $ProtectedGroups | Where-Object { $_.Container -eq 'CSV' }
 
-            try {
-                $FileBackupProxy = Get-VbrBackupProxyInfo -Type 'nas'
-                if ($BackupServerInfo) {
-                    if ($FileBackupProxy) {
-                        if ($LocalBackupRepo.Name.Count -eq 1) {
-                            $FileBackupProxyColumnSize = 1
-                        } elseif ($ColumnSize) {
-                            $FileBackupProxyColumnSize = $ColumnSize
-                        } else {
-                            $FileBackupProxyColumnSize = $FileBackupProxy.Name.Count
-                        }
-
-                        Node FileProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($FileBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize $FileBackupProxyColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $FileBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_Proxy" -SubgraphLabel "File Backup Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontsize 24 -fontSize 18); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
-
-                        Edge BackupServers -To FileProxies @{minlen = 3 }
-
-                    }
-                }
-            } catch {
-                Write-Verbose -Message $_.Exception.Message
-            }
-
             if ($ProtectedGroups.Container) {
+                try {
+                    $FileBackupProxy = Get-VbrBackupProxyInfo -Type 'nas'
+                    if ($BackupServerInfo) {
+                        if ($FileBackupProxy) {
+                            if ($FileBackupProxy.Name.Count -eq 1) {
+                                $FileBackupProxyColumnSize = 1
+                            } elseif ($ColumnSize) {
+                                $FileBackupProxyColumnSize = $ColumnSize
+                            } else {
+                                $FileBackupProxyColumnSize = $FileBackupProxy.Name.Count
+                            }
+
+                            Node FileProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($FileBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize $FileBackupProxyColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $FileBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_Proxy" -SubgraphLabel "File Backup Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontsize 24 -fontSize 18); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+
+                            Edge BackupServers -To FileProxies @{minlen = 3 }
+
+                        }
+                    }
+                } catch {
+                    Write-Verbose -Message $_.Exception.Message
+                }
                 if ($ProtectedGroups) {
                     $ComputerAgentsArray = @()
                     if ($ADContainer) {
