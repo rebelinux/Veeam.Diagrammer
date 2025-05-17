@@ -27,12 +27,12 @@ function Get-DiagBackupToHvProxy {
             $HyperVBackupProxy = Get-VbrBackupProxyInfo -Type 'hyperv'
             if ($HyperVBackupProxy) {
 
-                if ($HyperVBackupProxy.Count -eq 1) {
+                if ($HyperVBackupProxy.Name.Count -eq 1) {
                     $HyperVBackupProxyColumnSize = 1
                 } elseif ($ColumnSize) {
                     $HyperVBackupProxyColumnSize = $ColumnSize
                 } else {
-                    $HyperVBackupProxyColumnSize = $HyperVBackupProxy.Count
+                    $HyperVBackupProxyColumnSize = $HyperVBackupProxy.Name.Count
                 }
 
                 Node HvProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($HyperVBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize $HyperVBackupProxyColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $HyperVBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_HyperV" -SubgraphLabel "Hyper-V Backup Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 18 -SubgraphLabelFontsize 22); shape = 'plain'; fontsize = 18; fontname = "Segoe Ui" }
