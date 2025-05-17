@@ -5,7 +5,7 @@ function Get-DiagBackupToWanAccel {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.20
+        Version:        0.6.29
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -28,15 +28,15 @@ function Get-DiagBackupToWanAccel {
             if ($BackupServerInfo) {
                 if ($WanAccel) {
 
-                    $columnSize = & {
-                        if (($WanAccel | Measure-Object).count-le 1 ) {
-                            return 1
-                        } else {
-                            return 4
-                        }
+                    if ($WanAccel.Name.Count -eq 1) {
+                        $WanAccelColumnSize = 1
+                    } elseif ($ColumnSize) {
+                        $WanAccelColumnSize = $ColumnSize
+                    } else {
+                        $WanAccelColumnSize = $WanAccel.Name.Count
                     }
 
-                    Node WanAccelServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($WanAccel | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Wan_Accel" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($WanAccel.AditionalInfo ) -Subgraph -SubgraphIconType "VBR_Wan_Accel" -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 18 -SubgraphLabelFontsize 22); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+                    Node WanAccelServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($WanAccel | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Wan_Accel" -columnSize $WanAccelColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($WanAccel.AditionalInfo ) -Subgraph -SubgraphIconType "VBR_Wan_Accel" -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 18 -SubgraphLabelFontsize 22); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
                     Edge BackupServers -To WanAccelServer @{minlen = 3; }
                 }

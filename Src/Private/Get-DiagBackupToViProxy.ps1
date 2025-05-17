@@ -5,7 +5,7 @@ function Get-DiagBackupToViProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.28
+        Version:        0.6.29
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -28,15 +28,15 @@ function Get-DiagBackupToViProxy {
             if ($BackupServerInfo) {
                 if ($VMwareBackupProxy) {
 
-                    $columnSize = & {
-                        if (($VMwareBackupProxy | Measure-Object).count -le 1 ) {
-                            return 1
-                        } else {
-                            return 4
-                        }
+                    if ($VMwareBackupProxy.Name.Count -eq 1) {
+                        $VMwareBackupProxyColumnSize = 1
+                    } elseif ($ColumnSize) {
+                        $VMwareBackupProxyColumnSize = $ColumnSize
+                    } else {
+                        $VMwareBackupProxyColumnSize = $VMwareBackupProxy.Name.Count
                     }
 
-                    Node ViProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($VMwareBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $VMwareBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_Proxy" -SubgraphLabel "VMware Backup Proxies" -SubgraphLabelFontsize 26 -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 18); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+                    Node ViProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($VMwareBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize $VMwareBackupProxyColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $VMwareBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_Proxy" -SubgraphLabel "VMware Backup Proxies" -SubgraphLabelFontsize 26 -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 18); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
                     Edge BackupServers -To ViProxies @{minlen = 2 }
                 }
@@ -47,15 +47,21 @@ function Get-DiagBackupToViProxy {
                     $VivCenterNodesAll = @()
                     foreach ($vCenter in $vSphereObj) {
                         $vCenterNodeArray = @()
-                        $vCenterNodeArrayAll = @()
                         $ViClustersNodes = @()
                         $vCenterNodeArray += $vCenter.Label
                         try {
                             $ViClustersChildsNodes = foreach ($ViCluster in $vCenter.Childs) {
                                 if ($ViCluster.EsxiHost.Name) {
-                                    Get-DiaHTMLTable -ImagesObj $Images -Rows $ViCluster.EsxiHost.Name -Align 'Center' -ColumnSize 3 -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_ESXi_Server" -SubgraphLabel $ViCluster.Name -SubgraphLabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18
+                                    if ($VMwareBackupProxy.EsxiHost.Name.Count -eq 1) {
+                                        $ViClustersChildsNodesColumnSize = 1
+                                    } elseif ($ColumnSize) {
+                                        $ViClustersChildsNodesColumnSize = $ColumnSize
+                                    } else {
+                                        $ViClustersChildsNodesColumnSize = $ViCluster.EsxiHost.Name.Count
+                                    }
+                                    Get-DiaHTMLTable -ImagesObj $Images -Rows $ViCluster.EsxiHost.Name -Align 'Center' -ColumnSize $ViClustersChildsNodesColumnSize -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_ESXi_Server" -SubgraphLabel $ViCluster.Name -SubgraphLabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18
                                 } else {
-                                    Get-DiaHTMLTable -ImagesObj $Images -Rows 'No Esxi Host' -Align 'Center' -ColumnSize 3 -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_ESXi_Server" -SubgraphLabel $ViCluster.Name -SubgraphLabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18
+                                    Get-DiaHTMLTable -ImagesObj $Images -Rows 'No Esxi Host' -Align 'Center' -ColumnSize $ViClustersChildsNodesColumnSize -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_ESXi_Server" -SubgraphLabel $ViCluster.Name -SubgraphLabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18
                                 }
                             }
                         } catch {
@@ -64,7 +70,14 @@ function Get-DiagBackupToViProxy {
                         }
                         try {
                             if ($ViClustersChildsNodes) {
-                                $ViClustersNodes += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ViClustersChildsNodes -Align 'Center' -IconDebug $IconDebug -Label 'Clusters' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3 -fontSize 20
+                                if ($ViClustersChildsNodes.Count -eq 1) {
+                                    $ViClustersChildsNodesColumnSize = 1
+                                } elseif ($ColumnSize) {
+                                    $ViClustersChildsNodesColumnSize = $ColumnSize
+                                } else {
+                                    $ViClustersChildsNodesColumnSize = $ViClustersChildsNodes.Count
+                                }
+                                $ViClustersNodes += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ViClustersChildsNodes -Align 'Center' -IconDebug $IconDebug -Label 'Clusters' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $ViClustersChildsNodesColumnSize -fontSize 20
                                 $vCenterNodeArray += $ViClustersNodes
                             }
                         } catch {
@@ -83,7 +96,14 @@ function Get-DiagBackupToViProxy {
 
                     try {
                         if ($VivCenterNodes) {
-                            $VivCenterNodesAll += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $VivCenterNodes -Align 'Center' -IconDebug $IconDebug -Label 'Management Servers' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3 -fontSize 24
+                            if ($VivCenterNodes.Count -eq 1) {
+                                $VivCenterNodesColumnSize = 1
+                            } elseif ($ColumnSize) {
+                                $VivCenterNodesColumnSize = $ColumnSize
+                            } else {
+                                $VivCenterNodesColumnSize = $VivCenterNodes.Count
+                            }
+                            $VivCenterNodesAll += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $VivCenterNodes -Align 'Center' -IconDebug $IconDebug -Label 'Management Servers' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $VivCenterNodesColumnSize -fontSize 24
                         }
                     } catch {
                         Write-Verbose "Error: Unable to create vCenter Server Objects. Disabling the section"
@@ -93,16 +113,16 @@ function Get-DiagBackupToViProxy {
 
                 if ($vSphereServerObj = Get-VbrBackupvSphereStandAloneInfo | Sort-Object) {
 
-                    $columnSize = & {
-                        if (($vSphereServerObj | Measure-Object).count -le 1 ) {
-                            return 1
-                        } else {
-                            return 4
-                        }
+                    if ($vSphereServerObj.Name.Count -le 1) {
+                        $vSphereServerObjColumnSize = 1
+                    } elseif ($ColumnSize) {
+                        $vSphereServerObjColumnSize = $ColumnSize
+                    } else {
+                        $vSphereServerObjColumnSize = $vSphereServerObj.Name.Count
                     }
 
                     try {
-                        [array]$ViStandAloneNodes = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($vSphereServerObj | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_ESXi_Server" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $vSphereServerObj.AditionalInfo -Subgraph -SubgraphLabel " " -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1")
+                        [array]$ViStandAloneNodes = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($vSphereServerObj | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_ESXi_Server" -columnSize $vSphereServerObjColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $vSphereServerObj.AditionalInfo -Subgraph -SubgraphLabel "Host" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1")
                     } catch {
                         Write-Verbose "Error: Unable to create vSphere StandAlone Table. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
@@ -110,7 +130,7 @@ function Get-DiagBackupToViProxy {
 
                     if ($ViStandAloneNodes) {
                         try {
-                            $VivCenterNodesAll += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ViStandAloneNodes -Align 'Center' -IconDebug $IconDebug -Label 'ESxi StandAlone Hosts' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $columnSize -fontSize 24
+                            $VivCenterNodesAll += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ViStandAloneNodes -Align 'Center' -IconDebug $IconDebug -Label 'ESxi StandAlone Hosts' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 24
                         } catch {
                             Write-Verbose "Error: Unable to create vSphere StandAlone Objects. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
@@ -119,6 +139,7 @@ function Get-DiagBackupToViProxy {
                 }
 
                 if ($VivCenterNodesAll) {
+
                     if ($Dir -eq 'LR') {
                         try {
                             $ViClustersSubgraphNode = Node -Name "ViCluster" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $VivCenterNodesAll -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_vSphere' -Label 'VMware vSphere Infrastructure' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 26); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }

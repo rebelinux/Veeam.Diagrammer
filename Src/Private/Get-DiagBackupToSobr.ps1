@@ -5,7 +5,7 @@ function Get-DiagBackupToSobr {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.19
+        Version:        0.6.29
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -41,8 +41,15 @@ function Get-DiagBackupToSobr {
                         }
 
                         if ($SOBROBJ.Performance) {
+                            if ($SOBROBJ.Performance.Name.Count -eq 1) {
+                                $SOBRPerfColumnSize = 1
+                            } elseif ($ColumnSize) {
+                                $SOBRPerfColumnSize = $ColumnSize
+                            } else {
+                                $SOBRPerfColumnSize = $SOBROBJ.Performance.Name.Count
+                            }
                             try {
-                                $Performance = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBROBJ.Performance.Name -Align "Center" -iconType $SOBROBJ.Performance.IconType -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Performance.AditionalInfo -Subgraph -SubgraphLabel "Performance Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 14
+                                $Performance = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBROBJ.Performance.Name -Align "Center" -iconType $SOBROBJ.Performance.IconType -columnSize $SOBRPerfColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Performance.AditionalInfo -Subgraph -SubgraphLabel "Performance Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 14
                             } catch {
                                 Write-Verbose "Error: Unable to create SOBR Performance Objects. Disabling the section"
                                 Write-Debug "Error Message: $($_.Exception.Message)"
@@ -53,9 +60,15 @@ function Get-DiagBackupToSobr {
                             }
                         }
                         if ($SOBROBJ.Capacity) {
-
+                            if ($SOBROBJ.Capacity.Name.Count -eq 1) {
+                                $SOBRCapColumnSize = 1
+                            } elseif ($ColumnSize) {
+                                $SOBRCapColumnSize = $ColumnSize
+                            } else {
+                                $SOBRCapColumnSize = $SOBROBJ.Capacity.Name.Count
+                            }
                             try {
-                                $Capacity = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBROBJ.Capacity.Name -Align "Center" -iconType $SOBROBJ.Capacity.IconType -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Capacity.AditionalInfo -Subgraph -SubgraphLabel "Capacity Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 14
+                                $Capacity = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBROBJ.Capacity.Name -Align "Center" -iconType $SOBROBJ.Capacity.IconType -columnSize $SOBRCapColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Capacity.AditionalInfo -Subgraph -SubgraphLabel "Capacity Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 14
                             } catch {
                                 Write-Verbose "Error: Unable to create SOBR Capacity Objects. Disabling the section"
                                 Write-Debug "Error Message: $($_.Exception.Message)"
@@ -66,9 +79,15 @@ function Get-DiagBackupToSobr {
                             }
                         }
                         if ($SOBROBJ.Archive) {
-
+                            if ($SOBROBJ.Archive.Name.Count -eq 1) {
+                                $SOBRCArchColumnSize = 1
+                            } elseif ($ColumnSize) {
+                                $SOBRCArchColumnSize = $ColumnSize
+                            } else {
+                                $SOBRCArchColumnSize = $SOBROBJ.Archive.Name.Count
+                            }
                             try {
-                                $Archive = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBROBJ.Archive.Name -Align "Center" -iconType $SOBROBJ.Archive.IconType -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Archive.AditionalInfo -Subgraph -SubgraphLabel "Archive Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 14
+                                $Archive = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBROBJ.Archive.Name -Align "Center" -iconType $SOBROBJ.Archive.IconType -columnSize $SOBRCArchColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Archive.AditionalInfo -Subgraph -SubgraphLabel "Archive Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 14
 
                             } catch {
                                 Write-Verbose "Error: Unable to create SOBR Archive Objects. Disabling the section"
@@ -104,15 +123,29 @@ function Get-DiagBackupToSobr {
                     }
 
                     if ($Dir -eq 'LR') {
+                        if ($SOBRArray.Count -eq 1) {
+                            $SOBRCSubGraphColumnSize = 1
+                        } elseif ($ColumnSize) {
+                            $SOBRCSubGraphColumnSize = $ColumnSize
+                        } else {
+                            $SOBRCSubGraphColumnSize = $SOBRArray.Count
+                        }
                         try {
-                            $SOBRSubgraph = Node -Name SOBRRepo -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $SOBRArray  -Align 'Center' -IconDebug $IconDebug -Label 'SOBR Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 22); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                            $SOBRSubgraph = Node -Name SOBRRepo -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $SOBRArray  -Align 'Center' -IconDebug $IconDebug -Label 'SOBR Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $SOBRCSubGraphColumnSize -fontSize 22); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                         } catch {
                             Write-Verbose "Error: Unable to create SubGraph Objects. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
                         }
                     } else {
+                        if ($SOBRArray.Count -eq 1) {
+                            $SOBRCSubGraphColumnSize = 1
+                        } elseif ($ColumnSize) {
+                            $SOBRCSubGraphColumnSize = $ColumnSize
+                        } else {
+                            $SOBRCSubGraphColumnSize = $SOBRArray.Count
+                        }
                         try {
-                            $SOBRSubgraph = Node -Name SOBRRepo -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $SOBRArray  -Align 'Center' -IconDebug $IconDebug -Label 'SOBR Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3 -fontSize 22); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                            $SOBRSubgraph = Node -Name SOBRRepo -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $SOBRArray  -Align 'Center' -IconDebug $IconDebug -Label 'SOBR Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $SOBRCSubGraphColumnSize -fontSize 22); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                         } catch {
                             Write-Verbose "Error: Unable to create SubGraph Objects. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"

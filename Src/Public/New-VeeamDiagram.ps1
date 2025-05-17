@@ -100,7 +100,7 @@ function New-VeeamDiagram {
         Default: Green
 
     .NOTES
-        Version:        0.6.26
+        Version:        0.6.29
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -321,7 +321,13 @@ function New-VeeamDiagram {
             Mandatory = $false,
             HelpMessage = 'Allow to specified the color used for the watermark text'
         )]
-        [string] $WaterMarkColor = 'Green'
+        [string] $WaterMarkColor = 'Green',
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Allow to specified the size of the node column size'
+        )]
+        [int] $ColumnSize = 4
     )
 
     begin {
@@ -380,11 +386,11 @@ function New-VeeamDiagram {
             'Backup-Infrastructure' { 'Backup Infrastructure Diagram' }
         }
         if ($Format -ne 'Base64') {
-            Write-ColorOutput -Color 'Green' -String ("Information: Please wait while the '{0}' is being generated." -f $MainGraphLabel)
-            Write-ColorOutput  -Color 'Yellow' -String "Information: Please refer to the Veeam.Diagrammer github website for more detailed information about this project."
-            Write-ColorOutput  -Color 'Yellow' -String "Information: Documentation: https://github.com/rebelinux/Veeam.Diagrammer"
-            Write-ColorOutput  -Color 'Yellow' -String "Information: Issues or bug reporting: https://github.com/rebelinux/Veeam.Diagrammer/issues"
-            Write-ColorOutput  -Color 'Yellow' -String "Information: This project is community maintained and has no sponsorship from Veeam, its employees or any of its affiliates."
+            Write-ColorOutput -Color 'Green' -String ("Please wait while the '{0}' is being generated." -f $MainGraphLabel)
+            Write-ColorOutput  -Color 'White' -String "- Please refer to the Veeam.Diagrammer github website for more detailed information about this project."
+            Write-ColorOutput  -Color 'White' -String "- Documentation: https://github.com/rebelinux/Veeam.Diagrammer"
+            Write-ColorOutput  -Color 'White' -String "- Issues or bug reporting: https://github.com/rebelinux/Veeam.Diagrammer/issues"
+            Write-ColorOutput  -Color 'White' -String "- This project is community maintained and has no sponsorship from Veeam, its employees or any of its affiliates."
 
 
             # Check the current Veeam.Diagrammer module
@@ -392,11 +398,11 @@ function New-VeeamDiagram {
                 $InstalledVersion = Get-Module -ListAvailable -Name Veeam.Diagrammer -ErrorAction SilentlyContinue | Sort-Object -Property Version -Descending | Select-Object -First 1 -ExpandProperty Version
 
                 if ($InstalledVersion) {
-                    Write-ColorOutput  -Color 'Yellow' -String "Information: Veeam.Diagrammer $($InstalledVersion.ToString()) is currently installed."
+                    Write-ColorOutput  -Color 'White' -String "- Veeam.Diagrammer $($InstalledVersion.ToString()) is currently installed."
                     $LatestVersion = Find-Module -Name Veeam.Diagrammer -Repository PSGallery -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Version
                     if ([version]$InstalledVersion -lt [version]$LatestVersion) {
-                        Write-ColorOutput  -Color 'Yellow' -String "Information: Veeam.Diagrammer $($LatestVersion.ToString()) update is available."
-                        Write-ColorOutput  -Color 'Yellow' -String "Information: Run 'Update-Module -Name Veeam.Diagrammer -Force' to install the latest version."
+                        Write-ColorOutput  -Color 'Red' -String "  - Veeam.Diagrammer $($LatestVersion.ToString()) update is available."
+                        Write-ColorOutput  -Color 'Red' -String "  - Run 'Update-Module -Name Veeam.Diagrammer -Force' to install the latest version."
                     }
                 }
             } Catch {

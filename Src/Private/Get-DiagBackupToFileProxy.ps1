@@ -5,7 +5,7 @@ function Get-DiagBackupToFileProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.19
+        Version:        0.6.29
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -28,15 +28,15 @@ function Get-DiagBackupToFileProxy {
             if ($BackupServerInfo) {
                 if ($FileBackupProxy) {
 
-                    $columnSize = & {
-                        if (($FileBackupProxy | Measure-Object).count-le 1 ) {
-                            return 1
-                        } else {
-                            return 4
-                        }
+                    if ($FileBackupProxy.Name.Count -le 1) {
+                        $FileBackupProxyColumnSize = 1
+                    } elseif ($ColumnSize) {
+                        $FileBackupProxyColumnSize = $ColumnSize
+                    } else {
+                        $FileBackupProxyColumnSize = $FileBackupProxy.Name.Count
                     }
 
-                    Node FileProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($FileBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $FileBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_Proxy" -SubgraphLabel "File Backup Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 18 -SubgraphLabelFontsize 26); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+                    Node FileProxies @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($FileBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -columnSize $FileBackupProxyColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $FileBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_Proxy" -SubgraphLabel "File Backup Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 18 -SubgraphLabelFontsize 26); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
                     Edge BackupServers -To FileProxies @{minlen = 3 }
 
