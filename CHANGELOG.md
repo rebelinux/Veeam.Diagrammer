@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhance column size handling in diagram generation scripts
 - Improved column size logic for various diagram components to dynamically adjust based on the number of items, ensuring better layout and readability.
 - Enhanced error handling and verbose output for better debugging and user feedback during diagram generation.
+- Enhance column size handling in diagram functions
+- Ensure positive integer validation for ColumnSize parameter
 
 ### Fixed
 

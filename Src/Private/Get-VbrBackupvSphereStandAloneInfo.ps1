@@ -1,7 +1,7 @@
 function Get-VbrBackupvSphereStandAloneInfo {
     <#
     .SYNOPSIS
-        Function to extract veeam backup & replication vsphere Vipervisor information.
+        Function to extract veeam backup & replication vsphere Hypervisor information.
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
@@ -20,9 +20,9 @@ function Get-VbrBackupvSphereStandAloneInfo {
 
     )
     process {
-        Write-Verbose -Message "Collecting vSphere ViperVisor information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting vSphere HyperVisor information from $($VBRServer.Name)."
         try {
-            $ViObjs = Get-VBRServer | Where-Object { $_.Type -eq 'ESXi' -and $_.Parentid -eq '00000000-0000-0000-0000-000000000000'}
+            $ViObjs = Get-VBRServer | Where-Object { $_.Type -eq 'ESXi' -and $_.Parentid -eq '00000000-0000-0000-0000-000000000000' }
             $ViObjsInfo = @()
             if ($ViObjs) {
                 foreach ($ViObj in $ViObjs) {

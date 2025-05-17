@@ -51,14 +51,14 @@ function Get-DiagBackupToViProxy {
                         $vCenterNodeArray += $vCenter.Label
                         try {
                             $ViClustersChildsNodes = foreach ($ViCluster in $vCenter.Childs) {
+                                if ($ViCluster.EsxiHost.Name.Count -eq 1) {
+                                    $ViClustersChildsNodesColumnSize = 1
+                                } elseif ($ColumnSize) {
+                                    $ViClustersChildsNodesColumnSize = $ColumnSize
+                                } else {
+                                    $ViClustersChildsNodesColumnSize = $ViCluster.EsxiHost.Name.Count
+                                }
                                 if ($ViCluster.EsxiHost.Name) {
-                                    if ($ViCluster.EsxiHost.Name.Count -eq 1) {
-                                        $ViClustersChildsNodesColumnSize = 1
-                                    } elseif ($ColumnSize) {
-                                        $ViClustersChildsNodesColumnSize = $ColumnSize
-                                    } else {
-                                        $ViClustersChildsNodesColumnSize = $ViCluster.EsxiHost.Name.Count
-                                    }
                                     Get-DiaHTMLTable -ImagesObj $Images -Rows $ViCluster.EsxiHost.Name -Align 'Center' -ColumnSize $ViClustersChildsNodesColumnSize -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_ESXi_Server" -SubgraphLabel $ViCluster.Name -SubgraphLabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18
                                 } else {
                                     Get-DiaHTMLTable -ImagesObj $Images -Rows 'No Esxi Host' -Align 'Center' -ColumnSize $ViClustersChildsNodesColumnSize -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_ESXi_Server" -SubgraphLabel $ViCluster.Name -SubgraphLabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18

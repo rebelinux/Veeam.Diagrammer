@@ -343,6 +343,13 @@ function New-VeeamDiagram {
             Mandatory = $false,
             HelpMessage = 'Allow to specified the size of the node column size'
         )]
+        [ValidateScript( {
+                if ($_ -gt 0) {
+                    $true
+                } else {
+                    throw "ColumnSize must be a positive integer greater than zero."
+                }
+            })]
         [int] $ColumnSize = 4
     )
 

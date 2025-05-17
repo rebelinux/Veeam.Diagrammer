@@ -53,12 +53,12 @@ function Get-DiagBackupToHvProxy {
                         if ($vCenter.Childs.Name.Count -eq 1) {
                             $HyperVBackupProxyColumnSize = 1
                         } elseif ($ColumnSize) {
-                            $ViClustersChildsNodesColumnSize = $ColumnSize
+                            $HyperVBackupProxyColumnSize = $ColumnSize
                         } else {
                             $HyperVBackupProxyColumnSize = $vCenter.Childs.Name.Count
                         }
 
-                        $ViClustersChildsNodes = Get-DiaHTMLTable -ImagesObj $Images -Rows $vCenter.Childs.Name -Align 'Center' -ColumnSize $ViClustersChildsNodesColumnSize -IconDebug $IconDebug -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18
+                        $ViClustersChildsNodes = Get-DiaHTMLTable -ImagesObj $Images -Rows $vCenter.Childs.Name -Align 'Center' -ColumnSize $HyperVBackupProxyColumnSize -IconDebug $IconDebug -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18
 
                     } catch {
                         Write-Verbose "Error: Unable to create Hyper-V Hosts table Objects. Disabling the section"
