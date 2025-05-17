@@ -5,7 +5,7 @@ function Get-DiagBackupToTape {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.19
+        Version:        0.6.29
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -54,7 +54,14 @@ function Get-DiagBackupToTape {
                                     $TapeLibraryDrives = ($BackupTapeDrives | Where-Object { $_.LibraryId -eq $TSLibraryOBJ.Id } | Sort-Object -Property Name)
 
                                     try {
-                                        $TapeLibraryDrivesNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeLibraryDrives.Name -Align "Center" -iconType "VBR_Tape_Drive" -columnSize $TapeLibraryDrives.Name.Count -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeLibraryDrives.AditionalInfo -Subgraph -SubgraphLabel "Tape Drives" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 18
+                                        if ($TapeLibraryDrives.Name.Count -eq 1) {
+                                            $TapeLibraryDriveColumnSize = 1
+                                        } elseif ($ColumnSize) {
+                                            $TapeLibraryDriveColumnSize = $ColumnSize
+                                        } else {
+                                            $TapeLibraryDriveColumnSize = $TapeLibraryDrives.Name.Count
+                                        }
+                                        $TapeLibraryDrivesNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeLibraryDrives.Name -Align "Center" -iconType "VBR_Tape_Drive" -columnSize $TapeLibraryDriveColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeLibraryDrives.AditionalInfo -Subgraph -SubgraphLabel "Tape Drives" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -fontSize 18
 
                                     } catch {
                                         Write-Verbose "Error: Unable to create Tape Library Drives Objects. Disabling the section"
@@ -80,7 +87,14 @@ function Get-DiagBackupToTape {
                         }
 
                         try {
-                            $TapeLibrarySubgraphArray = Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $TapeNodesArray  -Align 'Center' -IconDebug $IconDebug -Label " " -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "0" -columnSize 3
+                            if ($TapeNodesArray -eq 1) {
+                                $TapeLibraryColumnSize = 1
+                            } elseif ($ColumnSize) {
+                                $TapeLibraryColumnSize = $ColumnSize
+                            } else {
+                                $TapeLibraryColumnSize = $TapeNodesArray.Count
+                            }
+                            $TapeLibrarySubgraphArray = Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $TapeNodesArray  -Align 'Center' -IconDebug $IconDebug -Label " " -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "0" -columnSize $TapeLibraryColumnSize
                         } catch {
                             Write-Verbose "Error: Unable to create Tape Library SubGraph Array Objects. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
@@ -106,7 +120,14 @@ function Get-DiagBackupToTape {
                         }
                     }
                     try {
-                        $TapeSubgraph = Node -Name Tape -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $TapeArray  -Align 'Center' -IconDebug $IconDebug -Label 'Tape Servers' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3 -fontSize 26); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                        if ($TapeArray -eq 1) {
+                            $TapeServerColumnSize = 1
+                        } elseif ($ColumnSize) {
+                            $TapeServerColumnSize = $ColumnSize
+                        } else {
+                            $TapeServerColumnSize = $TapeArray.Count
+                        }
+                        $TapeSubgraph = Node -Name Tape -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $TapeArray  -Align 'Center' -IconDebug $IconDebug -Label 'Tape Servers' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $TapeServerColumnSize -fontSize 26); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                     } catch {
                         Write-Verbose "Error: Unable to create Tape SubGraph Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"

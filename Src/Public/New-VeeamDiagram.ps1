@@ -1,106 +1,122 @@
 function New-VeeamDiagram {
     <#
     .SYNOPSIS
-        Diagram the configuration of Veeam Backup & Replication infrastructure in PDF, SVG, DOT, and PNG formats using PSGraph and Graphviz.
+        Generates comprehensive diagrams of Veeam Backup & Replication (VBR) infrastructure in multiple formats using PSGraph and Graphviz.
 
     .DESCRIPTION
-        This script generates diagrams of the Veeam Backup & Replication infrastructure in various formats (PDF, SVG, DOT, PNG) using PSGraph and Graphviz. It provides detailed visualization of the backup infrastructure, including different components and their relationships.
+        This script automates the creation of detailed visual diagrams representing the architecture and relationships within a Veeam Backup & Replication environment. It supports various diagram types and output formats, enabling administrators to visualize backup infrastructure components, their connections, and data flows. Customization options include layout direction, themes, node and section separation, edge styles, and branding elements such as logos and watermarks.
 
     .PARAMETER DiagramType
         Specifies the type of Veeam VBR diagram to generate.
-        Supported types:
-            'Backup-to-Sobr', 'Backup-to-vSphere-Proxy', 'Backup-to-HyperV-Proxy',
-            'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-Tape',
-            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup', 'Backup-Infrastructure'
+        Supported values:
+            - 'Backup-to-Sobr'
+            - 'Backup-to-vSphere-Proxy'
+            - 'Backup-to-HyperV-Proxy'
+            - 'Backup-to-Repository'
+            - 'Backup-to-WanAccelerator'
+            - 'Backup-to-Tape'
+            - 'Backup-to-File-Proxy'
+            - 'Backup-to-ProtectedGroup'
+            - 'Backup-Infrastructure'
 
     .PARAMETER Target
-        Specifies the IP address or FQDN of the system to connect to.
+        One or more IP addresses or FQDNs of Veeam VBR servers to connect to.
         Multiple targets can be specified, separated by commas.
 
     .PARAMETER Port
-        Specifies an optional port to connect to the Veeam VBR Service.
+        Optional. The port number for connecting to the Veeam VBR Service.
         Default: 9392
 
     .PARAMETER Credential
-        Specifies the stored credential for the target system.
+        A PSCredential object containing the username and password for authentication to the target system.
 
     .PARAMETER Username
-        Specifies the username for the target system.
+        The username for authenticating to the target system. Used if Credential is not provided.
 
     .PARAMETER Password
-        Specifies the password for the target system.
+        The password for authenticating to the target system. Used if Credential is not provided.
 
     .PARAMETER Format
-        Specifies the output format of the diagram.
-        Supported formats: PDF, PNG, DOT, SVG
+        Specifies one or more output formats for the generated diagram.
+        Supported values: PDF, PNG, DOT, SVG
         Multiple formats can be specified, separated by commas.
 
     .PARAMETER Direction
-        Sets the direction in which resources are plotted in the visualization.
-        Supported directions: 'top-to-bottom', 'left-to-right'
-        Default: top-to-bottom
+        Sets the layout direction of the diagram.
+        Supported values: 'top-to-bottom', 'left-to-right'
+        Default: 'top-to-bottom'
 
     .PARAMETER Theme
-        Sets the theme of the diagram.
-        Supported themes: 'Black', 'White', 'Neon'
-        Default: White
+        Sets the visual theme of the diagram.
+        Supported values: 'Black', 'White', 'Neon'
+        Default: 'White'
 
     .PARAMETER NodeSeparation
-        Controls the node separation ratio in the visualization.
+        Adjusts the spacing between nodes in the diagram.
         Default: 0.60
 
     .PARAMETER SectionSeparation
-        Controls the section (subgraph) separation ratio in the visualization.
+        Adjusts the spacing between sections (subgraphs) in the diagram.
         Default: 0.75
 
     .PARAMETER EdgeType
-        Controls how edge lines appear in the visualization.
-        Supported types: 'polyline', 'curved', 'ortho', 'line', 'spline'
-        Default: spline
-        References: https://graphviz.org/docs/attrs/splines/
+        Defines the style of edge lines connecting nodes.
+        Supported values: 'polyline', 'curved', 'ortho', 'line', 'spline'
+        Default: 'spline'
+        See: https://graphviz.org/docs/attrs/splines/
 
     .PARAMETER OutputFolderPath
-        Specifies the folder path to save the diagram.
+        The directory path where the generated diagram files will be saved.
 
     .PARAMETER Filename
-        Specifies a filename for the diagram.
+        The base filename for the generated diagram files.
 
     .PARAMETER EnableEdgeDebug
-        Enables edge debugging (dummy edge and node lines).
+        Switch. Enables debugging visualization for edges (e.g., dummy edge and node lines).
 
     .PARAMETER EnableSubGraphDebug
-        Enables subgraph debugging (subgraph lines).
+        Switch. Enables debugging visualization for subgraphs (e.g., subgraph boundary lines).
 
     .PARAMETER EnableErrorDebug
-        Enables error debugging.
+        Switch. Enables detailed error debugging output.
 
     .PARAMETER AuthorName
-        Sets the footer signature author name.
+        The name of the author to include in the diagram footer signature.
 
     .PARAMETER CompanyName
-        Sets the footer signature company name.
+        The company name to include in the diagram footer signature.
 
     .PARAMETER Logo
-        Changes the Veeam logo to a custom one.
-        Image should be 400px x 100px or smaller.
+        Path to a custom logo image to replace the default Veeam logo.
+        Recommended size: 400px x 100px or smaller.
 
     .PARAMETER SignatureLogo
-        Changes the Veeam.Diagrammer signature logo to a custom one.
-        Image should be 120px x 130px or smaller.
+        Path to a custom signature logo image for the diagram footer.
+        Recommended size: 120px x 130px or smaller.
 
     .PARAMETER Signature
-        Creates a footer signature.
-        AuthorName and CompanyName must be set to use this property.
+        Switch. Adds a footer signature to the diagram. Requires AuthorName and CompanyName.
 
     .PARAMETER WatermarkText
-        Adds a watermark to the output image (not supported in SVG format).
+        Text to be used as a watermark on the output image (not supported for SVG format).
 
     .PARAMETER WatermarkColor
-        Specifies the color used for the watermark text.
-        Default: Green
+        The color of the watermark text.
+        Default: 'Green'
+
+    .PARAMETER ColumnSize
+        Sets the number of columns in the node table layout.
+        Default: 4
+
+    .EXAMPLE
+        New-VeeamDiagram -DiagramType 'Backup-Infrastructure' -Target 'vbr01.contoso.com' -Format 'PDF,PNG' -Theme 'Neon' -OutputFolderPath 'C:\Diagrams'
 
     .NOTES
-        Version:        0.6.26
+        Requires PSGraph and Graphviz to be installed and available in the system path.
+        For best results, ensure all image assets meet the recommended size guidelines.
+
+    .NOTES
+        Version:        0.6.29
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -321,7 +337,20 @@ function New-VeeamDiagram {
             Mandatory = $false,
             HelpMessage = 'Allow to specified the color used for the watermark text'
         )]
-        [string] $WaterMarkColor = 'Green'
+        [string] $WaterMarkColor = 'Green',
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Allow to specified the size of the node column size'
+        )]
+        [ValidateScript( {
+                if ($_ -gt 0) {
+                    $true
+                } else {
+                    throw "ColumnSize must be a positive integer greater than zero."
+                }
+            })]
+        [int] $ColumnSize = 4
     )
 
     begin {
@@ -380,11 +409,11 @@ function New-VeeamDiagram {
             'Backup-Infrastructure' { 'Backup Infrastructure Diagram' }
         }
         if ($Format -ne 'Base64') {
-            Write-ColorOutput -Color 'Green' -String ("Information: Please wait while the '{0}' is being generated." -f $MainGraphLabel)
-            Write-ColorOutput  -Color 'Yellow' -String "Information: Please refer to the Veeam.Diagrammer github website for more detailed information about this project."
-            Write-ColorOutput  -Color 'Yellow' -String "Information: Documentation: https://github.com/rebelinux/Veeam.Diagrammer"
-            Write-ColorOutput  -Color 'Yellow' -String "Information: Issues or bug reporting: https://github.com/rebelinux/Veeam.Diagrammer/issues"
-            Write-ColorOutput  -Color 'Yellow' -String "Information: This project is community maintained and has no sponsorship from Veeam, its employees or any of its affiliates."
+            Write-ColorOutput -Color 'Green' -String ("Please wait while the '{0}' is being generated." -f $MainGraphLabel)
+            Write-ColorOutput  -Color 'White' -String "- Please refer to the Veeam.Diagrammer github website for more detailed information about this project."
+            Write-ColorOutput  -Color 'White' -String "- Documentation: https://github.com/rebelinux/Veeam.Diagrammer"
+            Write-ColorOutput  -Color 'White' -String "- Issues or bug reporting: https://github.com/rebelinux/Veeam.Diagrammer/issues"
+            Write-ColorOutput  -Color 'White' -String "- This project is community maintained and has no sponsorship from Veeam, its employees or any of its affiliates."
 
 
             # Check the current Veeam.Diagrammer module
@@ -392,11 +421,11 @@ function New-VeeamDiagram {
                 $InstalledVersion = Get-Module -ListAvailable -Name Veeam.Diagrammer -ErrorAction SilentlyContinue | Sort-Object -Property Version -Descending | Select-Object -First 1 -ExpandProperty Version
 
                 if ($InstalledVersion) {
-                    Write-ColorOutput  -Color 'Yellow' -String "Information: Veeam.Diagrammer $($InstalledVersion.ToString()) is currently installed."
+                    Write-ColorOutput  -Color 'White' -String "- Veeam.Diagrammer $($InstalledVersion.ToString()) is currently installed."
                     $LatestVersion = Find-Module -Name Veeam.Diagrammer -Repository PSGallery -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Version
                     if ([version]$InstalledVersion -lt [version]$LatestVersion) {
-                        Write-ColorOutput  -Color 'Yellow' -String "Information: Veeam.Diagrammer $($LatestVersion.ToString()) update is available."
-                        Write-ColorOutput  -Color 'Yellow' -String "Information: Run 'Update-Module -Name Veeam.Diagrammer -Force' to install the latest version."
+                        Write-ColorOutput  -Color 'Red' -String "  - Veeam.Diagrammer $($LatestVersion.ToString()) update is available."
+                        Write-ColorOutput  -Color 'Red' -String "  - Run 'Update-Module -Name Veeam.Diagrammer -Force' to install the latest version."
                     }
                 }
             } Catch {

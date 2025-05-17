@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.29] - 2025-05-17
+
+### Changed
+
+- Update module version to 0.6.29
+- Enhance column size handling in diagram generation scripts
+- Improve column size logic for various diagram components to dynamically adjust based on the number of items, ensuring better layout and readability.
+- Enhance error handling and verbose output for better debugging and user feedback during diagram generation.
+
+### Fixed
+
+- Fix column size calculation for VivCenter and VMware backup proxies to ensure accurate representation
+- Fix Get-DiagBackupToProtectedGroup function to improve error handling
+- Ensure positive integer validation for ColumnSize parameter
+
+
 ## [0.6.28] - 2025-05-14
 
 ### Added
