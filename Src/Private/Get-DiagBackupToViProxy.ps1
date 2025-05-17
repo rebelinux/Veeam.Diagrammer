@@ -52,7 +52,7 @@ function Get-DiagBackupToViProxy {
                         try {
                             $ViClustersChildsNodes = foreach ($ViCluster in $vCenter.Childs) {
                                 if ($ViCluster.EsxiHost.Name) {
-                                    if ($VMwareBackupProxy.EsxiHost.Name.Count -eq 1) {
+                                    if ($ViCluster.EsxiHost.Name.Count -eq 1) {
                                         $ViClustersChildsNodesColumnSize = 1
                                     } elseif ($ColumnSize) {
                                         $ViClustersChildsNodesColumnSize = $ColumnSize

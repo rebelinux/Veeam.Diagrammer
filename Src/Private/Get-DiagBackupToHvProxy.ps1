@@ -136,13 +136,7 @@ function Get-DiagBackupToHvProxy {
             }
 
             if ($VivCenterNodesAll) {
-                if ($VivCenterNodesAll.Count -eq 1) {
-                    $VivCenterNodesAllColumnSize = 1
-                } elseif ($ColumnSize) {
-                    $VivCenterNodesAllColumnSize = $ColumnSize
-                } else {
-                    $VivCenterNodesAllColumnSize = $VivCenterNodesAll.Count
-                }
+
                 if ($Dir -eq 'LR') {
                     try {
                         $ViClustersSubgraphNode = Node -Name "HvCluster" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $VivCenterNodesAll -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_HyperV' -Label 'Microsoft Hyper-V Infrastructure' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 24); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
