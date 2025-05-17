@@ -11,15 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update module version to 0.6.29
 - Enhance column size handling in diagram generation scripts
-- Improved column size logic for various diagram components to dynamically adjust based on the number of items, ensuring better layout and readability.
-- Enhanced error handling and verbose output for better debugging and user feedback during diagram generation.
-- Enhance column size handling in diagram functions
-- Ensure positive integer validation for ColumnSize parameter
+- Improve column size logic for various diagram components to dynamically adjust based on the number of items, ensuring better layout and readability.
+- Enhance error handling and verbose output for better debugging and user feedback during diagram generation.
 
 ### Fixed
 
 - Fix column size calculation for VivCenter and VMware backup proxies to ensure accurate representation
 - Fix Get-DiagBackupToProtectedGroup function to improve error handling
+- Ensure positive integer validation for ColumnSize parameter
+
 
 ## [0.6.28] - 2025-05-14
 
