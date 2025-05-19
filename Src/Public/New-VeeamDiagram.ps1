@@ -409,27 +409,31 @@ function New-VeeamDiagram {
             'Backup-Infrastructure' { 'Backup Infrastructure Diagram' }
         }
         if ($Format -ne 'Base64') {
-            Write-ColorOutput -Color 'Green' -String ("Please wait while the '{0}' is being generated." -f $MainGraphLabel)
-            Write-ColorOutput  -Color 'White' -String "- Please refer to the Veeam.Diagrammer github website for more detailed information about this project."
-            Write-ColorOutput  -Color 'White' -String "- Documentation: https://github.com/rebelinux/Veeam.Diagrammer"
-            Write-ColorOutput  -Color 'White' -String "- Issues or bug reporting: https://github.com/rebelinux/Veeam.Diagrammer/issues"
-            Write-ColorOutput  -Color 'White' -String "- This project is community maintained and has no sponsorship from Veeam, its employees or any of its affiliates."
+            Write-Host -ForegroundColor 'Green' ("Please wait while the '{0}' is being generated." -f $MainGraphLabel)
+            Write-Host " - Please refer to the Veeam.Diagrammer github website for more detailed information about this project."
+            Write-Host " - Documentation: https://github.com/rebelinux/Veeam.Diagrammer"
+            Write-Host " - Issues or bug reporting: https://github.com/rebelinux/Veeam.Diagrammer/issues"
+            Write-Host " - This project is community maintained and has no sponsorship from Veeam, its employees or any of its affiliates."
 
 
-            # Check the current Veeam.Diagrammer module
-            Try {
-                $InstalledVersion = Get-Module -ListAvailable -Name Veeam.Diagrammer -ErrorAction SilentlyContinue | Sort-Object -Property Version -Descending | Select-Object -First 1 -ExpandProperty Version
+            # Check the version of the dependency modules
+            $ModuleArray = @('Veeam.Diagrammer', 'Diagrammer.Core')
 
-                if ($InstalledVersion) {
-                    Write-ColorOutput  -Color 'White' -String "- Veeam.Diagrammer $($InstalledVersion.ToString()) is currently installed."
-                    $LatestVersion = Find-Module -Name Veeam.Diagrammer -Repository PSGallery -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Version
-                    if ([version]$InstalledVersion -lt [version]$LatestVersion) {
-                        Write-ColorOutput  -Color 'Red' -String "  - Veeam.Diagrammer $($LatestVersion.ToString()) update is available."
-                        Write-ColorOutput  -Color 'Red' -String "  - Run 'Update-Module -Name Veeam.Diagrammer -Force' to install the latest version."
+            foreach ($Module in $ModuleArray) {
+                Try {
+                    $InstalledVersion = Get-Module -ListAvailable -Name $Module -ErrorAction SilentlyContinue | Sort-Object -Property Version -Descending | Select-Object -First 1 -ExpandProperty Version
+
+                    if ($InstalledVersion) {
+                        Write-Host " - $Module module v$($InstalledVersion.ToString()) is currently installed."
+                        $LatestVersion = Find-Module -Name $Module -Repository PSGallery -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Version
+                        if ($InstalledVersion -lt $LatestVersion) {
+                            Write-Host "  - $Module module v$($LatestVersion.ToString()) is available." -ForegroundColor Red
+                            Write-Host "  - Run 'Update-Module -Name $Module -Force' to install the latest version." -ForegroundColor Red
+                        }
                     }
+                } Catch {
+                    Write-PScriboMessage -IsWarning $_.Exception.Message
                 }
-            } Catch {
-                Write-Warning $_.Exception.Message
             }
         }
 
@@ -587,7 +591,7 @@ function New-VeeamDiagram {
                 }
 
                 SubGraph OUTERDRAWBOARD1 -Attributes @{Label = $Signature; fontsize = 24; penwidth = 1.5; labelloc = 'b'; labeljust = "r"; style = $SubGraphDebug.style; color = $SubGraphDebug.color } {
-                    SubGraph MainGraph -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label $MainGraphLabel -IconType $CustomLogo -IconDebug $IconDebug -IconWidth 300 -IconHeight 54 -fontName "Segoe Ui Black" -fontColor $Fontcolor -Fontsize 28); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
+                    SubGraph MainGraph -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label $MainGraphLabel -IconType $CustomLogo -IconDebug $IconDebug -IconWidth 300 -IconHeight 90 -fontName "Segoe Ui Black" -fontColor $Fontcolor -Fontsize 28); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
 
                         Get-DiagBackupServer
 
@@ -670,7 +674,7 @@ function New-VeeamDiagram {
                 if ($OutputDiagram) {
                     if ($OutputFormat -ne 'Base64') {
                         # If not Base64 format return image path
-                        Write-ColorOutput -Color 'White' -String ("Diagrammer diagram '{0}' has been saved to '{1}'" -f $OutputDiagram.Name, $OutputDiagram.Directory)
+                        Write-Host ("Diagrammer diagram '{0}' has been saved to '{1}'" -f $OutputDiagram.Name, $OutputDiagram.Directory)
                     } else {
                         Write-Verbose "Displaying Base64 string"
                         # Return Base64 string

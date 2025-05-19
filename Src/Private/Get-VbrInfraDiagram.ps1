@@ -283,7 +283,7 @@ function Get-VbrInfraDiagram {
                 }
 
                 try {
-                    $VirtualNodesArraySubgraphNode = Node -Name "VirtualInfra" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $VirtualNodesArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Proxy' -Label 'Virtual Infrastructure' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 24); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                    $VirtualNodesArraySubgraphNode = Node -Name "VirtualInfra" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $VirtualNodesArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Proxy' -Label 'Virtual Infrastructure' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 2 -fontSize 24); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create SureBackup SubGraph Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"

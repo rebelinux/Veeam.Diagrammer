@@ -6,5 +6,6 @@
         'PSAvoidUsingPlainTextForPassword',
         'PSAvoidUsingUsernameAndPasswordParams'
         'PSAvoidUsingConvertToSecureStringWithPlainText'
+        'PSAvoidUsingWriteHost'
     )
 }
