@@ -409,11 +409,11 @@ function New-VeeamDiagram {
             'Backup-Infrastructure' { 'Backup Infrastructure Diagram' }
         }
         if ($Format -ne 'Base64') {
-            Write-Host -ForegroundColor 'Green' ("Please wait while the '{0}' is being generated." -f $MainGraphLabel)
-            Write-Host " - Please refer to the Veeam.Diagrammer github website for more detailed information about this project."
-            Write-Host " - Documentation: https://github.com/rebelinux/Veeam.Diagrammer"
-            Write-Host " - Issues or bug reporting: https://github.com/rebelinux/Veeam.Diagrammer/issues"
-            Write-Host " - This project is community maintained and has no sponsorship from Veeam, its employees or any of its affiliates."
+            Write-ColorOutput -Color 'Green' -String ("Please wait while the '{0}' is being generated." -f $MainGraphLabel)
+            Write-ColorOutput -Color 'White' -String " - Please refer to the Veeam.Diagrammer github website for more detailed information about this project."
+            Write-ColorOutput -Color 'White' -String " - Documentation: https://github.com/rebelinux/Veeam.Diagrammer"
+            Write-ColorOutput -Color 'White' -String " - Issues or bug reporting: https://github.com/rebelinux/Veeam.Diagrammer/issues"
+            Write-ColorOutput -Color 'White' -String " - This project is community maintained and has no sponsorship from Veeam, its employees or any of its affiliates."
 
 
             # Check the version of the dependency modules
@@ -424,11 +424,11 @@ function New-VeeamDiagram {
                     $InstalledVersion = Get-Module -ListAvailable -Name $Module -ErrorAction SilentlyContinue | Sort-Object -Property Version -Descending | Select-Object -First 1 -ExpandProperty Version
 
                     if ($InstalledVersion) {
-                        Write-Host " - $Module module v$($InstalledVersion.ToString()) is currently installed."
+                        Write-ColorOutput -Color 'White' -String " - $Module module v$($InstalledVersion.ToString()) is currently installed."
                         $LatestVersion = Find-Module -Name $Module -Repository PSGallery -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Version
                         if ($InstalledVersion -lt $LatestVersion) {
-                            Write-Host "  - $Module module v$($LatestVersion.ToString()) is available." -ForegroundColor Red
-                            Write-Host "  - Run 'Update-Module -Name $Module -Force' to install the latest version." -ForegroundColor Red
+                            Write-ColorOutput -Color 'White' -String "  - $Module module v$($LatestVersion.ToString()) is available." -Color Red
+                            Write-ColorOutput -Color 'White' -String "  - Run 'Update-Module -Name $Module -Force' to install the latest version." -Color Red
                         }
                     }
                 } Catch {
@@ -674,7 +674,7 @@ function New-VeeamDiagram {
                 if ($OutputDiagram) {
                     if ($OutputFormat -ne 'Base64') {
                         # If not Base64 format return image path
-                        Write-Host ("Diagrammer diagram '{0}' has been saved to '{1}'" -f $OutputDiagram.Name, $OutputDiagram.Directory)
+                        Write-ColorOutput -Color 'White' -String ("Diagrammer diagram '{0}' has been saved to '{1}'" -f $OutputDiagram.Name, $OutputDiagram.Directory)
                     } else {
                         Write-Verbose "Displaying Base64 string"
                         # Return Base64 string
