@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Update PSScriptAnalyzerSettings.psd1 to exclude 'PSAvoidUsingWriteHost' rule
-- Refactor New-VeeamDiagram function to replace Write-ColorOutput with Write-Host for improved output handling
 - Update `Diagrammer.Core` module version to 0.2.27
 
 ### Fixed
