@@ -516,6 +516,53 @@ function Get-VbrInfraDiagram {
                 }
             }
 
+            # Cloud Connect Graphviz Cluster
+            $CloudConnectInfraArray = @()
+
+            if ($CGServerInfo = Get-VbrBackupCGServerInfo) {
+                try {
+                    $CGServerNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CGServerInfo.Name -Align "Center" -iconType "VBR_Cloud_Connect_Gateway" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $CGServerInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Cloud_Connect_Gateway" -SubgraphLabel "Cloud Gateway Servers" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+
+                    $CloudConnectInfraArray += $CGServerNode
+                    $CloudConnectInfraArray += $BlankFiller
+                } catch {
+                    Write-Verbose "Error: Unable to create CloudGateway server Objects. Disabling the section"
+                    Write-Debug "Error Message: $($_.Exception.Message)"
+                }
+                # if ($TapeLibraryInfo = Get-VbrTapeLibraryInfo) {
+                #     try {
+                #         $TapeLibraryNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeLibraryInfo.Name -Align "Center" -iconType "VBR_Tape_Library" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeLibraryInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Library" -SubgraphLabel "Tape Libraries" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+
+                #         $TapeInfraArray += $TapeLibraryNode
+                #         $TapeInfraArray += $BlankFiller
+                #     } catch {
+                #         Write-Verbose "Error: Unable to create TapeLibrary Objects. Disabling the section"
+                #         Write-Debug "Error Message: $($_.Exception.Message)"
+                #     }
+                # }
+                # if ($TapeVaultInfo = Get-VbrTapeVaultInfo) {
+                #     try {
+                #         $TapeVaultNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeVaultInfo.Name -Align "Center" -iconType "VBR_Tape_Vaults" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeVaultInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Vaults" -SubgraphLabel "Tape Vaults" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+                #         $TapeInfraArray += $TapeVaultNode
+                #     } catch {
+                #         Write-Verbose "Error: Unable to create TapeVault Objects. Disabling the section"
+                #         Write-Debug "Error Message: $($_.Exception.Message)"
+                #     }
+                # }
+            }
+            if ($CGServerInfo -and $CGServerNode) {
+                try {
+                    $CGServerSubGraph = Node -Name "CloudConnectInfra" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CloudConnectInfraArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Cloud_Connect' -Label 'Cloud Connect Infrastructure' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 24); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                } catch {
+                    Write-Verbose "Error: Unable to create CloudConnectInfra SubGraph Objects. Disabling the section"
+                    Write-Debug "Error Message: $($_.Exception.Message)"
+                }
+
+                if ($CGServerSubGraph) {
+                    $CGServerSubGraph
+                }
+            }
+
             if ($DiagramTheme -eq 'Black') {
                 $NodeFillColor = 'White'
             } elseif ($DiagramTheme -eq 'Neon') {
@@ -526,24 +573,42 @@ function Get-VbrInfraDiagram {
 
             # Veeam VBR elements point of connection (Dummy Nodes!)
             $Node = @('VBRServerPointSpace', 'VBRProxyPoint', 'VBRProxyPointSpace', 'VBRRepoPoint')
+            $NodeEdge = @()
+
+            $LastPoint = 'VBRRepoPoint'
 
             if ($WanAccels) {
-                $Node += 'VBRWanAccelPoint', 'VBRRepoPointSpace'
+                $Node += 'VBRRepoPointSpace', 'VBRWanAccelPoint'
+                $NodeEdge += 'VBRRepoPointSpace', 'VBRWanAccelPoint'
+                $LastPoint = 'VBRWanAccelPoint'
             } else {
                 $Node += 'VBRRepoPointSpace'
-
+                $NodeEdge += 'VBRRepoPointSpace'
+                $LastPoint = 'VBRRepoPointSpace'
             }
 
             if ($TapeServerInfo) {
                 $Node += 'VBRTapePoint'
+                $NodeEdge += 'VBRTapePoint'
+                $LastPoint = 'VBRTapePoint'
             }
 
             if ($ServiceProviderInfo) {
                 $Node += 'VBRServiceProviderPoint'
+                $NodeEdge += 'VBRServiceProviderPoint'
+                $LastPoint = 'VBRServiceProviderPoint'
             }
 
             if ($VirtualLabNode -or $ApplicationGroups) {
                 $Node += 'VBRSureBackupPoint'
+                $NodeEdge += 'VBRSureBackupPoint'
+                $LastPoint = 'VBRSureBackupPoint'
+            }
+
+            if ($CGServerInfo) {
+                $Node += 'VBRCloudConnectPoint'
+                $NodeEdge += 'VBRCloudConnectPoint'
+                $LastPoint = 'VBRCloudConnectPoint'
             }
 
             Node $Node -NodeScript { $_ } @{Label = { $_ } ; fontcolor = $NodeDebug.color; fillColor = $NodeDebug.style; shape = $NodeDebug.shape }
@@ -582,105 +647,11 @@ function Get-VbrInfraDiagram {
             Edge -From VBRProxyPointSpace -To VBRRepoPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
             Edge -From VBRRepoPoint -To VBRRepoPointSpace @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
 
-            if ($TapeServerNode -and $WanAccelsNode -and $ServiceProviderNode -and ($VirtualLabNode -or $ApplicationGroupsNode)) {
-                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRWanAccelPoint -To VBRTapePoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRTapePoint -To VBRServiceProviderPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRServiceProviderPoint -To VBRSureBackupPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRSureBackupPoint'
-
-            } elseif ($TapeServerNode -and $WanAccelsNode -and $ServiceProviderNode -and ( -Not ($VirtualLabNode -or $ApplicationGroupsNode))) {
-                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRWanAccelPoint -To VBRTapePoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRTapePoint -To VBRServiceProviderPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRServiceProviderPoint'
-
-            } elseif ($TapeServerNode -and $WanAccelsNode -and (-Not $ServiceProviderNode) -and ($VirtualLabNode -or $ApplicationGroupsNode)) {
-                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRWanAccelPoint -To VBRTapePoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRTapePoint -To VBRSureBackupPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRSureBackupPoint'
-
-            } elseif ($TapeServerNode -and $WanAccelsNode -and (-Not $ServiceProviderNode) -and (-Not ($VirtualLabNode -or $ApplicationGroupsNode))) {
-                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRWanAccelPoint -To VBRTapePoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRTapePoint'
-
-            } elseif ($TapeServerNode -and (-Not $WanAccelsNode) -and (-Not $ServiceProviderNode) -and ($VirtualLabNode -or $ApplicationGroupsNode)) {
-                Edge -From VBRRepoPointSpace -To VBRTapePoint @{minlen = 22; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRTapePoint -To VBRSureBackupPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRSureBackupPoint'
-
-            } elseif ($TapeServerNode -and (-Not $WanAccelsNode) -and (-Not $ServiceProviderNode) -and (-Not ($VirtualLabNode -or $ApplicationGroupsNode))) {
-                Edge -From VBRRepoPointSpace -To VBRTapePoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRTapePoint'
-
-            } elseif ((-Not $TapeServerNode) -and (-Not $WanAccelsNode) -and (-Not $ServiceProviderNode) -and ($VirtualLabNode -or $ApplicationGroupsNode)) {
-                Edge -From VBRRepoPointSpace -To VBRSureBackupPoint @{minlen = 22; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRSureBackupPoint'
-
-            } elseif ((-Not $TapeServerNode) -and (-Not $WanAccelsNode) -and (-Not $ServiceProviderNode) -and (-Not ($VirtualLabNode -or $ApplicationGroupsNode))) {
-                $LastPoint = 'VBRRepoPointSpace'
-                $LastPointMinLen = 12
-
-            } elseif ((-Not $TapeServerNode) -and $WanAccelsNode -and $ServiceProviderNode -and (($VirtualLabNode -or $ApplicationGroupsNode))) {
-                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRWanAccelPoint -To VBRServiceProviderPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRServiceProviderPoint -To VBRSureBackupPoint @{minlen = 22; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRSureBackupPoint'
-            } elseif ((-Not $TapeServerNode) -and $WanAccelsNode -and $ServiceProviderNode -and ( -Not ($VirtualLabNode -or $ApplicationGroupsNode))) {
-                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRWanAccelPoint -To VBRServiceProviderPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRServiceProviderPoint'
-            }
-
-            elseif ((-Not $TapeServerNode) -and (-Not $WanAccelsNode) -and $ServiceProviderNode -and (($VirtualLabNode -or $ApplicationGroupsNode))) {
-                Edge -From VBRRepoPointSpace -To VBRServiceProviderPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRServiceProviderPoint -To VBRSureBackupPoint @{minlen = 22; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRSureBackupPoint'
-            } elseif ((-Not $TapeServerNode) -and (-Not $WanAccelsNode) -and $ServiceProviderNode -and ( -Not ($VirtualLabNode -or $ApplicationGroupsNode))) {
-                Edge -From VBRRepoPointSpace -To VBRServiceProviderPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRServiceProviderPoint'
-            }
-
-            elseif ((-Not $TapeServerNode) -and $WanAccelsNode -and (-Not $ServiceProviderNode) -and (($VirtualLabNode -or $ApplicationGroupsNode))) {
-                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRWanAccelPoint -To VBRSureBackupPoint @{minlen = 22; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRSureBackupPoint'
-            }
-
-            elseif ($TapeServerNode -and (-Not $WanAccelsNode) -and $ServiceProviderNode -and (($VirtualLabNode -or $ApplicationGroupsNode))) {
-                Edge -From VBRRepoPointSpace -To VBRTapePoint @{minlen = 18; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRTapePoint -To VBRServiceProviderPoint @{minlen = 16; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRServiceProviderPoint -To VBRSureBackupPoint @{minlen = 18; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRSureBackupPoint'
-            }
-
-            elseif ($TapeServerNode -and (-Not $WanAccelsNode) -and $ServiceProviderNode) {
-                Edge -From VBRRepoPointSpace -To VBRTapePoint @{minlen = 22; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRTapePoint -To VBRServiceProviderPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRServiceProviderPoint'
-            } elseif ($TapeServerNode -and (-Not $WanAccels) -and (-Not $ServiceProviderNode)) {
-                Edge -From VBRRepoPointSpace -To VBRTapePoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRTapePoint'
-            } elseif ((-Not $TapeServerNode) -and $WanAccelsNode -and $ServiceProviderNode) {
-                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRWanAccelPoint -To VBRServiceProviderPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRServiceProviderPoint'
-            } elseif ((-Not $TapeServerNode) -and (-Not $WanAccelsNode) -and $ServiceProviderNode) {
-                Edge -From VBRRepoPointSpace -To VBRServiceProviderPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRServiceProviderPoint'
-
-            } elseif ((-Not $TapeServerNode) -and $WanAccelsNode -and (-Not $ServiceProviderNode)) {
-                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRWanAccelPoint'
-            } elseif ($TapeServerNode -and $WanAccelsNode -and (-Not $ServiceProviderNode)) {
-                Edge -From VBRRepoPointSpace -To VBRWanAccelPoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                Edge -From VBRWanAccelPoint -To VBRTapePoint @{minlen = 20; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
-                $LastPoint = 'VBRTapePoint'
-            } elseif ((-Not $TapeServerNode) -and (-Not $WanAccelsNode) -and (-Not $ServiceProviderNode)) {
-                $LastPoint = 'VBRRepoPointSpace'
-                $LastPointMinLen = 16
+            # Connect the available Points
+            $index = 0
+            foreach ($Element in $NodeEdge) {
+                $index++
+                Edge -From $Element -To $NodeEdge[$index] @{minlen = 18; arrowtail = 'none'; arrowhead = 'none'; style = 'filled' }
             }
 
             ####################################################################################
@@ -733,6 +704,11 @@ function Get-VbrInfraDiagram {
             # Connect Veeam Object Repository to the Dummy line
             if ($SureBackupSubgraphNode) {
                 Edge -From SureBackup -To VBRSureBackupPoint @{minlen = 2; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
+            }
+
+            # Connect Veeam Cloud Connect object to the Dummy line
+            if ($CGServerSubGraph) {
+                Edge -From VBRCloudConnectPoint -To CloudConnectInfra @{minlen = 1; arrowtail = 'dot'; arrowhead = 'none'; style = 'dashed' }
             }
 
             ####################################################################################

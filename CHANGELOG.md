@@ -7,14 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.30] - 2025-05-XX
 
+### Added
+
+- Introduce `Get-VbrBackupCGServerInfo` function to extract Cloud Gateway server information
+
 ### Changed
 
-- Update PSScriptAnalyzerSettings.psd1 to exclude 'PSAvoidUsingWriteHost' rule
-- Update `Diagrammer.Core` module version to 0.2.27
+- Update `PSScriptAnalyzerSettings.psd1` to exclude the 'PSAvoidUsingWriteHost' rule
+- Upgrade `Diagrammer.Core` module version to 0.2.27
+- Enhance `Get-VbrInfraDiagram` to integrate Cloud Connect infrastructure
+- Update `Images.ps1` with new image references
+- Improve logic for dummy line generation
 
 ### Fixed
 
-- Fix Veeam Logo aspect ratio
+- Correct Veeam logo aspect ratio
 
 ## [0.6.29] - 2025-05-17
 
