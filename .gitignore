@@ -14,5 +14,6 @@ debug.log
 .vscode/launch.json
 .vscode/extensions.json
 *.code-workspace
+Todo
 
 # End of https://www.toptal.com/developers/gitignore/api/hugo,vscode

@@ -529,17 +529,41 @@ function Get-VbrInfraDiagram {
                     Write-Verbose "Error: Unable to create CloudGateway server Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
                 }
-                # if ($TapeLibraryInfo = Get-VbrTapeLibraryInfo) {
-                #     try {
-                #         $TapeLibraryNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeLibraryInfo.Name -Align "Center" -iconType "VBR_Tape_Library" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeLibraryInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Library" -SubgraphLabel "Tape Libraries" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+                if ($CGPoolInfo = Get-VbrBackupCGPoolInfo) {
+                    try {
+                        $CGPoolNode = foreach ($CGPool in $CGPoolInfo) {
+                            if ($CGPoolInfo.CloudGateways) {
+                                if ($CGPoolInfo.CloudGateways.count -le 3) {
+                                    $columnSize = $CGPoolInfo.CloudGateways.count
+                                } else {
+                                    $columnSize = 3
+                                }
+                                Get-DiaHTMLTable -ImagesObj $Images -Rows $CGPool.CloudGateways.Name.split(".")[0] -Align 'Center' -ColumnSize $columnSize -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_Cloud_Connect_Gateway" -SubgraphLabel $CGPool.Name -SubgraphLabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18
+                            } else {
+                                Get-DiaHTMLTable -ImagesObj $Images -Rows 'No Cloud Gateway Server' -Align 'Center' -ColumnSize 1 -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_Cloud_Connect_Gateway" -SubgraphLabel $CGPool.Name -SubgraphLabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18
+                            }
+                        }
+                    } catch {
+                        Write-Verbose "Error: Unable to create CGPoolInfo Objects. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
+                    }
+                    try {
+                        if ($CGPoolNode) {
+                            if ($CGPoolNode.count -le 3) {
+                                $columnSize = $CGPoolNode.count
+                            } else {
+                                $columnSize = 3
+                            }
+                            $CGPoolNodesSubGraph += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CGPoolNode -Align 'Center' -IconDebug $IconDebug -Label 'Cloud Gateway Pools' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $columnSize -fontSize 22 -IconType "VBR_Cloud_Connect_Gateway_Pools"
 
-                #         $TapeInfraArray += $TapeLibraryNode
-                #         $TapeInfraArray += $BlankFiller
-                #     } catch {
-                #         Write-Verbose "Error: Unable to create TapeLibrary Objects. Disabling the section"
-                #         Write-Debug "Error Message: $($_.Exception.Message)"
-                #     }
-                # }
+                            $CloudConnectInfraArray += $CGPoolNodesSubGraph
+                            $CloudConnectInfraArray += $BlankFiller
+                        }
+                    } catch {
+                        Write-Verbose "Error: Unable to create CGPoolInfo SubGraph Objects. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
+                    }
+                }
                 # if ($TapeVaultInfo = Get-VbrTapeVaultInfo) {
                 #     try {
                 #         $TapeVaultNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeVaultInfo.Name -Align "Center" -iconType "VBR_Tape_Vaults" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeVaultInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Vaults" -SubgraphLabel "Tape Vaults" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18

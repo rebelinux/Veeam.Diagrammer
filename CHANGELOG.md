@@ -10,9 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Introduce `Get-VbrBackupCGServerInfo` function to extract Cloud Gateway server information
+- Add Get-VbrBackupCGPoolInfo function for extracting cloud gateway pool information
 
 ### Changed
 
+- update module version to 0.6.30
 - Update `PSScriptAnalyzerSettings.psd1` to exclude the 'PSAvoidUsingWriteHost' rule
 - Upgrade `Diagrammer.Core` module version to 0.2.27
 - Enhance `Get-VbrInfraDiagram` to integrate Cloud Connect infrastructure

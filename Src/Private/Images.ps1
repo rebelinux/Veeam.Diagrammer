@@ -9,6 +9,7 @@ $script:Images = @{
     "VBR_Cloud_Repository" = "Cloud_Repository.png"
     "VBR_Cloud_Connect" = "Veeam_Cloud_Connect.png"
     "VBR_Cloud_Connect_Gateway" = "VSPC_server.png"
+    "VBR_Cloud_Connect_Gateway_Pools" = "Folder.png"
     "VBR_Object_Repository" = "Object_Storage.png"
     "VBR_Object" = "Object_Storage_support.png"
     "VBR_Amazon_S3_Compatible" = "S3-compatible.png"
