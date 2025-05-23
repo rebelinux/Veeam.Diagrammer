@@ -1,0 +1,20 @@
+[] Calculate Node count to assign the correct column size to the html table
+[] Add Cloud Connect resources to the Infrastructure diagram (InProgress)
+[] Create a Cloud Connect Diagram
+[] Create a Per Tenant Cloud Connect Diagram showing the resources used by it
+    [] Backup Storage
+    [] Resources Usage
+    [] Etc...
+           Cloud GateWay Pool
+                  |
+                  |
+            Cloud Gateway
+                  |
+                  |
+    Cloud Repository (Backup Resources)
+                  |
+                  |
+    Replica Resources (Hardware Plan)
+                  |
+                  |
+           Network Extension

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Introduce `Get-VbrBackupCGServerInfo` function to extract Cloud Gateway server information
 - Add Get-VbrBackupCGPoolInfo function for extracting cloud gateway pool information
+- Add Todo file for tracking diagram enhancements
 
 ### Changed
 
