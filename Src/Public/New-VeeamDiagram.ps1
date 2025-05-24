@@ -289,7 +289,7 @@ function New-VeeamDiagram {
             Mandatory = $true,
             HelpMessage = 'Controls type of Veeam VBR generated diagram'
         )]
-        [ValidateSet('Backup-to-Tape', 'Backup-to-File-Proxy', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-ProtectedGroup', 'Backup-Infrastructure')]
+        [ValidateSet('Backup-to-Tape', 'Backup-to-File-Proxy', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-ProtectedGroup', 'Backup-Infrastructure', 'Backup-to-CloudConnect')]
         [string] $DiagramType,
 
         [Parameter(
@@ -407,6 +407,7 @@ function New-VeeamDiagram {
             'Backup-to-Tape' { 'Tape Infrastructure Diagram' }
             'Backup-to-ProtectedGroup' { 'Physical Infrastructure Diagram' }
             'Backup-Infrastructure' { 'Backup Infrastructure Diagram' }
+            'Backup-to-CloudConnect' { 'Cloud Connect Infrastructure Diagram' }
         }
         if ($Format -ne 'Base64') {
             Write-ColorOutput -Color 'Green' -String ("Please wait while the '{0}' is being generated." -f $MainGraphLabel)
@@ -657,6 +658,13 @@ function New-VeeamDiagram {
                                 $BackupInfra
                             } else {
                                 throw "No Backup Infrastructure available to diagram"
+                            }
+                        } elseif ($DiagramType -eq 'Backup-to-CloudConnect') {
+                            $BackuptoCloudConnect = Get-DiagBackupToCloudConnect | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            if ($BackuptoCloudConnect) {
+                                $BackuptoCloudConnect
+                            } else {
+                                throw "No Cloud Connect infrastructure available to diagram"
                             }
                         }
                     }

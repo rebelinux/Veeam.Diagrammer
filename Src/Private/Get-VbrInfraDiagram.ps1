@@ -132,7 +132,12 @@ function Get-VbrInfraDiagram {
                     }
                     try {
                         if ($ViClustersChildsNodes) {
-                            $ViClustersNodes += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ViClustersChildsNodes -Align 'Center' -IconDebug $IconDebug -Label 'vSphere Clusters' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 3 -fontSize 22
+                            if ($ViClustersChildsNodes.count -le 5) {
+                                $columnSize = $ViClustersChildsNodes.count
+                            } else {
+                                $columnSize = 5
+                            }
+                            $ViClustersNodes += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ViClustersChildsNodes -Align 'Center' -IconDebug $IconDebug -Label 'vSphere Clusters' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $columnSize -fontSize 22
                             $vCenterNodeArray += $ViClustersNodes
                         }
                     } catch {
@@ -271,7 +276,7 @@ function Get-VbrInfraDiagram {
                     if ($ViStandAloneSubgraph) {
                         $VirtualNodesArray += $ViStandAloneSubgraph
                     }
-                    $VirtualNodesArray += $BlankFiller
+                    # $VirtualNodesArray += $BlankFiller
 
                 }
 
@@ -301,9 +306,14 @@ function Get-VbrInfraDiagram {
             # SOBR Graphviz Cluster
             if ($SOBR = Get-VbrSOBRInfo) {
                 try {
-                    $SOBRNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBR.Name -Align "Center" -iconType "VBR_SOBR_Repo" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBR.AditionalInfo -Subgraph -SubgraphLabel "Scale-Out Backup Repositories"  -SubgraphLabelFontsize 22 -fontSize 18 -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_SOBR"
+                    if ($SOBR.Name.count -le 5) {
+                        $columnSize = $SOBR.Name.count
+                    } else {
+                        $columnSize = 5
+                    }
+                    $SOBRNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBR.Name -Align "Center" -iconType "VBR_SOBR_Repo" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBR.AditionalInfo -Subgraph -SubgraphLabel "Scale-Out Backup Repositories"  -SubgraphLabelFontsize 22 -fontSize 18 -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_SOBR"
                     $OnpremStorageArray += $SOBRNode
-                    $OnpremStorageArray += $BlankFiller
+                    # $OnpremStorageArray += $BlankFiller
                 } catch {
                     Write-Verbose "Error: Unable to create SOBR Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -313,9 +323,14 @@ function Get-VbrInfraDiagram {
             # SAN Infrastructure Graphviz Cluster
             if ($SAN = Get-VbrSANInfo) {
                 try {
-                    $SANNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SAN.Name -Align "Center" -iconType $SAN.IconType -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $SAN.AditionalInfo -SubgraphLabelFontsize 22 -fontSize 18 -Subgraph -SubgraphLabel "Storage Infrastructure" -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_SAN"
+                    if ($SAN.Name.count -le 5) {
+                        $columnSize = $SAN.Name.count
+                    } else {
+                        $columnSize = 5
+                    }
+                    $SANNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SAN.Name -Align "Center" -iconType $SAN.IconType -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SAN.AditionalInfo -SubgraphLabelFontsize 22 -fontSize 18 -Subgraph -SubgraphLabel "Storage Infrastructure" -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_SAN"
                     $OnpremStorageArray += $SANNode
-                    $OnpremStorageArray += $BlankFiller
+                    # $OnpremStorageArray += $BlankFiller
                 } catch {
                     Write-Verbose "Error: Unable to create SAN Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -323,8 +338,13 @@ function Get-VbrInfraDiagram {
             }
             # Repositories Graphviz Cluster
             if ($RepositoriesInfo = Get-VbrRepositoryInfo) {
+                if ($RepositoriesInfo.Name.count -le 5) {
+                    $columnSize = $RepositoriesInfo.Name.count
+                } else {
+                    $columnSize = 5
+                }
                 try {
-                    $RepositoriesNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $RepositoriesInfo.Name -Align "Center" -iconType $RepositoriesInfo.IconType -columnSize 4 -IconDebug $IconDebug -MultiIcon -AditionalInfo $RepositoriesInfo.AditionalInfo -Subgraph -SubgraphLabel "Backup Repositories" -SubgraphLabelFontsize 22 -fontSize 18 -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_Repository"
+                    $RepositoriesNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $RepositoriesInfo.Name -Align "Center" -iconType $RepositoriesInfo.IconType -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $RepositoriesInfo.AditionalInfo -Subgraph -SubgraphLabel "Backup Repositories" -SubgraphLabelFontsize 22 -fontSize 18 -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_Repository"
                     $OnpremStorageArray += $RepositoriesNode
                 } catch {
                     Write-Verbose "Error: Unable to create Repositories Objects. Disabling the section"
@@ -349,8 +369,13 @@ function Get-VbrInfraDiagram {
 
             # Object Repositories Graphviz Cluster
             if ($ObjectRepositoriesInfo = Get-VbrObjectRepoInfo) {
+                if ($ObjectRepositoriesInfo.Name.count -le 5) {
+                    $columnSize = $ObjectRepositoriesInfo.Name.count
+                } else {
+                    $columnSize = 5
+                }
                 try {
-                    $ObjectRepositoriesNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ObjectRepositoriesInfo.Name -Align "Center" -iconType $ObjectRepositoriesInfo.Icontype -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $ObjectRepositoriesInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_vSphere" -SubgraphLabel "Object Repositories" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+                    $ObjectRepositoriesNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ObjectRepositoriesInfo.Name -Align "Center" -iconType $ObjectRepositoriesInfo.Icontype -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $ObjectRepositoriesInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_vSphere" -SubgraphLabel "Object Repositories" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
                 } catch {
                     Write-Verbose "Error: Unable to create ObjectRepositories Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -359,8 +384,13 @@ function Get-VbrInfraDiagram {
 
             # Archive Object Repositories Graphviz Cluster
             if ($ArchObjRepositoriesInfo = Get-VbrArchObjectRepoInfo) {
+                if ($ArchObjRepositoriesInfo.Name.count -le 5) {
+                    $columnSize = $ArchObjRepositoriesInfo.Name.count
+                } else {
+                    $columnSize = 5
+                }
                 try {
-                    $ArchObjRepositoriesNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ArchObjRepositoriesInfo.Name -Align "Center" -iconType $ArchObjRepositoriesInfo.Icontype -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $ArchObjRepositoriesInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_vSphere" -SubgraphLabel "Archives Object Repositories" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+                    $ArchObjRepositoriesNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ArchObjRepositoriesInfo.Name -Align "Center" -iconType $ArchObjRepositoriesInfo.Icontype -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $ArchObjRepositoriesInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_vSphere" -SubgraphLabel "Archives Object Repositories" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
                 } catch {
                     Write-Verbose "Error: Unable to create ArchiveObjectRepositories Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -378,7 +408,7 @@ function Get-VbrInfraDiagram {
                 }
 
                 try {
-                    $ObjStorageSubgraphNode = Node -Name "ObjectRepos" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ObjStorageNodeArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Object' -Label 'Object Storage' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 2 -fontSize 24); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                    $ObjStorageSubgraphNode = Node -Name "ObjectRepos" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ObjStorageNodeArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Object' -Label 'Object Storage' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 24); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create SureBackup SubGraph Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -391,8 +421,13 @@ function Get-VbrInfraDiagram {
 
             # WanAccels Graphviz Cluster
             if ($WanAccels = Get-VbrWanAccelInfo) {
+                if ($WanAccels.Name.count -le 5) {
+                    $columnSize = $WanAccels.Name.count
+                } else {
+                    $columnSize = 5
+                }
                 try {
-                    $WanAccelsNode = Node WanAccelServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($WanAccels | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Wan_Accel" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $WanAccels.AditionalInfo -Subgraph -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphIconType "VBR_Wan_Accel" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18); shape = 'plain'; fontname = "Segoe Ui" }
+                    $WanAccelsNode = Node WanAccelServer @{Label = (Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($WanAccels | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Wan_Accel" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $WanAccels.AditionalInfo -Subgraph -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphIconType "VBR_Wan_Accel" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18); shape = 'plain'; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create WanAccelerators Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -407,28 +442,43 @@ function Get-VbrInfraDiagram {
 
             if ($TapeServerInfo = Get-VbrTapeServersInfo) {
                 try {
-                    $TapeServerNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeServerInfo.Name -Align "Center" -iconType "VBR_Tape_Server" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeServerInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Server" -SubgraphLabel "Tape Servers" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+                    if ($TapeServerInfo.Name.count -le 5) {
+                        $columnSize = $TapeServerInfo.Name.count
+                    } else {
+                        $columnSize = 5
+                    }
+                    $TapeServerNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeServerInfo.Name -Align "Center" -iconType "VBR_Tape_Server" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeServerInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Server" -SubgraphLabel "Tape Servers" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
 
                     $TapeInfraArray += $TapeServerNode
-                    $TapeInfraArray += $BlankFiller
+                    # $TapeInfraArray += $BlankFiller
                 } catch {
                     Write-Verbose "Error: Unable to create TapeServers Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
                 }
                 if ($TapeLibraryInfo = Get-VbrTapeLibraryInfo) {
+                    if ($TapeLibraryInfo.Name.count -le 5) {
+                        $columnSize = $TapeLibraryInfo.Name.count
+                    } else {
+                        $columnSize = 5
+                    }
                     try {
-                        $TapeLibraryNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeLibraryInfo.Name -Align "Center" -iconType "VBR_Tape_Library" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeLibraryInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Library" -SubgraphLabel "Tape Libraries" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+                        $TapeLibraryNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeLibraryInfo.Name -Align "Center" -iconType "VBR_Tape_Library" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeLibraryInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Library" -SubgraphLabel "Tape Libraries" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
 
                         $TapeInfraArray += $TapeLibraryNode
-                        $TapeInfraArray += $BlankFiller
+                        # $TapeInfraArray += $BlankFiller
                     } catch {
                         Write-Verbose "Error: Unable to create TapeLibrary Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
                     }
                 }
                 if ($TapeVaultInfo = Get-VbrTapeVaultInfo) {
+                    if ($TapeVaultInfo.Name.count -le 5) {
+                        $columnSize = $TapeVaultInfo.Name.count
+                    } else {
+                        $columnSize = 5
+                    }
                     try {
-                        $TapeVaultNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeVaultInfo.Name -Align "Center" -iconType "VBR_Tape_Vaults" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeVaultInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Vaults" -SubgraphLabel "Tape Vaults" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+                        $TapeVaultNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeVaultInfo.Name -Align "Center" -iconType "VBR_Tape_Vaults" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeVaultInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Vaults" -SubgraphLabel "Tape Vaults" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
                         $TapeInfraArray += $TapeVaultNode
                     } catch {
                         Write-Verbose "Error: Unable to create TapeVault Objects. Disabling the section"
@@ -475,16 +525,26 @@ function Get-VbrInfraDiagram {
             # SureBackup Graphviz Cluster
             if (($VirtualLab = Get-VbrVirtualLabInfo -and ($ApplicationGroups = Get-VbrApplicationGroupsInfo))) {
                 if ($VirtualLab) {
+                    if ($VirtualLab.Name.count -le 2) {
+                        $columnSize = $VirtualLab.Name.count
+                    } else {
+                        $columnSize = 2
+                    }
                     try {
-                        $VirtualLabNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $VirtualLab.Name -Align "Center" -iconType $VirtualLab.IconType -columnSize 2 -IconDebug $IconDebug -MultiIcon -AditionalInfo $VirtualLab.AditionalInfo -Subgraph -SubgraphIconType "VBR_Virtual_Lab" -SubgraphLabel "Virtual Labs" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+                        $VirtualLabNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $VirtualLab.Name -Align "Center" -iconType $VirtualLab.IconType -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $VirtualLab.AditionalInfo -Subgraph -SubgraphIconType "VBR_Virtual_Lab" -SubgraphLabel "Virtual Labs" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
                     } catch {
                         Write-Verbose "Error: Unable to create VirtualLab Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
                     }
                 }
                 if ($ApplicationGroups) {
+                    if ($ApplicationGroups.Name.count -le 2) {
+                        $columnSize = $ApplicationGroups.Name.count
+                    } else {
+                        $columnSize = 2
+                    }
                     try {
-                        $ApplicationGroupsNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ApplicationGroups.Name -Align "Center" -iconType $ApplicationGroups.IconType -columnSize 2 -IconDebug $IconDebug -MultiIcon -AditionalInfo $ApplicationGroups.AditionalInfo -Subgraph -SubgraphIconType "VBR_Virtual_Lab" -SubgraphLabel "Application Groups" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+                        $ApplicationGroupsNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $ApplicationGroups.Name -Align "Center" -iconType $ApplicationGroups.IconType -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $ApplicationGroups.AditionalInfo -Subgraph -SubgraphIconType "VBR_Virtual_Lab" -SubgraphLabel "Application Groups" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
                     } catch {
                         Write-Verbose "Error: Unable to create VirtualLab Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
@@ -493,19 +553,20 @@ function Get-VbrInfraDiagram {
 
                 $SureBackupSubgraphNodeArray = @()
 
-                # VirtualLab Graphviz Cluster
-                if ($VirtualLab -and $VirtualLabNode) {
-
-                    $SureBackupSubgraphNodeArray += $VirtualLabNode
-                }
                 # ApplicationGroups Graphviz Cluster
                 if ($ApplicationGroups -and $ApplicationGroupsNode) {
 
                     $SureBackupSubgraphNodeArray += $ApplicationGroupsNode
                 }
 
+                # VirtualLab Graphviz Cluster
+                if ($VirtualLab -and $VirtualLabNode) {
+
+                    $SureBackupSubgraphNodeArray += $VirtualLabNode
+                }
+
                 try {
-                    $SureBackupSubgraphNode = Node -Name "SureBackup" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $SureBackupSubgraphNodeArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_SureBackup' -Label 'SureBackup' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 2 -fontSize 22); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                    $SureBackupSubgraphNode = Node -Name "SureBackup" -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $SureBackupSubgraphNodeArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_SureBackup' -Label 'SureBackup' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 22); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create SureBackup SubGraph Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -520,11 +581,16 @@ function Get-VbrInfraDiagram {
             $CloudConnectInfraArray = @()
 
             if ($CGServerInfo = Get-VbrBackupCGServerInfo) {
+                if ($CGServerInfo.Name.count -le 5) {
+                    $columnSize = $CGServerInfo.Name.count
+                } else {
+                    $columnSize = 5
+                }
                 try {
-                    $CGServerNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CGServerInfo.Name -Align "Center" -iconType "VBR_Cloud_Connect_Gateway" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $CGServerInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Cloud_Connect_Gateway" -SubgraphLabel "Cloud Gateway Servers" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+                    $CGServerNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CGServerInfo.Name -Align "Center" -iconType "VBR_Cloud_Connect_Gateway" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CGServerInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Service_Providers_Server" -SubgraphLabel "Gateway Servers" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
 
                     $CloudConnectInfraArray += $CGServerNode
-                    $CloudConnectInfraArray += $BlankFiller
+                    # $CloudConnectInfraArray += $BlankFiller
                 } catch {
                     Write-Verbose "Error: Unable to create CloudGateway server Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -533,10 +599,10 @@ function Get-VbrInfraDiagram {
                     try {
                         $CGPoolNode = foreach ($CGPool in $CGPoolInfo) {
                             if ($CGPoolInfo.CloudGateways) {
-                                if ($CGPoolInfo.CloudGateways.count -le 3) {
+                                if ($CGPoolInfo.CloudGateways.count -le 5) {
                                     $columnSize = $CGPoolInfo.CloudGateways.count
                                 } else {
-                                    $columnSize = 3
+                                    $columnSize = 5
                                 }
                                 Get-DiaHTMLTable -ImagesObj $Images -Rows $CGPool.CloudGateways.Name.split(".")[0] -Align 'Center' -ColumnSize $columnSize -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_Cloud_Connect_Gateway" -SubgraphLabel $CGPool.Name -SubgraphLabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18
                             } else {
@@ -549,30 +615,54 @@ function Get-VbrInfraDiagram {
                     }
                     try {
                         if ($CGPoolNode) {
-                            if ($CGPoolNode.count -le 3) {
+                            if ($CGPoolNode.count -le 5) {
                                 $columnSize = $CGPoolNode.count
                             } else {
-                                $columnSize = 3
+                                $columnSize = 5
                             }
-                            $CGPoolNodesSubGraph += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CGPoolNode -Align 'Center' -IconDebug $IconDebug -Label 'Cloud Gateway Pools' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $columnSize -fontSize 22 -IconType "VBR_Cloud_Connect_Gateway_Pools"
+                            $CGPoolNodesSubGraph += Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CGPoolNode -Align 'Center' -IconDebug $IconDebug -Label 'Gateway Pools' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $columnSize -fontSize 22 -IconType "VBR_Cloud_Connect_Gateway_Pools"
 
                             $CloudConnectInfraArray += $CGPoolNodesSubGraph
-                            $CloudConnectInfraArray += $BlankFiller
+                            # $CloudConnectInfraArray += $BlankFiller
                         }
                     } catch {
                         Write-Verbose "Error: Unable to create CGPoolInfo SubGraph Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
                     }
                 }
-                # if ($TapeVaultInfo = Get-VbrTapeVaultInfo) {
-                #     try {
-                #         $TapeVaultNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeVaultInfo.Name -Align "Center" -iconType "VBR_Tape_Vaults" -columnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeVaultInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Vaults" -SubgraphLabel "Tape Vaults" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
-                #         $TapeInfraArray += $TapeVaultNode
-                #     } catch {
-                #         Write-Verbose "Error: Unable to create TapeVault Objects. Disabling the section"
-                #         Write-Debug "Error Message: $($_.Exception.Message)"
-                #     }
-                # }
+
+                if ($CCBSInfo = Get-VbrBackupCCBackupStorageInfo) {
+                    if ($CCBSInfo.Name.count -le 5) {
+                        $columnSize = $CCBSInfo.Name.count
+                    } else {
+                        $columnSize = 5
+                    }
+                    try {
+                        $CCBSNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CCBSInfo.Name -Align "Center" -iconType $CCBSInfo.IconType -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCBSInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Repository" -SubgraphLabel "Backup Storage" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+
+                        $CloudConnectInfraArray += $CCBSNode
+                        # $CloudConnectInfraArray += $BlankFiller
+                    } catch {
+                        Write-Verbose "Error: Unable to create CCBSNode Objects. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
+                    }
+                }
+                if ($CCRRInfo = Get-VbrBackupCCReplicaResourcesInfo) {
+                    if ($CCRRInfo.Name.count -le 5) {
+                        $columnSize = $CCRRInfo.Name.count
+                    } else {
+                        $columnSize = 5
+                    }
+                    try {
+                        $CCRRNode = Get-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CCRRInfo.Name -Align "Center" -iconType "VBR_Hardware_Resources" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCRRInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Hardware_Resources" -SubgraphLabel "Replica Resources" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+
+                        $CloudConnectInfraArray += $CCRRNode
+                        # $CloudConnectInfraArray += $BlankFiller
+                    } catch {
+                        Write-Verbose "Error: Unable to create CCRRNode Objects. Disabling the section"
+                        Write-Debug "Error Message: $($_.Exception.Message)"
+                    }
+                }
             }
             if ($CGServerInfo -and $CGServerNode) {
                 try {

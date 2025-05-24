@@ -9,22 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Introduce `Get-VbrBackupCGServerInfo` function to extract Cloud Gateway server information
-- Add Get-VbrBackupCGPoolInfo function for extracting cloud gateway pool information
-- Add Todo file for tracking diagram enhancements
+- Add the `Get-VbrBackupCGServerInfo` function to retrieve Cloud Gateway server details.
+- Add the `Get-VbrBackupCGPoolInfo` function for extracting Cloud Gateway pool information.
+- Add the `Get-VbrBackupCCBackupStorageInfo` function for extracting Cloud Connect Backup Storage information.
+- Add the `Get-VbrBackupCCReplicaResourcesInfo` function for extracting Cloud Connect Replica Resources information.
+- Add a Todo file to track diagram enhancement tasks.
+- Include Cloud Connect resources in the Infrastructure diagram.
+- Add a dedicated Cloud Connect Diagram.
 
 ### Changed
 
-- update module version to 0.6.30
-- Update `PSScriptAnalyzerSettings.psd1` to exclude the 'PSAvoidUsingWriteHost' rule
-- Upgrade `Diagrammer.Core` module version to 0.2.27
-- Enhance `Get-VbrInfraDiagram` to integrate Cloud Connect infrastructure
-- Update `Images.ps1` with new image references
-- Improve logic for dummy line generation
+- Update the module version to 0.6.30.
+- Modify `PSScriptAnalyzerSettings.psd1` to exclude the 'PSAvoidUsingWriteHost' rule.
+- Upgrade the `Diagrammer.Core` module dependency to version 0.2.27.
+- Enhance `Get-VbrInfraDiagram` to incorporate Cloud Connect infrastructure.
+- Update `Images.ps1` with new image references.
+- Improve the logic for generating dummy lines.
+- Refine node count calculation to assign appropriate column sizes to HTML tables in the `Get-VbrInfraDiagram` cmdlet.
 
 ### Fixed
 
-- Correct Veeam logo aspect ratio
+- Fix the aspect ratio of the Veeam logo.
 
 ## [0.6.29] - 2025-05-17
 

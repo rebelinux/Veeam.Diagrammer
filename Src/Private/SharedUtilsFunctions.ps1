@@ -82,6 +82,7 @@ function Get-IconType {
         'Dell' { 'VBR_Dell' }
         'VirtualLab' { 'VBR_Virtual_Lab' }
         'ApplicationGroups' { 'VBR_Application_Groups' }
+        'ExtendableRepository' { 'VBR_SOBR_Repo' }
         default { 'VBR_No_Icon' }
     }
 
@@ -233,26 +234,14 @@ function ConvertTo-TextYN {
 function ConvertTo-FileSizeString {
     <#
     .SYNOPSIS
-        Converts a size in bytes to a human-readable string representation in KB, MB, GB, TB, or PB.
+    Used by As Built Report to convert bytes automatically to GB or TB based on size.
     .DESCRIPTION
-        This function takes a size in bytes and converts it to a more readable format by automatically
-        selecting the appropriate unit (KB, MB, GB, TB, or PB) based on the size. The result is a string
-        that includes the rounded size and the unit.
-    .PARAMETER Size
-        The size in bytes to be converted. This parameter is mandatory and must be a 64-bit integer.
-    .OUTPUTS
-        [String]
-            A string representing the size in the most appropriate unit.
     .NOTES
         Version:        0.1.0
         Author:         Jonathan Colon
     .EXAMPLE
-        PS> ConvertTo-FileSizeString -Size 1073741824
-        1 GB
     .LINK
-        https://github.com/rebelinux/Veeam.Diagrammer
     #>
-
     [CmdletBinding()]
     [OutputType([String])]
     Param
@@ -260,16 +249,70 @@ function ConvertTo-FileSizeString {
         [Parameter (
             Position = 0,
             Mandatory)]
-        [int64]
-        $Size
+        [int64] $Size,
+        [Parameter(
+            Position = 1,
+            Mandatory = $false,
+            HelpMessage = 'Please provide the source space unit'
+        )]
+        [ValidateSet('MB', 'GB', 'TB', 'PB')]
+        [string] $SourceSpaceUnit,
+        [Parameter(
+            Position = 2,
+            Mandatory = $false,
+            HelpMessage = 'Please provide the space unit to output'
+        )]
+        [ValidateSet('MB', 'GB', 'TB', 'PB')]
+        [string] $TargetSpaceUnit,
+        [Parameter(
+            Position = 3,
+            Mandatory = $false,
+            HelpMessage = 'Please provide the value to round the storage unit'
+        )]
+        [int] $RoundUnits = 0
     )
 
-    $Unit = Switch ($Size) {
-        { $Size -gt 1PB } { 'PB' ; Break }
-        { $Size -gt 1TB } { 'TB' ; Break }
-        { $Size -gt 1GB } { 'GB' ; Break }
-        { $Size -gt 1Mb } { 'MB' ; Break }
-        Default { 'KB' }
+    if ($SourceSpaceUnit) {
+        return "$([math]::Round(($Size * $("1" + $SourceSpaceUnit) / $("1" + $TargetSpaceUnit)), $RoundUnits)) $TargetSpaceUnit"
+    } else {
+        $Unit = Switch ($Size) {
+            { $Size -gt 1PB } { 'PB' ; Break }
+            { $Size -gt 1TB } { 'TB' ; Break }
+            { $Size -gt 1GB } { 'GB' ; Break }
+            { $Size -gt 1Mb } { 'MB' ; Break }
+            Default { 'KB' }
+        }
+        return "$([math]::Round(($Size / $("1" + $Unit)), $RoundUnits)) $Unit"
     }
-    return "$([math]::Round(($Size / $("1" + $Unit)), 0)) $Unit"
 } # end
+
+function Convert-Size {
+    [cmdletbinding()]
+    param(
+        [validateset("Bytes", "KB", "MB", "GB", "TB")]
+        [string]$From,
+        [validateset("Bytes", "KB", "MB", "GB", "TB")]
+        [string]$To,
+        [Parameter(Mandatory = $true)]
+        [double]$Value,
+        [int]$Precision = 4
+    )
+    switch ($From) {
+        "Bytes" { $value = $Value }
+        "KB" { $value = $Value * 1024 }
+        "MB" { $value = $Value * 1024 * 1024 }
+        "GB" { $value = $Value * 1024 * 1024 * 1024 }
+        "TB" { $value = $Value * 1024 * 1024 * 1024 * 1024 }
+    }
+
+    switch ($To) {
+        "Bytes" { return $value }
+        "KB" { $Value = $Value / 1KB }
+        "MB" { $Value = $Value / 1MB }
+        "GB" { $Value = $Value / 1GB }
+        "TB" { $Value = $Value / 1TB }
+
+    }
+
+    return [Math]::Round($value, $Precision, [MidPointRounding]::AwayFromZero)
+}
