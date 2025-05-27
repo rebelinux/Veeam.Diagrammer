@@ -1,7 +1,7 @@
-function Get-VbrBackupCGPoolInfo {
+function Get-VbrBackupCCPerTenantInfo {
     <#
     .SYNOPSIS
-        Function to extract veeam backup & replication cloud gateway pool information.
+        Function to extract veeam backup & replication Cloud Connect per Tenant information.
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
@@ -19,7 +19,7 @@ function Get-VbrBackupCGPoolInfo {
     )
 
     process {
-        Write-Verbose -Message "Collecting Cloud Gateway Pool information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Cloud Connect per Tenant information from $($VBRServer.Name)."
         try {
 
             $BackupCGPoolsInfo = @()

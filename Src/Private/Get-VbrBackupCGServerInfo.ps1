@@ -40,7 +40,7 @@ function Get-VbrBackupCGServerInfo {
 
                     $TempBackupCGServersInfo = [PSCustomObject]@{
                         Name = $CloudObject.Name
-                        Label = Get-DiaNodeIcon -Name "$((Remove-SpecialChar -String $CloudObject.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType 'VBR_Tape_Server' -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
+                        Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $CloudObject.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType 'VBR_Tape_Server' -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                         Id = $CloudObject.Id
                         AditionalInfo = $AditionalInfo
                     }

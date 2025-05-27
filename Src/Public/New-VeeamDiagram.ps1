@@ -116,7 +116,7 @@ function New-VeeamDiagram {
         For best results, ensure all image assets meet the recommended size guidelines.
 
     .NOTES
-        Version:        0.6.29
+        Version:        0.6.30
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -564,7 +564,7 @@ function New-VeeamDiagram {
                     labelloc = 't'
                     style = 'filled'
                     fillColor = 'transparent'
-                    fontsize = $NodeFontSize
+                    fontsize = 14
                     imagescale = $true
                     fontcolor = $NodeFontcolor
                 }
@@ -582,9 +582,9 @@ function New-VeeamDiagram {
                 if ($Signature) {
                     Write-Verbose "Generating diagram signature"
                     if ($CustomSignatureLogo) {
-                        $Signature = (Get-DiaHtmlSignatureTable -ImagesObj $Images -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -Align 'left' -Logo $CustomSignatureLogo -IconDebug $IconDebug)
+                        $Signature = (Add-DiaHtmlSignatureTable -ImagesObj $Images -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -Align 'left' -Logo $CustomSignatureLogo -IconDebug $IconDebug)
                     } else {
-                        $Signature = (Get-DiaHtmlSignatureTable -ImagesObj $Images -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -Align 'left' -Logo "VBR_LOGO_Footer" -IconDebug $IconDebug)
+                        $Signature = (Add-DiaHtmlSignatureTable -ImagesObj $Images -Rows "Author: $($AuthorName)", "Company: $($CompanyName)" -TableBorder 2 -CellBorder 0 -Align 'left' -Logo "VBR_LOGO_Footer" -IconDebug $IconDebug)
                     }
                 } else {
                     Write-Verbose "No diagram signature specified"
@@ -592,7 +592,7 @@ function New-VeeamDiagram {
                 }
 
                 SubGraph OUTERDRAWBOARD1 -Attributes @{Label = $Signature; fontsize = 24; penwidth = 1.5; labelloc = 'b'; labeljust = "r"; style = $SubGraphDebug.style; color = $SubGraphDebug.color } {
-                    SubGraph MainGraph -Attributes @{Label = (Get-DiaHTMLLabel -ImagesObj $Images -Label $MainGraphLabel -IconType $CustomLogo -IconDebug $IconDebug -IconWidth 300 -IconHeight 90 -fontName "Segoe Ui Black" -fontColor $Fontcolor -Fontsize 28); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
+                    SubGraph MainGraph -Attributes @{Label = (Add-DiaHTMLLabel -ImagesObj $Images -Label $MainGraphLabel -IconType $CustomLogo -IconDebug $IconDebug -IconWidth 300 -IconHeight 90 -fontName "Segoe Ui Black" -fontColor $Fontcolor -Fontsize 28); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
 
                         Get-DiagBackupServer
 

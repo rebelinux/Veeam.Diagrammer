@@ -5,7 +5,7 @@ function Get-VbrBackupEntraIDInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.9
+        Version:        0.6.30
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -34,7 +34,7 @@ function Get-VbrBackupEntraIDInfo {
 
                     $TempEntraIDInfo = [PSCustomObject]@{
                         Name = $EntraID.Name.toUpper()
-                        Label = Get-DiaNodeIcon -Name "$($EntraID.Name.toUpper())" -IconType "VBR_Microsoft_Entra_ID" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                        Label = Add-DiaNodeIcon -Name "$($EntraID.Name.toUpper())" -IconType "VBR_Microsoft_Entra_ID" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
                         AditionalInfo = $Rows
                     }
                     $EntraIDInfo += $TempEntraIDInfo

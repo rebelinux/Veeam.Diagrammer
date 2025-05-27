@@ -42,7 +42,7 @@ function Get-VbrBackupCCBackupStorageInfo {
 
                     $TempBackupCCBKStorageInfo = [PSCustomObject]@{
                         Name = $CloudObject.Name
-                        Label = Get-DiaNodeIcon -Name "$((Remove-SpecialChar -String $CloudObject.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType $Type -Align "Center" -Rows $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
+                        Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $CloudObject.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType $Type -Align "Center" -Rows $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                         Id = $CloudObject.Id
                         AditionalInfo = $AditionalInfo
                         IconType = $Type

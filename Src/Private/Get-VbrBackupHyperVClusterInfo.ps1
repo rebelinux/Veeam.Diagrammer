@@ -5,7 +5,7 @@ function Get-VbrBackupHyperVClusterInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.19
+        Version:        0.6.30
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -34,7 +34,7 @@ function Get-VbrBackupHyperVClusterInfo {
 
                         $TempHyObjsInfo = [PSCustomObject]@{
                             Name = $HyObj.Info.HostInstanceIdV2
-                            Label = Get-DiaNodeIcon -Name $HyObj.Name -IconType "VBR_HyperV_Cluster" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
+                            Label = Add-DiaNodeIcon -Name $HyObj.Name -IconType "VBR_HyperV_Cluster" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
                             AditionalInfo = $Rows
                             Childs = & {
                                 foreach ($HvHost in $HvHosts) {
@@ -44,7 +44,7 @@ function Get-VbrBackupHyperVClusterInfo {
                                     }
                                     [PSCustomObject]@{
                                         Name = $HvHost.Name
-                                        Label = Get-DiaNodeIcon -Name $HvHost.Name -IconType "VBR_HyperV_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
+                                        Label = Add-DiaNodeIcon -Name $HvHost.Name -IconType "VBR_HyperV_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
                                         AditionalInfo = $Rows
                                     }
                                 }

@@ -5,7 +5,7 @@ function Get-VbrBackupServerInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.19
+        Version:        0.6.30
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -74,8 +74,8 @@ function Get-VbrBackupServerInfo {
 
                 $script:BackupServerInfo = [PSCustomObject]@{
                     Name = $VBRServer.Name.split(".")[0]
-                    Label = Get-DiaNodeIcon -Name "$($VBRServer.Name.split(".")[0])" -IconType "VBR_Server" -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
-                    Spacer = Get-DiaNodeIcon -Name " " -IconType "VBR_Bid_Arrow" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug
+                    Label = Add-DiaNodeIcon -Name "$($VBRServer.Name.split(".")[0])" -IconType "VBR_Server" -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
+                    Spacer = Add-DiaNodeIcon -Name " " -IconType "VBR_Bid_Arrow" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug
                 }
             }
 
@@ -106,7 +106,7 @@ function Get-VbrBackupServerInfo {
 
                 $script:DatabaseServerInfo = [PSCustomObject]@{
                     Name = $DatabaseServer.split(".")[0]
-                    Label = Get-DiaNodeIcon -Name "$($DatabaseServer.split(".")[0])" -IconType $DBIconType -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
+                    Label = Add-DiaNodeIcon -Name "$($DatabaseServer.split(".")[0])" -IconType $DBIconType -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                     DBPort = $DBPort
                 }
             }
@@ -122,7 +122,7 @@ function Get-VbrBackupServerInfo {
 
                 $script:EMServerInfo = [PSCustomObject]@{
                     Name = $EMServer.ServerName.split(".")[0]
-                    Label = Get-DiaNodeIcon -Name "$($EMServer.ServerName.split(".")[0])" -IconType "VBR_Server_EM" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
+                    Label = Add-DiaNodeIcon -Name "$($EMServer.ServerName.split(".")[0])" -IconType "VBR_Server_EM" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                 }
             }
         } catch {

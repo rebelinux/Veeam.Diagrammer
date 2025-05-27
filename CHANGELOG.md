@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `Images.ps1` with new image references.
 - Improve the logic for generating dummy lines.
 - Refine node count calculation to assign appropriate column sizes to HTML tables in the `Get-VbrInfraDiagram` cmdlet.
+- Update cmdlet verb to better reflect its intended action
+
 
 ### Fixed
 
@@ -184,7 +186,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Increase Diagrammer.Core minimum version requirement
-- Migrated Protection Group diagram to use Get-DiaHTMLSubGraph cmdlet
+- Migrated Protection Group diagram to use Add-DiaHTMLSubGraph cmdlet
 
 ### Fixed
 
@@ -322,7 +324,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Migrate diagrams to use Get-DiaHTMLNodeTable
+- Migrate diagrams to use Add-DiaHTMLNodeTable
 
 ## [0.6.1] - 2024-08-31
 
