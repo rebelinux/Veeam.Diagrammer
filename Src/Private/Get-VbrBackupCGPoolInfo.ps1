@@ -28,7 +28,7 @@ function Get-VbrBackupCGPoolInfo {
 
                     $TempBackupCGPoolsInfo = [PSCustomObject]@{
                         Name = $CloudObject.Name
-                        Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $CloudObject.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType 'VBR_Tape_Server' -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
+                        Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $CloudObject.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType 'VBR_Cloud_Connect_Gateway' -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                         Id = $CloudObject.Id
                         CloudGateways = $CloudObject.CloudGateways
                     }

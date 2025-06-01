@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix the aspect ratio of the Veeam logo.
+- Correct edge direction and update label icon types in backup functions
 
 ## [0.6.29] - 2025-05-17
 
