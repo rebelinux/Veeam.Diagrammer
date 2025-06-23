@@ -71,11 +71,8 @@ function New-VeeamDiagram {
     .PARAMETER Filename
         The base filename for the generated diagram files.
 
-    .PARAMETER EnableEdgeDebug
-        Switch. Enables debugging visualization for edges (e.g., dummy edge and node lines).
-
-    .PARAMETER EnableSubGraphDebug
-        Switch. Enables debugging visualization for subgraphs (e.g., subgraph boundary lines).
+    .PARAMETER DraftMode
+        Switch. Enables debugging visualization for subgraphs, edges & nodes.
 
     .PARAMETER EnableErrorDebug
         Switch. Enables detailed error debugging output.
@@ -286,23 +283,23 @@ function New-VeeamDiagram {
         [string] $SectionSeparation = .75,
 
         [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Tenant name to be used in the diagram (if applicable, e.g., for multi-tenant environments)'
+        )]
+        [string] $TenantName,
+
+        [Parameter(
             Mandatory = $true,
             HelpMessage = 'Controls type of Veeam VBR generated diagram'
         )]
-        [ValidateSet('Backup-to-Tape', 'Backup-to-File-Proxy', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-ProtectedGroup', 'Backup-Infrastructure', 'Backup-to-CloudConnect')]
+        [ValidateSet('Backup-to-Tape', 'Backup-to-File-Proxy', 'Backup-to-HyperV-Proxy', 'Backup-to-vSphere-Proxy', 'Backup-to-Repository', 'Backup-to-Sobr', 'Backup-to-WanAccelerator', 'Backup-to-ProtectedGroup', 'Backup-Infrastructure', 'Backup-to-CloudConnect', 'Backup-to-CloudConnect-Tenant')]
         [string] $DiagramType,
 
         [Parameter(
             Mandatory = $false,
-            HelpMessage = 'Allow to enable edge debugging ( Dummy Edge and Node lines)'
+            HelpMessage = 'Allow to enable debugging visualization of subgraph, edges & nodes'
         )]
-        [Switch] $EnableEdgeDebug = $false,
-
-        [Parameter(
-            Mandatory = $false,
-            HelpMessage = 'Allow to enable subgraph debugging ( Subgraph Lines )'
-        )]
-        [Switch] $EnableSubGraphDebug = $false,
+        [Switch] $DraftMode = $false,
         [Parameter(
             Mandatory = $false,
             HelpMessage = 'Allow to enable error debugging'
@@ -360,6 +357,9 @@ function New-VeeamDiagram {
             break
         }
 
+        if ($DiagramType -eq 'Backup-to-CloudConnect-Tenant' -and ([string]::IsNullOrEmpty($TenantName) -eq $true)) {
+            throw "TenantName must be a used with the Backup-to-CloudConnect-Tenant diagram type."
+        }
 
         $Verbose = if ($PSBoundParameters.ContainsKey('Verbose')) {
             $PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent
@@ -408,6 +408,7 @@ function New-VeeamDiagram {
             'Backup-to-ProtectedGroup' { 'Physical Infrastructure Diagram' }
             'Backup-Infrastructure' { 'Backup Infrastructure Diagram' }
             'Backup-to-CloudConnect' { 'Cloud Connect Infrastructure Diagram' }
+            'Backup-to-CloudConnect-Tenant' { "Cloud Connect $TenantName Resources Diagram" }
         }
         if ($Format -ne 'Base64') {
             Write-ColorOutput -Color 'Green' -String ("Please wait while the '{0}' is being generated." -f $MainGraphLabel)
@@ -440,12 +441,8 @@ function New-VeeamDiagram {
 
         $IconDebug = $false
 
-        if ($EnableEdgeDebug) {
+        if ($DraftMode) {
             $script:EdgeDebug = @{style = 'filled'; color = 'red' }
-            $IconDebug = $true
-        } else { $script:EdgeDebug = @{style = 'invis'; color = 'red' } }
-
-        if ($EnableSubGraphDebug) {
             $script:SubGraphDebug = @{style = 'dashed'; color = 'red' }
             $script:NodeDebug = @{color = 'black'; style = 'red'; shape = 'plain' }
             $script:NodeDebugEdge = @{color = 'black'; style = 'red'; shape = 'plain' }
@@ -454,6 +451,7 @@ function New-VeeamDiagram {
             $script:SubGraphDebug = @{style = 'invis'; color = 'gray' }
             $script:NodeDebug = @{color = 'transparent'; style = 'transparent'; shape = 'point' }
             $script:NodeDebugEdge = @{color = 'transparent'; style = 'transparent'; shape = 'none' }
+            $script:EdgeDebug = @{style = 'invis'; color = 'red' }
         }
 
         # Used to set diagram theme
@@ -559,7 +557,7 @@ function New-VeeamDiagram {
             $script:Graph = Graph -Name VeeamVBR -Attributes $MainGraphAttributes {
                 # Node default theme
                 Node @{
-                    label = ''
+                    # label = ''
                     shape = 'none'
                     labelloc = 't'
                     style = 'filled'
@@ -594,9 +592,8 @@ function New-VeeamDiagram {
                 SubGraph OUTERDRAWBOARD1 -Attributes @{Label = $Signature; fontsize = 24; penwidth = 1.5; labelloc = 'b'; labeljust = "r"; style = $SubGraphDebug.style; color = $SubGraphDebug.color } {
                     SubGraph MainGraph -Attributes @{Label = (Add-DiaHTMLLabel -ImagesObj $Images -Label $MainGraphLabel -IconType $CustomLogo -IconDebug $IconDebug -IconWidth 300 -IconHeight 90 -fontName "Segoe Ui Black" -fontColor $Fontcolor -Fontsize 28); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
 
-                        Get-DiagBackupServer
-
                         if ($DiagramType -eq 'Backup-to-HyperV-Proxy') {
+                            Get-DiagBackupServer
                             $BackuptoHyperVProxy = Get-DiagBackupToHvProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoHyperVProxy) {
                                 $BackuptoHyperVProxy
@@ -604,6 +601,7 @@ function New-VeeamDiagram {
                                 throw "No HyperV Proxy Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-vSphere-Proxy') {
+                            Get-DiagBackupServer
                             $BackuptovSphereProxy = Get-DiagBackupToViProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptovSphereProxy) {
                                 $BackuptovSphereProxy
@@ -611,6 +609,7 @@ function New-VeeamDiagram {
                                 throw "No vSphere Proxy Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-File-Proxy') {
+                            Get-DiagBackupServer
                             $BackuptoFileProxy = Get-DiagBackupToFileProxy | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoFileProxy) {
                                 $BackuptoFileProxy
@@ -618,6 +617,7 @@ function New-VeeamDiagram {
                                 throw "No File Proxy Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-WanAccelerator') {
+                            Get-DiagBackupServer
                             $BackuptoWanAccelerator = Get-DiagBackupToWanAccel | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoWanAccelerator) {
                                 $BackuptoWanAccelerator
@@ -625,6 +625,7 @@ function New-VeeamDiagram {
                                 throw "No Wan Accelerators available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-Repository') {
+                            Get-DiagBackupServer
                             $BackuptoRepository = Get-DiagBackupToRepo | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoRepository) {
                                 $BackuptoRepository
@@ -632,6 +633,7 @@ function New-VeeamDiagram {
                                 throw "No Backup Repository available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-ProtectedGroup') {
+                            Get-DiagBackupServer
                             $BackuptoProtectedGroup = Get-DiagBackupToProtectedGroup | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoProtectedGroup) {
                                 $BackuptoProtectedGroup
@@ -639,6 +641,7 @@ function New-VeeamDiagram {
                                 throw "No Backup Protected Group available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-Tape') {
+                            Get-DiagBackupServer
                             $BackupToTape = Get-DiagBackupToTape | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackupToTape) {
                                 $BackupToTape
@@ -646,6 +649,7 @@ function New-VeeamDiagram {
                                 throw "No Tape Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-Sobr') {
+                            Get-DiagBackupServer
                             $BackuptoSobr = Get-DiagBackupToSobr | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoSobr) {
                                 $BackuptoSobr
@@ -653,6 +657,7 @@ function New-VeeamDiagram {
                                 throw "No Scale-Out Backup Repository available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-Infrastructure') {
+                            Get-DiagBackupServer
                             $BackupInfra = Get-VbrInfraDiagram | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackupInfra) {
                                 $BackupInfra
@@ -660,11 +665,19 @@ function New-VeeamDiagram {
                                 throw "No Backup Infrastructure available to diagram"
                             }
                         } elseif ($DiagramType -eq 'Backup-to-CloudConnect') {
+                            Get-DiagBackupServer
                             $BackuptoCloudConnect = Get-DiagBackupToCloudConnect | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
                             if ($BackuptoCloudConnect) {
                                 $BackuptoCloudConnect
                             } else {
                                 throw "No Cloud Connect infrastructure available to diagram"
+                            }
+                        } elseif ($DiagramType -eq 'Backup-to-CloudConnect-Tenant') {
+                            $BackuptoCloudConnectTenant = Get-DiagBackupToCloudConnectTenant | Select-String -Pattern '"([A-Z])\w+"\s\[label="";style="invis";shape="point";]' -NotMatch
+                            if ($BackuptoCloudConnectTenant) {
+                                $BackuptoCloudConnectTenant
+                            } else {
+                                throw "No Cloud Connect Tenant infrastructure available to diagram"
                             }
                         }
                     }

@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add the `Get-VbrBackupCCReplicaResourcesInfo` function for extracting Cloud Connect Replica Resources information.
 - Add a Todo file to track diagram enhancement tasks.
 - Include Cloud Connect resources in the Infrastructure diagram.
-- Add a dedicated Cloud Connect Diagram.
+- Add a dedicated Cloud Connect diagram.
+- Add Per Tenant Cloud Connect diagram.
 
 ### Changed
 
@@ -33,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix the aspect ratio of the Veeam logo.
 - Correct edge direction and update label icon types in backup functions
+- Remove trailing spaces from name properties in various functions
 
 ## [0.6.29] - 2025-05-17
 

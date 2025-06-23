@@ -59,4 +59,5 @@ $script:Images = @{
     "VBR_Microsoft_Entra_ID" = "Microsoft_Entra_ID.png"
     "VBR_Bid_Arrow" = "BidirectionalArrow.png"
     "VBR_Hardware_Resources" = "Hardware_controller.png"
+    "VBR_Cloud_Network_Extension" = "Network Proxy.png"
 }

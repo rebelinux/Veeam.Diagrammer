@@ -1,7 +1,7 @@
 [x] Calculate Node count to assign the correct column size to the html table
 [x] Add Cloud Connect resources to the Infrastructure diagram
 [x] Create a Cloud Connect Diagram
-[] Test DPI option
+[x] Test DPI option
 [] Create a Per Tenant Cloud Connect Diagram showing the resources used by it
     [] Backup Storage
     [] Resources Usage
@@ -12,10 +12,10 @@
            Cloud GateWay Pool
                   |
                   |
-            Cloud Gateway
+            Cloud Gateway Servers
                   |
                   |
-    Cloud Repository (Backup Resources)
+    Cloud Repository (Backup Resources) -- [Sub-Tenant]
                   |
                   |
     Replica Resources (Hardware Plan)
