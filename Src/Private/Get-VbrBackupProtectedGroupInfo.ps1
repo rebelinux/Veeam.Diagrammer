@@ -40,7 +40,7 @@ function Get-VbrBackupProtectedGroupInfo {
                     $Type = Get-IconType -String $ProtectedGroup.Container.Type
 
                     $TempProtectedGroupInfo = [PSCustomObject]@{
-                        Name = "$((Remove-SpecialChar -String $ProtectedGroup.Name -SpecialChars '\').toUpper()) "
+                        Name = "$((Remove-SpecialChar -String $ProtectedGroup.Name -SpecialChars '\').toUpper())"
                         Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $ProtectedGroup.Name -SpecialChars '\').toUpper())" -IconType $Type -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
                         Container = $ProtectedGroup.Container.Type
                         Object = $ProtectedGroup

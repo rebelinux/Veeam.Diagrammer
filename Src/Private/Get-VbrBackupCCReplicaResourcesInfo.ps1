@@ -35,7 +35,7 @@ function Get-VbrBackupCCReplicaResourcesInfo {
                         }
                         Memory = Switch ([string]::IsNullOrEmpty($CloudObject.Memory)) {
                             $true { 'Unlimited' }
-                            $false { ConvertTo-FileSizeString -Size (Convert-Size -From MB -To Bytes -Value $CloudObject.Memory) -RoundUnits $Options.RoundUnits }
+                            $false { ConvertTo-FileSizeString -Size (Convert-Size -From MB -To Bytes -Value $CloudObject.Memory) -RoundUnits 2 }
                             default { '--' }
                         }
                         Storage = ConvertTo-FileSizeString -Size (Convert-Size -From GB -To Bytes -Value ($CloudObject.Datastore.Quota | Measure-Object -Sum).Sum) -RoundUnits 2

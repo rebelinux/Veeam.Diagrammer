@@ -27,22 +27,31 @@ function Get-VbrBackupWanAccelInfo {
             if ($WANACCELS) {
                 foreach ($WANACCEL in $WANACCELS) {
 
-                    $Rows = @{
-                        # Role = 'Wan Accelerator'
+                    $AdditionalInfo = [PSCustomObject]@{
                         IP = Get-NodeIP -Hostname $WANACCEL.Name
                         TrafficPort = "$($WANAccel.GetWaTrafficPort())/TCP"
+                        'Cache Path' = & {
+                            if ($WANAccel.FindWaHostComp().Options.CachePath) {
+                                $WANAccel.FindWaHostComp().Options.CachePath
+                            } else {
+                                'N/A'
+                            }
+                        }
+                        'Cache Size' = & {
+                            if ($WANAccel.FindWaHostComp().Options.MaxCacheSize) {
+                                "$($WANAccel.FindWaHostComp().Options.MaxCacheSize) $($WANAccel.FindWaHostComp().Options.SizeUnit)"
+                            } else {
+                                'N/A'
+                            }
+                        }
                     }
 
-                    if ($WANAccel.FindWaHostComp().Options.CachePath) {
-                        $Rows.add('Cache Path', $WANAccel.FindWaHostComp().Options.CachePath)
-                        $Rows.add('Cache Size', "$($WANAccel.FindWaHostComp().Options.MaxCacheSize) $($WANAccel.FindWaHostComp().Options.SizeUnit)")
-                    }
 
 
                     $TempWANACCELInfo = [PSCustomObject]@{
-                        Name = "$($WANACCEL.Name.toUpper().split(".")[0])  ";
-                        Label = Add-DiaNodeIcon -Name "$($WANACCEL.Name.toUpper().split(".")[0])" -IconType "VBR_Wan_Accel" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
-                        AditionalInfo = $Rows
+                        Name = "$($WANACCEL.Name.toUpper().split(".")[0])";
+                        Label = Add-DiaNodeIcon -Name "$($WANACCEL.Name.toUpper().split(".")[0])" -IconType "VBR_Wan_Accel" -Align "Center" -Rows $AdditionalInfo -ImagesObj $Images -IconDebug $IconDebug
+                        AditionalInfo = $AdditionalInfo
                     }
                     $WANACCELInfo += $TempWANACCELInfo
                 }

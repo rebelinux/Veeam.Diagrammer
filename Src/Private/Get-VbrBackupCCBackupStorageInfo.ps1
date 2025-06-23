@@ -31,13 +31,13 @@ function Get-VbrBackupCCBackupStorageInfo {
 
                     $AditionalInfo = [PSCustomObject] [ordered] @{
                         Type = $CloudObject.Type
+                        'Total Space' = ConvertTo-FileSizeString -Size $CloudObject.GetContainer().CachedTotalSpace.InBytesAsUInt64
+                        'Free Space' = ConvertTo-FileSizeString -Size $CloudObject.GetContainer().CachedFreeSpace.InBytesAsUInt64
                         Path = Switch ([string]::IsNullOrEmpty($CloudObject.FriendlyPath)) {
                             $true { 'Unknown' }
                             $false { $CloudObject.FriendlyPath }
                             default { '--' }
                         }
-                        'Total Space' = ConvertTo-FileSizeString -Size $CloudObject.GetContainer().CachedTotalSpace.InBytesAsUInt64
-                        'Free Space' = ConvertTo-FileSizeString -Size $CloudObject.GetContainer().CachedFreeSpace.InBytesAsUInt64
                     }
 
                     $TempBackupCCBKStorageInfo = [PSCustomObject]@{

@@ -65,7 +65,7 @@ function Get-VbrBackupRepoInfo {
                     $Type = Get-IconType -String $BackupType
 
                     $TempBackupRepoInfo = [PSCustomObject]@{
-                        Name = "$((Remove-SpecialChar -String $BackupRepo.Name -SpecialChars '\').toUpper()) "
+                        Name = "$((Remove-SpecialChar -String $BackupRepo.Name -SpecialChars '\').toUpper())"
                         Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $BackupRepo.Name -SpecialChars '\').toUpper())" -IconType $Type -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
                         Role = $Role
                         AditionalInfo = $Rows
