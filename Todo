@@ -3,22 +3,28 @@
 [x] Create a Cloud Connect Diagram
 [x] Test DPI option
 [] Create a Per Tenant Cloud Connect Diagram showing the resources used by it
-    [] Backup Storage
-    [] Resources Usage
+    [x] Backup Storage
+    [x] Resources Usage
     [] Etc...
-               Tenant
+            Tenant (Done)
                   |
                   |
-           Cloud GateWay Pool
+        Cloud GateWay Pool (Done)
                   |
                   |
-            Cloud Gateway Servers
+        Cloud Gateway Servers (Done)
                   |
                   |
-    Cloud Repository (Backup Resources) -- [Sub-Tenant]
+    Cloud Repository (Backup Resources) (Done)
                   |
                   |
-    Replica Resources (Hardware Plan)
+            [Sub-Tenant]
                   |
                   |
-           Network Extension
+    Replica Resources (Hardware Plan) (Done)
+                  |
+                  |
+        vCD Replica Resource
+                  |
+                  |
+      Network Extension (Done)

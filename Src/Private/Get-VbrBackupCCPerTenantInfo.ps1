@@ -15,7 +15,7 @@ function Get-VbrBackupCCPerTenantInfo {
     [CmdletBinding()]
     [OutputType([System.Object[]])]
 
-    Param (
+    param (
         [Parameter(Mandatory = $true)]
         [string]$TenantName
     )
@@ -28,18 +28,18 @@ function Get-VbrBackupCCPerTenantInfo {
             if ($CloudObject = Get-VBRCloudTenant -Name $TenantName) {
 
                 $AditionalInfo = [PSCustomObject] [ordered] @{
-                    'Type' = Switch ($CloudObject.Type) {
+                    'Type' = switch ($CloudObject.Type) {
                         'Ad' { 'Active Directory' }
                         'General' { 'Standalone' }
                         'vCD' { 'vCloud Director' }
                         default { 'Unknown' }
                     }
-                    'Status' = Switch ($CloudObject.Enabled) {
+                    'Status' = switch ($CloudObject.Enabled) {
                         'True' { 'Enabled' }
                         'False' { 'Disabled' }
                         default { 'Unknown' }
                     }
-                    'Expiration Date' = Switch ([string]::IsNullOrEmpty($CloudObject.LeaseExpirationDate)) {
+                    'Expiration Date' = switch ([string]::IsNullOrEmpty($CloudObject.LeaseExpirationDate)) {
                         $true { 'Never' }
                         $false {
                             & {
@@ -52,25 +52,21 @@ function Get-VbrBackupCCPerTenantInfo {
                     }
                 }
 
-                # Todo: Add more information to the AditionalInfo object as needed.
-                # CloudObject.Resources.FriendlyName
-                #         AdditionalInfo (Quota, etc...)
-                #            Subgraph
-                #      Backup Repositories (Get info from Get-VbrBackupCCBackupStorageInfo)
-                #         AdditionalInfo
-
                 $TempBackupCCTenantInfo = [PSCustomObject]@{
                     Name = $CloudObject.Name
                     Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $CloudObject.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType 'VBR_Cloud_Connect_Gateway' -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                     Id = $CloudObject.Id
                     CloudGatewaySelectionType = $CloudObject.GatewaySelectionType
-                    CloudGatewayPools = & {
-                        Get-VbrBackupCGPoolInfo | Where-Object { $_.Name -eq $CloudObject.GatewayPool }
-
+                    CloudGatewayPools = Get-VbrBackupCGPoolInfo | Where-Object { $_.Name -eq $CloudObject.GatewayPool }
+                    CloudGatewayServers = & {
+                        $CloudGatewayPoolServers = (Get-VBRCloudGatewayPool).CloudGateways.Name
+                        $CloudGatewayServersNotInPool = Get-VBRCloudGateway | Where-Object { $_.Name -notin $CloudGatewayPoolServers }
+                        Get-VbrBackupCGServerInfo | Where-Object { $_.Name -in $CloudGatewayServersNotInPool.Name }
                     }
                     BackupResources = & {
-                        if ($CloudObject.Resources) {
+                        if ($CloudObject.ResourcesEnabled) {
                             $CloudObject.Resources | ForEach-Object {
+                                $RepoNameFriendlyName = $_.RepositoryFriendlyName
                                 $AditionalInfo = [PSCustomObject]@{
                                     "Used Space" = ConvertTo-FileSizeString -Size (Convert-Size -From MB -To Bytes -Value $_.UsedSpace) -RoundUnits 2
                                     "Quota" = ConvertTo-FileSizeString -Size (Convert-Size -From MB -To Bytes -Value $_.RepositoryQuota) -RoundUnits 2
@@ -78,9 +74,9 @@ function Get-VbrBackupCCPerTenantInfo {
                                 }
                                 [PSCustomObject]@{
                                     Name = $_.RepositoryFriendlyName
-                                    Label = Add-DiaNodeIcon -Name "$($_.RepositoryFriendlyName)" -IconType "VBR_Cloud_Repository" -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug
+                                    Label = Add-DiaNodeIcon -Name "$($_.RepositoryFriendlyName)" -IconType "VBR_Cloud_Repository" -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                                     Id = $_.Id
-                                    WanAccelerationEnabled = Switch ($_.WanAccelerationEnabled) {
+                                    WanAccelerationEnabled = switch ($_.WanAccelerationEnabled) {
                                         'True' { 'Enabled' }
                                         'False' { 'Disabled' }
                                         default { 'Unknown' }
@@ -97,46 +93,99 @@ function Get-VbrBackupCCPerTenantInfo {
                                             Get-VbrBackupCCBackupStorageInfo | Where-Object { $_.Name -eq $RepoName }
                                         }
                                     }
+                                    SubTenant = & {
+                                        $Guid = $_.Id.Guid
+                                        Get-VBRCloudSubTenant -Tenant $CloudObject | Where-Object { $_.Resources.ParentId.Guid -eq $Guid } | ForEach-Object {
+                                            $AditionalInfo = [PSCustomObject]@{
+                                                'Type' = $_.Type
+                                                'Repository Name' = $_.Resources.RepositoryFriendlyName
+                                                'Cloud Repository' = $RepoNameFriendlyName
+                                                'Quota' = ConvertTo-FileSizeString -RoundUnits $Options.RoundUnits -Size $_.Resources.RepositoryQuota
+                                                'Used Space' = $_.Resources.UsedSpacePercentage
+                                                'Status' = switch ($_.Enabled) {
+                                                    'True' { 'Enabled' }
+                                                    'False' { 'Disabled' }
+                                                    default { '--' }
+                                                }
+                                            }
+                                            [PSCustomObject]@{
+                                                Name = $_.Name
+                                                Label = Add-DiaNodeIcon -Name "$($_.Name)" -IconType "VBR_Cloud_Sub_Tenant" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -AditionalInfo $AditionalInfo
+                                                Id = $_.Id
+                                                IconType = 'VBR_Cloud_Sub_Tenant'
+                                                AditionalInfo = $AditionalInfo
+                                            }
+                                        }
+                                    }
+                                    IconType = 'VBR_Cloud_Storage'
                                 }
                             }
                         }
                     }
                     ReplicationResources = & {
-                        if ($CloudObject.Resources) {
+                        if ($CloudObject.ReplicationResourcesEnabled) {
                             $CloudObject.ReplicationResources | ForEach-Object {
                                 $NetExEnabled = $_.NetworkFailoverResourcesEnabled
                                 [PSCustomObject]@{
-                                    'NetworkFailoverResourcesEnabled' = Switch ($_.NetworkFailoverResourcesEnabled) {
+                                    'NetworkFailoverResourcesEnabled' = switch ($_.NetworkFailoverResourcesEnabled) {
                                         'True' { 'Enabled' }
                                         'False' { 'Disabled' }
                                         default { 'Unknown' }
                                     }
-                                    "Public Ip Enabled" = $_.PublicIpEnabled
-                                    "Public IpV6 Enabled" = $_.PublicIpV6Enabled
-                                    "Number Of Public Ip" = $_.NumberOfPublicIp
-                                    'Number Of Public IpV6' = $_.NumberOfPublicIpV6
                                     HardwarePlanOptions = & {
                                         if ($_.HardwarePlanOptions) {
                                             $_.HardwarePlanOptions | ForEach-Object {
-                                                $HardwarePlanId = $_.HardwarePlanId
+                                                $HardwarePlanId = $_.HardwarePlanId.Guid
                                                 $HardwarePlanObject = Get-VbrBackupCCReplicaResourcesInfo | Where-Object { $_.id -eq $HardwarePlanId }
                                                 [PSCustomObject]@{
                                                     Name = $HardwarePlanObject.Name
                                                     Label = $HardwarePlanObject.Label
+                                                    Host = $HardwarePlanObject.Host
+                                                    Storage = $HardwarePlanObject.Storage
+                                                    WanAcceleration = & {
+                                                        if ($_.WanAccelerationEnabled) {
+                                                            if ($_.WanAccelerator.Name) {
+                                                                $WANName = $_.WanAccelerator.Name.split(".")[0]
+                                                                Get-VbrBackupWanAccelInfo | Where-Object { $_.Name -eq $WANName }
+                                                            }
+                                                        }
+                                                    }
                                                     NetworkExtensions = & {
                                                         if ($NetExEnabled) {
                                                             Get-VBRCloudTenantNetworkAppliance -Tenant $CloudObject | Where-Object { $_.HardwarePlanId -eq $HardwarePlanId } | ForEach-Object {
+                                                                $IPAddress = $_.IpAddress
+                                                                $SubnetMask = $_.SubnetMask
+                                                                $Gateway = $_.DefaultGateway
                                                                 $AditionalInfo = [PSCustomObject]@{
+                                                                    'Hardware Plan' = $HardwarePlanObject.Name
                                                                     'Platform' = $_.Platform
                                                                     'Network Name' = $_.ProductionNetwork.NetworkName
-                                                                    'Switch Name' = $_.ProductionNetwork.SwitchName
-                                                                    'Ip Address' = $_.IpAddress
-                                                                    'Network Mask' = $_.SubnetMask
-                                                                    'Gateway' = $_.DefaultGateway
+                                                                    'Switch Name' = switch ([string]::IsNullOrEmpty($_.ProductionNetwork.SwitchName)) {
+                                                                        $true { 'Not Configured' }
+                                                                        $false { $_.ProductionNetwork.SwitchName }
+                                                                        default { 'Unknown' }
+                                                                    }
+                                                                    'Ip Address' = switch ($_.ObtainIpAddressAutomatically) {
+                                                                        $true { 'Automatic' }
+                                                                        $false { $IPAddress }
+                                                                        default { 'Unknown' }
+                                                                    }
+                                                                    'Network Mask' = switch ($_.ObtainIpAddressAutomatically) {
+                                                                        $true { 'Automatic' }
+                                                                        $false { $SubnetMask }
+                                                                        default { 'Unknown' }
+                                                                    }
+                                                                    'Gateway' = switch ($_.ObtainIpAddressAutomatically) {
+                                                                        $true { 'Automatic' }
+                                                                        $false { $Gateway }
+                                                                        default { 'Unknown' }
+                                                                    }
                                                                 }
                                                                 [PSCustomObject]@{
-                                                                    'Name' = $_.Name
-                                                                    'Label' = Add-DiaNodeIcon -Name "$($_.Name)" -IconType "VBR_Cloud_Network_Extension" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug -AditionalInfo $AditionalInfo
+                                                                    Name = $_.Name
+                                                                    Label = Add-DiaNodeIcon -Name "$($_.Name)" -IconType "VBR_Cloud_Network_Extension" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug -AditionalInfo $AditionalInfo -FontSize 18
+                                                                    AditionalInfo = $AditionalInfo
+                                                                    IconType = 'VBR_Cloud_Network_Extension'
                                                                 }
                                                             }
                                                         }
@@ -149,14 +198,62 @@ function Get-VbrBackupCCPerTenantInfo {
                             }
                         }
                     }
-                    CloudGatewayServers = & {
-                        if ($CloudObject.GatewaySelectionType -eq 'StandaloneGateways') {
-                            Get-VbrBackupCGServerInfo
+                    vCDReplicationResources = & {
+                        if ($CloudObject.vCDReplicationResourcesEnabled) {
+                            $CloudObject.vCDReplicationResource | ForEach-Object {
+                                $NetExEnabled = $_.NetworkFailoverResourcesEnabled
+                                [PSCustomObject]@{
+                                    'NetworkFailoverResourcesEnabled' = switch ($_.NetworkFailoverResourcesEnabled) {
+                                        'True' { 'Enabled' }
+                                        'False' { 'Disabled' }
+                                        default { 'Unknown' }
+                                    }
+                                    OrganizationvDCOptions = & {
+                                        if ($_.OrganizationvDCOptions) {
+                                            $_.OrganizationvDCOptions | ForEach-Object {
+                                                $OrganizationvDCId = $_.OrganizationvDCID.Guid
+                                                $OrganizationvDCObject = Get-VbrBackupCCvCDReplicaResourcesInfo | Where-Object { $_.id -eq $OrganizationvDCId }
+                                                [PSCustomObject]@{
+                                                    Name = $OrganizationvDCObject.Name
+                                                    Label = $OrganizationvDCObject.Label
+                                                    WanAcceleration = & {
+                                                        if ($_.WANAccelarationEnabled) {
+                                                            if ($_.WANAccelerator.Name) {
+                                                                $WANName = $_.WANAccelerator.Name.split(".")[0]
+                                                                Get-VbrBackupWanAccelInfo | Where-Object { $_.Name -eq $WANName }
+                                                            }
+                                                        }
+                                                    }
+                                                    NetworkExtensions = & {
+                                                        if ($NetExEnabled) {
+                                                            Get-VBRCloudTenantNetworkAppliance -Tenant $CloudObject | ForEach-Object {
+                                                                $AditionalInfo = [PSCustomObject]@{
+                                                                    'Platform' = $_.Platform
+                                                                    'Network Name' = $_.ProductionNetwork.NetworkName
+                                                                    'Switch Name' = $_.ProductionNetwork.SwitchName
+                                                                    'Ip Address' = $_.IpAddress
+                                                                    'Network Mask' = $_.SubnetMask
+                                                                    'Gateway' = $_.DefaultGateway
+                                                                }
+                                                                [PSCustomObject]@{
+                                                                    'Name' = $_.Name
+                                                                    'Label' = Add-DiaNodeIcon -Name "$($_.Name)" -IconType "VBR_Cloud_Network_Extension" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug -AditionalInfo $AditionalInfo -FontSize 18
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-
                 $BackupCCTenantInfo += $TempBackupCCTenantInfo
+            } else {
+                throw "No Cloud Connect Tenant found with the name $TenantName."
             }
 
             return $BackupCCTenantInfo

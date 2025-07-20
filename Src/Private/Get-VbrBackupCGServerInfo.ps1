@@ -24,6 +24,7 @@ function Get-VbrBackupCGServerInfo {
 
             $BackupCGServersInfo = @()
             if ($CloudObjects = Get-VBRCloudGateway | Sort-Object -Property Name) {
+                $CloudGatewayPoolServers = (Get-VBRCloudGatewayPool).CloudGateways.Name
                 foreach ($CloudObject in $CloudObjects) {
 
                     $AditionalInfo = [PSCustomObject] [ordered] @{

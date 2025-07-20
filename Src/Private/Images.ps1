@@ -28,6 +28,7 @@ $script:Images = @{
     'VBR_vCenter_Server' = 'vCenter_server.png'
     'VBR_ESXi_Server' = 'ESXi_host.png'
     'VBR_HyperV_Server' = 'Hyper-V_host.png'
+    'VBR_Esxi_AHV_HyperV_Server' = 'ESXi_Hyper-V_AHV_host.png'
     'VBR_Server_EM' = 'Veeam_Backup_Enterprise_Manager.png'
     'VBR_Tape_Server' = 'Tape_Server.png'
     'VBR_Tape_Library' = 'Tape_Library.png'
@@ -60,4 +61,9 @@ $script:Images = @{
     "VBR_Bid_Arrow" = "BidirectionalArrow.png"
     "VBR_Hardware_Resources" = "Hardware_controller.png"
     "VBR_Cloud_Network_Extension" = "Network Proxy.png"
+    "VBR_Cloud_Storage" = "Datastore.png"
+    "VBR_Cloud_Connect_vCD" = "VMware vCloud Director.png"
+    "VBR_Cloud_Connect_Server" = "vCloud_Director_server.png"
+    "VBR_Cloud_Connect_VM" = "VM_with_a_snapshot.png"
+    "VBR_Cloud_Sub_Tenant" = "SubTenant.png"
 }

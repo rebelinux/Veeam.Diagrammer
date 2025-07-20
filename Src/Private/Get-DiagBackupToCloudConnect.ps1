@@ -14,7 +14,7 @@ function Get-DiagBackupToCloudConnect {
     #>
     [CmdletBinding()]
 
-    Param
+    param
     (
 
     )
@@ -38,7 +38,6 @@ function Get-DiagBackupToCloudConnect {
                 $CGServerNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CGServerInfo.Name -Align "Center" -iconType "VBR_Cloud_Connect_Gateway" -columnSize $CGServerNodeColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CGServerInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Service_Providers_Server" -SubgraphLabel "Gateway Servers" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
 
                 $CloudConnectInfraArray += $CGServerNode
-                # $CloudConnectInfraArray += $BlankFiller
             } catch {
                 Write-Verbose "Error: Unable to create CloudGateway server Objects. Disabling the section"
                 Write-Debug "Error Message: $($_.Exception.Message)"
@@ -75,7 +74,6 @@ function Get-DiagBackupToCloudConnect {
                         $CGPoolNodesSubGraph += Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CGPoolNode -Align 'Center' -IconDebug $IconDebug -Label 'Gateway Pools' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $CGPoolNodecolumnSize -fontSize 22 -IconType "VBR_Cloud_Connect_Gateway_Pools"
 
                         $CloudConnectInfraArray += $CGPoolNodesSubGraph
-                        # $CloudConnectInfraArray += $BlankFiller
                     }
                 } catch {
                     Write-Verbose "Error: Unable to create CGPoolInfo SubGraph Objects. Disabling the section"
@@ -95,7 +93,6 @@ function Get-DiagBackupToCloudConnect {
                     $CCBSNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CCBSInfo.Name -Align "Center" -iconType $CCBSInfo.IconType -columnSize $CCBSInfocolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCBSInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Repository" -SubgraphLabel "Backup Storage" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
 
                     $CloudConnectInfraArray += $CCBSNode
-                    # $CloudConnectInfraArray += $BlankFiller
                 } catch {
                     Write-Verbose "Error: Unable to create CCBSNode Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -113,9 +110,25 @@ function Get-DiagBackupToCloudConnect {
                     $CCRRNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CCRRInfo.Name -Align "Center" -iconType "VBR_Hardware_Resources" -columnSize $CCRRInfocolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCRRInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Hardware_Resources" -SubgraphLabel "Replica Resources" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
 
                     $CloudConnectInfraArray += $CCRRNode
-                    # $CloudConnectInfraArray += $BlankFiller
                 } catch {
                     Write-Verbose "Error: Unable to create CCRRNode Objects. Disabling the section"
+                    Write-Debug "Error Message: $($_.Exception.Message)"
+                }
+            }
+            if ($CCVCDRRInfo = Get-VbrBackupCCvCDReplicaResourcesInfo) {
+                if ($CCVCDRRInfo.Name.count -le 5) {
+                    $CCVCDRRInfocolumnSize = $CCVCDRRInfo.Name.count
+                } elseif ($ColumnSize) {
+                    $CCVCDRRInfocolumnSize = $ColumnSize
+                } else {
+                    $CCVCDRRInfocolumnSize = 5
+                }
+                try {
+                    $CCVCDRRNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CCVCDRRInfo.Name -Align "Center" -iconType "VBR_Cloud_Connect_vCD" -columnSize $CCVCDRRInfocolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCVCDRRInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Cloud_Connect_Server" -SubgraphLabel "Replica Org vCDs" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+
+                    $CloudConnectInfraArray += $CCVCDRRNode
+                } catch {
+                    Write-Verbose "Error: Unable to create CCVCDRRNode Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
                 }
             }

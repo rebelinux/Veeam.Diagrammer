@@ -52,6 +52,7 @@ function Get-VbrBackupWanAccelInfo {
                         Name = "$($WANACCEL.Name.toUpper().split(".")[0])";
                         Label = Add-DiaNodeIcon -Name "$($WANACCEL.Name.toUpper().split(".")[0])" -IconType "VBR_Wan_Accel" -Align "Center" -Rows $AdditionalInfo -ImagesObj $Images -IconDebug $IconDebug
                         AditionalInfo = $AdditionalInfo
+                        IconType = "VBR_Wan_Accel"
                     }
                     $WANACCELInfo += $TempWANACCELInfo
                 }
