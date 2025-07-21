@@ -467,8 +467,8 @@ function Get-DiagBackupToCloudConnectTenant {
             }
 
 
-            # Create Tenant Replica Resources Node
-            if ($CCvCDReplicaResourcesObj = $CCPerTenantInfo.vCDReplicationResources) {
+            # Create Tenant vCD Replica Resources Node
+            if ($CCvCDReplicaResourcesObj = $CCPerTenantInfo.vCDReplicationResources.OrganizationvDCOptions) {
                 $CloudvCDResourcesSubgraphNode = @()
                 $CloudConnectTenantvCDRRArraySubgraph = @()
 
@@ -476,140 +476,102 @@ function Get-DiagBackupToCloudConnectTenant {
 
 
                 foreach ($CCvCDReplicaResourcesInfo in $CCvCDReplicaResourcesObj) {
-                    $CloudConnectTenantReplicaResourceArray = @()
+                    $CloudConnectTenantvCDReplicaResourceArray = @()
                     $CloudConnectTenantvCDRRArray = @()
 
-                    $CloudConnectTenantReplicaResourceArray += $CCvCDReplicaResourcesInfo.Label
+                    $CloudConnectTenantvCDReplicaResourceArray += $CCvCDReplicaResourcesInfo.Label
 
-                    try {
-                        if (($CCvCDReplicaResourcesInfo.Host | Measure-Object).Count -le 5) {
-                            $CCvCDReplicaResourcesInfocolumnSize = ($CCvCDReplicaResourcesInfo.Host | Measure-Object).Count
+                    if ($CCvCDReplicaResourcesInfo.WanAcceleration) {
+                        if (($CCvCDReplicaResourcesInfo.WanAcceleration | Measure-Object).Count -le 5) {
+                            $CCvCDRRWancolumnSize = ($CCvCDReplicaResourcesInfo.WanAcceleration | Measure-Object).Count
                         } elseif ($ColumnSize) {
-                            $CCvCDReplicaResourcesInfocolumnSize = $ColumnSize
+                            $CCvCDRRWancolumnSize = $ColumnSize
                         } else {
-                            $CCvCDReplicaResourcesInfocolumnSize = 5
-                        }
-
-                        if ($CCvCDReplicaResourcesInfo.Host) {
-                            $CCRRHostNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CCvCDReplicaResourcesInfo.Host.Name -Align "Center" -iconType $CCvCDReplicaResourcesInfo.Host.IconType -columnSize $CCvCDReplicaResourcesInfocolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCvCDReplicaResourcesInfo.Host.AditionalInfo -Subgraph -SubgraphIconType "VBR_Cloud_Connect_VM" -SubgraphLabel "Host or Cluster" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
-
-                            $CloudConnectTenantRRArray += $CCRRHostNode
-                        }
-                    } catch {
-                        Write-Verbose "Error: Unable to create CCRRHostNode Objects. Disabling the section"
-                        Write-Debug "Error Message: $($_.Exception.Message)"
-                    }
-
-                    try {
-                        if (($CCReplicaResourcesInfo.Storage | Measure-Object).Count -le 5) {
-                            $CCReplicaResourcesInfocolumnSize = ($CCReplicaResourcesInfo.Storage | Measure-Object).Count
-                        } elseif ($ColumnSize) {
-                            $CCReplicaResourcesInfocolumnSize = $ColumnSize
-                        } else {
-                            $CCReplicaResourcesInfocolumnSize = 5
-                        }
-
-                        if ($CCReplicaResourcesInfo.Storage) {
-                            $CCRRStorageNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CCReplicaResourcesInfo.Storage.Name -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize $CCReplicaResourcesInfocolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCReplicaResourcesInfo.Storage.AditionalInfo -Subgraph -SubgraphIconType "VBR_Cloud_Repository" -SubgraphLabel "Storage" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
-
-                            $CloudConnectTenantRRArray += $CCRRStorageNode
-                        }
-                    } catch {
-                        Write-Verbose "Error: Unable to create CCRRStorageNode Objects. Disabling the section"
-                        Write-Debug "Error Message: $($_.Exception.Message)"
-                    }
-
-                    if ($CCReplicaResourcesInfo.WanAcceleration) {
-                        if (($CCReplicaResourcesInfo.WanAcceleration | Measure-Object).Count -le 5) {
-                            $CCRRWancolumnSize = ($CCReplicaResourcesInfo.WanAcceleration | Measure-Object).Count
-                        } elseif ($ColumnSize) {
-                            $CCRRWancolumnSize = $ColumnSize
-                        } else {
-                            $CCRRWancolumnSize = 5
+                            $CCvCDRRWancolumnSize = 5
                         }
                         try {
-                            $CCCloudWanAcceleratorNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CCReplicaResourcesInfo.WanAcceleration.Name -Align "Center" -iconType $CCReplicaResourcesInfo.WanAcceleration.IconType -columnSize $CCRRWancolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCReplicaResourcesInfo.WanAcceleration.AditionalInfo -Subgraph -SubgraphIconType "VBR_Wan_Accel" -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+                            $CCCloudvCDWanAcceleratorNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CCvCDReplicaResourcesInfo.WanAcceleration.Name -Align "Center" -iconType $CCvCDReplicaResourcesInfo.WanAcceleration.IconType -columnSize $CCvCDRRWancolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCvCDReplicaResourcesInfo.WanAcceleration.AditionalInfo -Subgraph -SubgraphIconType "VBR_Wan_Accel" -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
 
-                            if ($CCCloudWanAcceleratorNode) {
-                                $CloudConnectTenantRRArray += $CCCloudWanAcceleratorNode
+                            if ($CCCloudvCDWanAcceleratorNode) {
+                                $CloudConnectTenantvCDRRArray += $CCCloudvCDWanAcceleratorNode
                             }
                         } catch {
-                            Write-Verbose "Error: Unable to create CCCloudWanAcceleratorNode Objects. Disabling the section"
+                            Write-Verbose "Error: Unable to create CCCloudvCDWanAcceleratorNode Objects. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
                         }
                     }
 
                     try {
-                        if ($CloudConnectTenantRRArray) {
-                            if (($CloudConnectTenantRRArray | Measure-Object).Count -le 5) {
-                                $CloudConnectTenantRRArraycolumnSize = ($CloudConnectTenantRRArray | Measure-Object).Count
+                        if ($CloudConnectTenantvCDRRArray) {
+                            if (($CloudConnectTenantvCDRRArray | Measure-Object).Count -le 5) {
+                                $CloudConnectTenantvCDRRArraycolumnSize = ($CloudConnectTenantvCDRRArray | Measure-Object).Count
                             } elseif ($ColumnSize) {
-                                $CloudConnectTenantRRArraycolumnSize = $ColumnSize
+                                $CloudConnectTenantvCDRRArraycolumnSize = $ColumnSize
                             } else {
-                                $CloudConnectTenantRRArraycolumnSize = 5
+                                $CloudConnectTenantvCDRRArraycolumnSize = 5
                             }
-                            $CloudConnectTenantRRSubGraph = Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantRRArray -Align 'Center' -IconDebug $IconDebug -Label "Resources" -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $CloudConnectTenantRRArraycolumnSize -fontSize 22
+                            $CloudConnectTenantvCDRRSubGraph = Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantvCDRRArray -Align 'Center' -IconDebug $IconDebug -Label "Resources" -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $CloudConnectTenantvCDRRArraycolumnSize -fontSize 22
 
-                            if ($CloudConnectTenantRRSubGraph) {
-                                $CloudConnectTenantReplicaResourceArray += $CloudConnectTenantRRSubGraph
+                            if ($CloudConnectTenantvCDRRSubGraph) {
+                                $CloudConnectTenantvCDReplicaResourceArray += $CloudConnectTenantvCDRRSubGraph
                             }
 
                         }
                     } catch {
-                        Write-Verbose "Error: Unable to create CloudConnectTenantRRSubGraph SubGraph Objects. Disabling the section"
+                        Write-Verbose "Error: Unable to create CloudConnectTenantvCDRRSubGraph SubGraph Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
                     }
 
                     try {
-                        if ($CloudConnectTenantReplicaResourceArray) {
-                            $CloudConnectTenantRRArraySubgraph += Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantReplicaResourceArray  -Align 'Center' -IconDebug $IconDebug -Label $CCReplicaResourcesInfo.Name -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 22
+                        if ($CloudConnectTenantvCDReplicaResourceArray) {
+                            $CloudConnectTenantvCDRRArraySubgraph += Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantvCDReplicaResourceArray  -Align 'Center' -IconDebug $IconDebug -Label $CCvCDReplicaResourcesInfo.Name -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 1 -fontSize 22
 
                         }
                     } catch {
-                        Write-Verbose "Error: Unable to create CCRRNode Objects. Disabling the section"
+                        Write-Verbose "Error: Unable to create CloudConnectTenantvCDRRArraySubgraph Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
                     }
 
-                    if ($CCReplicaResourcesInfo.NetworkExtensions) {
-                        if (($CCReplicaResourcesInfo.NetworkExtensions.Name | Measure-Object).Count -le 5) {
-                            $CCRRNetExtcolumnSize = ($CCReplicaResourcesInfo.NetworkExtensions.name | Measure-Object).Count
+                    if ($CCvCDReplicaResourcesInfo.NetworkExtensions) {
+                        if (($CCvCDReplicaResourcesInfo.NetworkExtensions.Name | Measure-Object).Count -le 5) {
+                            $CCvCDRRNetExtcolumnSize = ($CCvCDReplicaResourcesInfo.NetworkExtensions.Name | Measure-Object).Count
                         } elseif ($ColumnSize) {
-                            $CCRRNetExtcolumnSize = $ColumnSize
+                            $CCvCDRRNetExtcolumnSize = $ColumnSize
                         } else {
-                            $CCRRNetExtcolumnSize = 5
+                            $CCvCDRRNetExtcolumnSize = 5
                         }
                         try {
-                            $CCCloudNetworkExtensionsNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CCReplicaResourcesInfo.NetworkExtensions.Name -Align "Center" -iconType $CCReplicaResourcesInfo.NetworkExtensions.IconType -columnSize $CCRRNetExtcolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCReplicaResourcesInfo.NetworkExtensions.AditionalInfo -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+                            $CCCloudvCDNetworkExtensionsNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CCvCDReplicaResourcesInfo.NetworkExtensions.Name -Align "Center" -iconType $CCvCDReplicaResourcesInfo.NetworkExtensions.IconType -columnSize $CCvCDRRNetExtcolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCvCDReplicaResourcesInfo.NetworkExtensions.AditionalInfo -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
 
-                            if ($CCCloudNetworkExtensionsNode) {
-                                $CloudConnectTenantRRNetworkExtensionArray += $CCCloudNetworkExtensionsNode
+                            if ($CCCloudvCDNetworkExtensionsNode) {
+                                $CloudConnectTenantvCDRRNetworkExtensionArray += $CCCloudvCDNetworkExtensionsNode
                             }
                         } catch {
-                            Write-Verbose "Error: Unable to create CCCloudNetworkExtensionsNode Objects. Disabling the section"
+                            Write-Verbose "Error: Unable to create CCCloudvCDNetworkExtensionsNode Objects. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
                         }
                     }
                 }
 
-                if ($CloudConnectTenantRRNetworkExtensionArray) {
+                if ($CloudConnectTenantvCDRRNetworkExtensionArray) {
                     try {
-                        $CloudConnectTenantRRNExtensionSubgraphNode = Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantRRNetworkExtensionArray  -Align 'Center' -IconDebug $IconDebug -Label "Network Extension Appliances" -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 4 -fontSize 22 -IconType 'VBR_Hardware_Resources'
+                        $CloudConnectTenantvCDRRNExtensionSubgraphNode = Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantvCDRRNetworkExtensionArray  -Align 'Center' -IconDebug $IconDebug -Label "Network Extension Appliances" -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 4 -fontSize 22 -IconType 'VBR_Hardware_Resources'
                     } catch {
-                        Write-Verbose "Error: Unable to create Cloud Resource SubGraph Nodes Objects. Disabling the section"
+                        Write-Verbose "Error: Unable to create CloudvCDRRNExtensionSubgraphNode Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
                     }
                 }
 
                 try {
-                    $CloudResourcesSubgraphNode = Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantRRArraySubgraph  -Align 'Center' -IconDebug $IconDebug -Label "Replica Resources" -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 4 -fontSize 22 -IconType 'VBR_Hardware_Resources'
+                    $CloudvCDResourcesSubgraphNode = Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantvCDRRArraySubgraph  -Align 'Center' -IconDebug $IconDebug -Label "vDC Replica Resources" -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize 4 -fontSize 22 -IconType 'VBR_Hardware_Resources'
                 } catch {
-                    Write-Verbose "Error: Unable to create Cloud Resource SubGraph Nodes Objects. Disabling the section"
+                    Write-Verbose "Error: Unable to create CloudvCDResourcesSubgraphNode Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
                 }
 
-                if ($CloudResourcesSubgraphNode) {
+                if ($CloudvCDResourcesSubgraphNode) {
                     Node 'TenantReplicaResources' -Attributes @{
-                        Label = $CloudResourcesSubgraphNode;
+                        Label = $CloudvCDResourcesSubgraphNode;
                         shape = 'plain';
                         fillColor = 'transparent';
                         fontsize = 14;
@@ -617,9 +579,9 @@ function Get-DiagBackupToCloudConnectTenant {
                     }
                 }
 
-                if ($CloudConnectTenantRRNExtensionSubgraphNode) {
+                if ($CloudConnectTenantvCDRRNExtensionSubgraphNode) {
                     Node 'TenantReplicaResourcesNetworkExtension' -Attributes @{
-                        Label = $CloudConnectTenantRRNExtensionSubgraphNode;
+                        Label = $CloudConnectTenantvCDRRNExtensionSubgraphNode;
                         shape = 'plain';
                         fillColor = 'transparent';
                         fontsize = 14;
@@ -638,7 +600,7 @@ function Get-DiagBackupToCloudConnectTenant {
                 }
             }
 
-            if ($CloudResourcesSubgraphNode -and $CloudRepoSubgraph) {
+            if (($CloudResourcesSubgraphNode -or $CloudvCDResourcesSubgraphNode) -and $CloudRepoSubgraph) {
                 Rank 'TenantBackupStorage', 'TenantBackupStorageConnector'
                 Rank 'TenantReplicaResources', 'TenantReplicaResourcesConnector'
                 # Create Edge Connector Nodes
@@ -660,7 +622,7 @@ function Get-DiagBackupToCloudConnectTenant {
                     arrowtail = 'dot';
                     arrowhead = 'none';
                 }
-            } elseif ($CloudResourcesSubgraphNode) {
+            } elseif ($CloudResourcesSubgraphNode -or $CloudvCDResourcesSubgraphNode) {
                 # Create Edge Connector Nodes
                 Add-DiaVerticalLine -VStart 'TenantGatewayConnector' -VEnd 'TenantReplicaResourcesConnector' -LineColor $Edgecolor -LineStyle 'dashed' -IconDebug $IconDebug -LineWidth $EdgeLineWidth
 

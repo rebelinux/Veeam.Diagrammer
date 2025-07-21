@@ -226,18 +226,37 @@ function Get-VbrBackupCCPerTenantInfo {
                                                     }
                                                     NetworkExtensions = & {
                                                         if ($NetExEnabled) {
-                                                            Get-VBRCloudTenantNetworkAppliance -Tenant $CloudObject | ForEach-Object {
+                                                            Get-VBRCloudTenantNetworkAppliance -Tenant $CloudObject | Where-Object { $_.HardwarePlanId -eq $OrganizationvDCId } | ForEach-Object {
                                                                 $AditionalInfo = [PSCustomObject]@{
+                                                                    'Organization vDC' = $OrganizationvDCObject.Name
                                                                     'Platform' = $_.Platform
                                                                     'Network Name' = $_.ProductionNetwork.NetworkName
-                                                                    'Switch Name' = $_.ProductionNetwork.SwitchName
-                                                                    'Ip Address' = $_.IpAddress
-                                                                    'Network Mask' = $_.SubnetMask
-                                                                    'Gateway' = $_.DefaultGateway
+                                                                    'Switch Name' = switch ([string]::IsNullOrEmpty($_.ProductionNetwork.SwitchName)) {
+                                                                        $true { 'Not Configured' }
+                                                                        $false { $_.ProductionNetwork.SwitchName }
+                                                                        default { 'Unknown' }
+                                                                    }
+                                                                    'Ip Address' = switch ($_.ObtainIpAddressAutomatically) {
+                                                                        $true { 'Automatic' }
+                                                                        $false { $IPAddress }
+                                                                        default { 'Unknown' }
+                                                                    }
+                                                                    'Network Mask' = switch ($_.ObtainIpAddressAutomatically) {
+                                                                        $true { 'Automatic' }
+                                                                        $false { $SubnetMask }
+                                                                        default { 'Unknown' }
+                                                                    }
+                                                                    'Gateway' = switch ($_.ObtainIpAddressAutomatically) {
+                                                                        $true { 'Automatic' }
+                                                                        $false { $Gateway }
+                                                                        default { 'Unknown' }
+                                                                    }
                                                                 }
                                                                 [PSCustomObject]@{
-                                                                    'Name' = $_.Name
-                                                                    'Label' = Add-DiaNodeIcon -Name "$($_.Name)" -IconType "VBR_Cloud_Network_Extension" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug -AditionalInfo $AditionalInfo -FontSize 18
+                                                                    Name = $_.Name
+                                                                    Label = Add-DiaNodeIcon -Name "$($_.Name)" -IconType "VBR_Cloud_Network_Extension" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug -AditionalInfo $AditionalInfo -FontSize 18
+                                                                    IconType = 'VBR_Cloud_Network_Extension'
+                                                                    AditionalInfo = $AditionalInfo
                                                                 }
                                                             }
                                                         }
