@@ -124,7 +124,7 @@ function Get-DiagBackupToCloudConnect {
                     $CCVCDRRInfocolumnSize = 5
                 }
                 try {
-                    $CCVCDRRNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CCVCDRRInfo.Name -Align "Center" -iconType "VBR_Cloud_Connect_vCD" -columnSize $CCVCDRRInfocolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCVCDRRInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Cloud_Connect_Server" -SubgraphLabel "Replica Org vCDs" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
+                    $CCVCDRRNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $CCVCDRRInfo.Name -Align "Center" -iconType "VBR_Cloud_Connect_vCD" -columnSize $CCVCDRRInfocolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCVCDRRInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Cloud_Connect_Server" -SubgraphLabel "Replica Org vDCs" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
 
                     $CloudConnectInfraArray += $CCVCDRRNode
                 } catch {

@@ -2,10 +2,10 @@
 [x] Add Cloud Connect resources to the Infrastructure diagram
 [x] Create a Cloud Connect Diagram
 [x] Test DPI option
-[] Create a Per Tenant Cloud Connect Diagram showing the resources used by it
+[x] Create a Per Tenant Cloud Connect Diagram showing the resources used by it
     [x] Backup Storage
     [x] Resources Usage
-    [] Etc...
+    [x] Etc...
             Tenant (Done)
                   |
                   |
@@ -18,13 +18,13 @@
     Cloud Repository (Backup Resources) (Done)
                   |
                   |
-            [Sub-Tenant]
+            [Sub-Tenant] (Done)
                   |
                   |
     Replica Resources (Hardware Plan) (Done)
                   |
                   |
-        vCD Replica Resource
+        vCD Replica Resource (Done)
                   |
                   |
       Network Extension (Done)

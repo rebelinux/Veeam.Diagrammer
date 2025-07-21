@@ -76,11 +76,7 @@ function Get-VbrBackupCCPerTenantInfo {
                                     Name = $_.RepositoryFriendlyName
                                     Label = Add-DiaNodeIcon -Name "$($_.RepositoryFriendlyName)" -IconType "VBR_Cloud_Repository" -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                                     Id = $_.Id
-                                    WanAccelerationEnabled = switch ($_.WanAccelerationEnabled) {
-                                        'True' { 'Enabled' }
-                                        'False' { 'Disabled' }
-                                        default { 'Unknown' }
-                                    }
+                                    WanAccelerationEnabled = $_.WanAccelerationEnabled
                                     WanAccelerator = & {
                                         if ($_.WanAccelerator.Name) {
                                             $WANName = $_.WanAccelerator.Name.split(".")[0]
@@ -220,6 +216,7 @@ function Get-VbrBackupCCPerTenantInfo {
                                                         if ($_.WANAccelarationEnabled) {
                                                             if ($_.WANAccelerator.Name) {
                                                                 $WANName = $_.WANAccelerator.Name.split(".")[0]
+
                                                                 Get-VbrBackupWanAccelInfo | Where-Object { $_.Name -eq $WANName }
                                                             }
                                                         }
@@ -227,6 +224,9 @@ function Get-VbrBackupCCPerTenantInfo {
                                                     NetworkExtensions = & {
                                                         if ($NetExEnabled) {
                                                             Get-VBRCloudTenantNetworkAppliance -Tenant $CloudObject | Where-Object { $_.HardwarePlanId -eq $OrganizationvDCId } | ForEach-Object {
+                                                                $IPAddress = $_.IpAddress
+                                                                $SubnetMask = $_.SubnetMask
+                                                                $Gateway = $_.DefaultGateway
                                                                 $AditionalInfo = [PSCustomObject]@{
                                                                     'Organization vDC' = $OrganizationvDCObject.Name
                                                                     'Platform' = $_.Platform
