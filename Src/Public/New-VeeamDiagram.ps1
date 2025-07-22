@@ -18,6 +18,8 @@ function New-VeeamDiagram {
             - 'Backup-to-File-Proxy'
             - 'Backup-to-ProtectedGroup'
             - 'Backup-Infrastructure'
+            - 'Backup-to-CloudConnect'
+            - 'Backup-to-CloudConnect-Tenant'
 
     .PARAMETER Target
         One or more IP addresses or FQDNs of Veeam VBR servers to connect to.
