@@ -81,8 +81,15 @@ function Get-VbrBackupCCReplicaResourcesInfo {
                                 $AditionalInfo = [PSCustomObject] [ordered] @{
                                     Quota = ConvertTo-FileSizeString -Size (Convert-Size -From GB -To Bytes -Value $_.Quota) -RoundUnits 2
                                     Platform = $_.Platform
-                                    Datastore = $_.Datastore.Name
-
+                                    Datastore = & {
+                                        if ($_.Platform -eq 'HyperV') {
+                                            $_.Datastore
+                                        } elseif ($_.Platform -eq 'VMWare') {
+                                            $_.Datastore.Name
+                                        } else {
+                                            'Unknown'
+                                        }
+                                    }
                                 }
                                 [PSCustomObject]@{
                                     Name = $_.FriendlyName

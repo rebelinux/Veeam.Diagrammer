@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix the aspect ratio of the Veeam logo.
 - Correct edge direction and update label icon types in backup functions
 - Remove trailing spaces from name properties in various functions
+- Fix Switch Name and Datastore handling in Cloud Connect scripts
 
 ## [0.6.29] - 2025-05-17
 

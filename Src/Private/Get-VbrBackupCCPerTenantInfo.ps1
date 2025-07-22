@@ -156,10 +156,12 @@ function Get-VbrBackupCCPerTenantInfo {
                                                                     'Hardware Plan' = $HardwarePlanObject.Name
                                                                     'Platform' = $_.Platform
                                                                     'Network Name' = $_.ProductionNetwork.NetworkName
-                                                                    'Switch Name' = switch ([string]::IsNullOrEmpty($_.ProductionNetwork.SwitchName)) {
-                                                                        $true { 'Not Configured' }
-                                                                        $false { $_.ProductionNetwork.SwitchName }
-                                                                        default { 'Unknown' }
+                                                                    'Switch Name' = &{
+                                                                        if ([string]::IsNullOrEmpty($_.ProductionNetwork.SwitchName)) {
+                                                                            'Not Configured'
+                                                                        } else {
+                                                                            $_.ProductionNetwork.SwitchName
+                                                                        }
                                                                     }
                                                                     'Ip Address' = switch ($_.ObtainIpAddressAutomatically) {
                                                                         $true { 'Automatic' }
