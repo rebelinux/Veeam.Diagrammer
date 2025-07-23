@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve the logic for generating dummy lines.
 - Refine node count calculation to assign appropriate column sizes to HTML tables in the `Get-VbrInfraDiagram` cmdlet.
 - Update cmdlet verb to better reflect its intended action
+- Update workflow to use Windows 2022 for publishing PowerShell module
 
 
 ### Fixed
