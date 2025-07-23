@@ -5,7 +5,7 @@ function Get-VbrBackupRepoInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.25
+        Version:        0.6.30
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -65,8 +65,8 @@ function Get-VbrBackupRepoInfo {
                     $Type = Get-IconType -String $BackupType
 
                     $TempBackupRepoInfo = [PSCustomObject]@{
-                        Name = "$((Remove-SpecialChar -String $BackupRepo.Name -SpecialChars '\').toUpper()) "
-                        Label = Get-DiaNodeIcon -Name "$((Remove-SpecialChar -String $BackupRepo.Name -SpecialChars '\').toUpper())" -IconType $Type -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                        Name = "$((Remove-SpecialChar -String $BackupRepo.Name -SpecialChars '\').toUpper())"
+                        Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $BackupRepo.Name -SpecialChars '\').toUpper())" -IconType $Type -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
                         Role = $Role
                         AditionalInfo = $Rows
                     }

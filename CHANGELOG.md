@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.30] - 2025-07-23
+
+### Added
+
+- Add the `Get-VbrBackupCGServerInfo` function to retrieve Cloud Gateway server details.
+- Add the `Get-VbrBackupCGPoolInfo` function for extracting Cloud Gateway pool information.
+- Add the `Get-VbrBackupCCBackupStorageInfo` function for extracting Cloud Connect Backup Storage information.
+- Add the `Get-VbrBackupCCReplicaResourcesInfo` function for extracting Cloud Connect Replica Resources information.
+- Add a Todo file to track diagram enhancement tasks.
+- Include Cloud Connect resources in the Infrastructure diagram.
+- Add a dedicated Cloud Connect diagram.
+- Add Per Tenant Cloud Connect diagram.
+
+### Changed
+
+- Update the module version to 0.6.30.
+- Modify `PSScriptAnalyzerSettings.psd1` to exclude the 'PSAvoidUsingWriteHost' rule.
+- Upgrade the `Diagrammer.Core` module dependency to version 0.2.27.
+- Enhance `Get-VbrInfraDiagram` to incorporate Cloud Connect infrastructure.
+- Update `Images.ps1` with new image references.
+- Improve the logic for generating dummy lines.
+- Refine node count calculation to assign appropriate column sizes to HTML tables in the `Get-VbrInfraDiagram` cmdlet.
+- Update cmdlet verb to better reflect its intended action
+- Update workflow to use Windows 2022 for publishing PowerShell module
+
+
+### Fixed
+
+- Fix the aspect ratio of the Veeam logo.
+- Correct edge direction and update label icon types in backup functions
+- Remove trailing spaces from name properties in various functions
+- Fix Switch Name and Datastore handling in Cloud Connect scripts
+
 ## [0.6.29] - 2025-05-17
 
 ### Changed
@@ -158,7 +191,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Increase Diagrammer.Core minimum version requirement
-- Migrated Protection Group diagram to use Get-DiaHTMLSubGraph cmdlet
+- Migrated Protection Group diagram to use Add-DiaHTMLSubGraph cmdlet
 
 ### Fixed
 
@@ -296,7 +329,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Migrate diagrams to use Get-DiaHTMLNodeTable
+- Migrate diagrams to use Add-DiaHTMLNodeTable
 
 ## [0.6.1] - 2024-08-31
 

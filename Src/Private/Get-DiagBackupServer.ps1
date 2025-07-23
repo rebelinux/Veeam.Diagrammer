@@ -5,7 +5,7 @@ function Get-DiagBackupServer {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.19
+        Version:        0.6.30
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -65,9 +65,9 @@ function Get-DiagBackupServer {
 
                 $columnSize = $BackupServerInfoArray.Count
 
-                $BackupServerInfoSubGraph = (Get-DiaHTMLSubGraph -CellSpacing 4 -ImagesObj $Images -TableArray $BackupServerInfoArray -Align 'Center' -IconDebug $IconDebug -Label 'Backup Server' -LabelPos "top" -fontColor $BackupServerFontColor -fontSize 26 -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "0" -columnSize $columnSize)
+                $BackupServerInfoSubGraph = (Add-DiaHTMLSubGraph -CellSpacing 4 -ImagesObj $Images -TableArray $BackupServerInfoArray -Align 'Center' -IconDebug $IconDebug -Label 'Backup Server' -LabelPos "top" -fontColor $BackupServerFontColor -fontSize 26 -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "0" -columnSize $columnSize)
 
-                Node -Name BackupServers -Attributes @{Label = (Get-DiaHTMLSubGraph -ImagesObj $Images -TableArray $BackupServerInfoSubGraph -Align 'Right' -IconDebug $IconDebug -Label 'Management' -LabelPos "down" -fontColor $Fontcolor -fontSize 14 -TableStyle "rounded" -TableBorderColor $Edgecolor -TableBorder "2" -columnSize 1); style = 'filled,rounded'; shape = 'plain'; fillColor = $BackupServerBGColor; fontsize = 14; fontname = "Segoe Ui" }
+                Node -Name BackupServers -Attributes @{Label = (Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $BackupServerInfoSubGraph -Align 'Right' -IconDebug $IconDebug -Label 'Management' -LabelPos "down" -fontColor $Fontcolor -fontSize 14 -TableStyle "rounded" -TableBorderColor $Edgecolor -TableBorder "2" -columnSize 1); style = 'filled,rounded'; shape = 'plain'; fillColor = $BackupServerBGColor; fontsize = 14; fontname = "Segoe Ui" }
 
             } else {
                 throw "No Backup Server Information Found."

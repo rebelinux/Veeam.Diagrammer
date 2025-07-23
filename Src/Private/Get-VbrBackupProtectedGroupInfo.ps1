@@ -5,7 +5,7 @@ function Get-VbrBackupProtectedGroupInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.9
+        Version:        0.6.30
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -40,8 +40,8 @@ function Get-VbrBackupProtectedGroupInfo {
                     $Type = Get-IconType -String $ProtectedGroup.Container.Type
 
                     $TempProtectedGroupInfo = [PSCustomObject]@{
-                        Name = "$((Remove-SpecialChar -String $ProtectedGroup.Name -SpecialChars '\').toUpper()) "
-                        Label = Get-DiaNodeIcon -Name "$((Remove-SpecialChar -String $ProtectedGroup.Name -SpecialChars '\').toUpper())" -IconType $Type -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                        Name = "$((Remove-SpecialChar -String $ProtectedGroup.Name -SpecialChars '\').toUpper())"
+                        Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $ProtectedGroup.Name -SpecialChars '\').toUpper())" -IconType $Type -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
                         Container = $ProtectedGroup.Container.Type
                         Object = $ProtectedGroup
                     }

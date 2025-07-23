@@ -228,7 +228,7 @@ function Get-VbrRepositoryInfo {
                 $IconType = Get-IconType -String $BackupType
 
                 [PSCustomObject] @{
-                    Name = "$((Remove-SpecialChar -String $_.Name -SpecialChars '\').toUpper()) "
+                    Name = "$((Remove-SpecialChar -String $_.Name -SpecialChars '\').toUpper())"
                     AditionalInfo = $Rows
                     IconType = $IconType
                 }

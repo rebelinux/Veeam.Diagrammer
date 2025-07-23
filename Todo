@@ -1,0 +1,31 @@
+[x] Add vDC to the Infrastructure Diagram
+[x] Calculate Node count to assign the correct column size to the html table
+[x] Add Cloud Connect resources to the Infrastructure diagram
+[x] Create a Cloud Connect Diagram
+[x] Test DPI option
+[x] Create a Per Tenant Cloud Connect Diagram showing the resources used by it
+    [x] Backup Storage
+    [x] Resources Usage
+    [x] Etc...
+            Tenant (Done)
+                  |
+                  |
+        Cloud GateWay Pool (Done)
+                  |
+                  |
+        Cloud Gateway Servers (Done)
+                  |
+                  |
+    Cloud Repository (Backup Resources) (Done)
+                  |
+                  |
+            [Sub-Tenant] (Done)
+                  |
+                  |
+    Replica Resources (Hardware Plan) (Done)
+                  |
+                  |
+        vCD Replica Resource (Done)
+                  |
+                  |
+      Network Extension (Done)
