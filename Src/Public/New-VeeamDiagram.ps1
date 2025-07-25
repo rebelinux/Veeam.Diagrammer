@@ -115,7 +115,7 @@ function New-VeeamDiagram {
         For best results, ensure all image assets meet the recommended size guidelines.
 
     .NOTES
-        Version:        0.6.30
+        Version:        0.6.31
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -399,7 +399,7 @@ function New-VeeamDiagram {
             throw "New-VeeamDiagram : AuthorName and CompanyName must be defined if the Signature option is specified"
         }
 
-        $MainGraphLabel = Switch ($DiagramType) {
+        $MainGraphLabel = switch ($DiagramType) {
             'Backup-to-Sobr' { 'Scale-Out Backup Repository Diagram' }
             'Backup-to-File-Proxy' { 'File Backup Proxy Diagram' }
             'Backup-to-vSphere-Proxy' { 'VMware Backup Proxy Diagram' }
@@ -424,7 +424,7 @@ function New-VeeamDiagram {
             $ModuleArray = @('Veeam.Diagrammer', 'Diagrammer.Core')
 
             foreach ($Module in $ModuleArray) {
-                Try {
+                try {
                     $InstalledVersion = Get-Module -ListAvailable -Name $Module -ErrorAction SilentlyContinue | Sort-Object -Property Version -Descending | Select-Object -First 1 -ExpandProperty Version
 
                     if ($InstalledVersion) {
@@ -435,7 +435,7 @@ function New-VeeamDiagram {
                             Write-ColorOutput -Color 'White' -String "  - Run 'Update-Module -Name $Module -Force' to install the latest version." -Color Red
                         }
                     }
-                } Catch {
+                } catch {
                     Write-PScriboMessage -IsWarning $_.Exception.Message
                 }
             }
@@ -546,9 +546,9 @@ function New-VeeamDiagram {
 
                 $script:VBRServer = Get-VBRServer -Type Local
 
-            } Catch { throw "Unable to get Veeam Backup & Replication Server information: $System" }
+            } catch { throw "Unable to get Veeam Backup & Replication Server information: $System" }
 
-            Get-VBRBackupServerInfo
+            Get-VbrBackupServerInformation
 
             if ($BackupServerInfo) {
                 Write-Verbose "Backup Server Information collected"
