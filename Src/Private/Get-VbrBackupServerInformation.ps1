@@ -1,11 +1,11 @@
-function Get-VbrBackupServerInfo {
+function Get-VbrBackupServerInformation {
     <#
     .SYNOPSIS
         Function to extract veeam backup & replication server information.
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.30
+        Version:        0.6.31
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -22,6 +22,7 @@ function Get-VbrBackupServerInfo {
         try {
             $PssSession = try { New-PSSession $VBRServer.Name -Credential $Credential -Authentication Negotiate -ErrorAction Stop -Name 'PSSBackupServerDiagram' } catch {
                 Write-Error "Veeam.Diagrammer: New-PSSession: Unable to connect to $($VBRServer.Name), WinRM disabled or not configured."
+                Write-Error -Message $_.Exception.Message
             }
             Write-Verbose -Message "Collecting Backup Server information from $($VBRServer.Name)."
 
@@ -38,6 +39,8 @@ function Get-VbrBackupServerInfo {
                         DBInfo11 = $VeeamDBInfo11
                     }
                 }
+            } else {
+                $VeeamBuild = Get-VBRBackupServerInfo
             }
 
             $VeeamDBInfo = if ($VeeamInfo.DBInfo11.SqlServerName) {
@@ -64,6 +67,10 @@ function Get-VbrBackupServerInfo {
 
                 if ($VeeamInfo.Version) {
                     $Rows.add('Version', $VeeamInfo.Version)
+                } elseif ($VeeamBuild) {
+                    $Rows.add('Version', $VeeamBuild.Build)
+                } else {
+                    $Rows.add('Version', 'Unknown')
                 }
 
                 if ($DBType) {
