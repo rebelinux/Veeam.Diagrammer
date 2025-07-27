@@ -107,6 +107,9 @@ function New-VeeamDiagram {
         Sets the number of columns in the node table layout.
         Default: 4
 
+    .PARAMETER NewIcons
+        Switch. Enables the use of new icons for the diagram (default: false).
+
     .EXAMPLE
         New-VeeamDiagram -DiagramType 'Backup-Infrastructure' -Target 'vbr01.contoso.com' -Format 'PDF,PNG' -Theme 'Neon' -OutputFolderPath 'C:\Diagrams'
 
@@ -349,7 +352,12 @@ function New-VeeamDiagram {
                     throw "ColumnSize must be a positive integer greater than zero."
                 }
             })]
-        [int] $ColumnSize = 4
+        [int] $ColumnSize = 4,
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Allow to use Veeam new icons instead of the old ones (default: false, use NewIcons = $true to enable it)'
+        )]
+        [switch] $NewIcons = $false
     )
 
     begin {
@@ -482,12 +490,23 @@ function New-VeeamDiagram {
             $NodeFontcolor = 'Black'
             $EdgeArrowSize = 1
             $EdgeLineWidth = 3
-            $BackupServerBGColor = '#ceedc4'
-            $BackupServerFontColor = '#005f4b'
+            $BackupServerBGColor = switch ($NewIcons) {
+                $true { '#dbdddf' }
+                $false { '#ceedc4' }
+            }
+            $BackupServerFontColor = switch ($NewIcons) {
+                $true { '#565656' }
+                $false { '#005f4b' }
+            }
         }
+
+        $script:NewIcons = $false
 
         $RootPath = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
         $IconPath = Join-Path $RootPath 'icons'
+        $ImagePath = Join-Path $RootPath 'src\private\Images.ps1'
+
+        . $ImagePath
 
         if ($DiagramType -eq 'Backup-Infrastructure') {
 

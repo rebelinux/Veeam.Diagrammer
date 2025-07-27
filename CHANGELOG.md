@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.32] - 2025-0X-XX
+
+### Added
+
+- Add support for Veeam new icons
+  - Add NewIcons cmdlet parameter (Default = False)
+
 ## [0.6.31] - 2025-07-25
 
 ### Fixed
