@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for Veeam new icons
   - Add NewIcons cmdlet parameter (Default = False)
 
+### Changed
+
+- Update the module version to 0.6.32
+- Upgrade the `Diagrammer.Core` module dependency to version 0.2.28.
+
+
 ## [0.6.31] - 2025-07-25
 
 ### Fixed
