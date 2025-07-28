@@ -127,73 +127,109 @@ _Note: You are not limited to installing the module to those example paths, you 
 The `New-VeeamDiagram` cmdlet is used to generate a Veeam Backup & Replication diagram. The type of diagram to generate is specified by using the `DiagramType` parameter. The DiagramType parameter relies on additional diagram modules being created alongside the defaults module. The `Target` parameter specifies one or more Veeam VBR servers on which to connect and run the diagram. User credentials to the system are specified using the `Credential`, or the `Username` and `Password` parameters. One or more document formats, such as `PNG`, `PDF`, `SVG`, `BASE64` or `DOT` can be specified using the `Format` parameter. Additional parameters are outlined below.
 
 ```markdown
-.PARAMETER DiagramType
-  Specifies the type of veeam vbr diagram that will be generated.
-  The supported output diagrams are:
-            'Backup-to-Sobr', 'Backup-to-vSphere-Proxy', 'Backup-to-HyperV-Proxy',
-            'Backup-to-Repository', 'Backup-to-WanAccelerator', 'Backup-to-Tape',
-            'Backup-to-File-Proxy', 'Backup-to-ProtectedGroup', 'Backup-Infrastructure'
-.PARAMETER Target
-  Specifies the IP/FQDN of the system to connect.
-  Multiple targets may be specified, separated by a comma.
-.PARAMETER Port
-  Specifies a optional port to connect to Veeam VBR Service.
-  By default, port will be set to 9392
-.PARAMETER Credential
-  Specifies the stored credential of the target system.
-.PARAMETER Username
-  Specifies the username for the target system.
-.PARAMETER Password
-  Specifies the password for the target system.
-.PARAMETER Format
-  Specifies the output format of the diagram.
-  The supported output formats are PDF, PNG, DOT & SVG.
-  Multiple output formats may be specified, separated by a comma.
-.PARAMETER Direction
-  Set the direction in which resource are plotted on the visualization
-  The supported directions are:
-      'top-to-bottom', 'left-to-right'
-  By default, direction will be set to top-to-bottom.
-.PARAMETER DiagramType
-  Use it to set the diagram theme.
-  The supported themes are:
-      'Black', 'White', 'Neon'
-  By default, theme will be set to White.
-.PARAMETER NodeSeparation
-  Controls Node separation ratio in visualization
-  By default, NodeSeparation will be set to .60.
-.PARAMETER SectionSeparation
-  Controls Section (Subgraph) separation ratio in visualization
-  By default, NodeSeparation will be set to .75.
-.PARAMETER EdgeType
-  Controls how edges lines appear in visualization
-  The supported edge type are:
-      'polyline', 'curved', 'ortho', 'line', 'spline'
-  By default, EdgeType will be set to spline.
-  References: https://graphviz.org/docs/attrs/splines/
-.PARAMETER OutputFolderPath
-  Specifies the folder path to save the diagram.
-.PARAMETER Filename
-  Specifies a filename for the diagram.
-.PARAMETER EnableEdgeDebug
-  Control to enable edge debugging ( Dummy Edge and Node lines ).
-.PARAMETER EnableSubGraphDebug
-  Control to enable subgraph debugging ( Subgraph Lines ).
-.PARAMETER EnableErrorDebug
-  Control to enable error debugging.
-.PARAMETER AuthorName
-  Allow to set footer signature Author Name.
-.PARAMETER CompanyName
-  Allow to set footer signature Company Name.
-.PARAMETER Logo
-  Allow to change the Veeam logo to a custom one.
-  Image should be 400px x 100px or less in size.
-.PARAMETER SignatureLogo
-  Allow to change the Veeam.Diagrammer signature logo to a custom one.
-  Image should be 120px x 130px or less in size.
-.PARAMETER Signature
-  Allow the creation of footer signature.
-  AuthorName and CompanyName must be set to use this property.
+    .PARAMETER DiagramType
+        Specifies the type of Veeam VBR diagram to generate.
+        Supported values:
+            - 'Backup-to-Sobr'
+            - 'Backup-to-vSphere-Proxy'
+            - 'Backup-to-HyperV-Proxy'
+            - 'Backup-to-Repository'
+            - 'Backup-to-WanAccelerator'
+            - 'Backup-to-Tape'
+            - 'Backup-to-File-Proxy'
+            - 'Backup-to-ProtectedGroup'
+            - 'Backup-Infrastructure'
+            - 'Backup-to-CloudConnect'
+            - 'Backup-to-CloudConnect-Tenant'
+
+    .PARAMETER Target
+        One or more IP addresses or FQDNs of Veeam VBR servers to connect to.
+        Multiple targets can be specified, separated by commas.
+
+    .PARAMETER Port
+        Optional. The port number for connecting to the Veeam VBR Service.
+        Default: 9392
+
+    .PARAMETER Credential
+        A PSCredential object containing the username and password for authentication to the target system.
+
+    .PARAMETER Username
+        The username for authenticating to the target system. Used if Credential is not provided.
+
+    .PARAMETER Password
+        The password for authenticating to the target system. Used if Credential is not provided.
+
+    .PARAMETER Format
+        Specifies one or more output formats for the generated diagram.
+        Supported values: PDF, PNG, DOT, SVG
+        Multiple formats can be specified, separated by commas.
+
+    .PARAMETER Direction
+        Sets the layout direction of the diagram.
+        Supported values: 'top-to-bottom', 'left-to-right'
+        Default: 'top-to-bottom'
+
+    .PARAMETER Theme
+        Sets the visual theme of the diagram.
+        Supported values: 'Black', 'White', 'Neon'
+        Default: 'White'
+
+    .PARAMETER NodeSeparation
+        Adjusts the spacing between nodes in the diagram.
+        Default: 0.60
+
+    .PARAMETER SectionSeparation
+        Adjusts the spacing between sections (subgraphs) in the diagram.
+        Default: 0.75
+
+    .PARAMETER EdgeType
+        Defines the style of edge lines connecting nodes.
+        Supported values: 'polyline', 'curved', 'ortho', 'line', 'spline'
+        Default: 'spline'
+        See: https://graphviz.org/docs/attrs/splines/
+
+    .PARAMETER OutputFolderPath
+        The directory path where the generated diagram files will be saved.
+
+    .PARAMETER Filename
+        The base filename for the generated diagram files.
+
+    .PARAMETER DraftMode
+        Switch. Enables debugging visualization for subgraphs, edges & nodes.
+
+    .PARAMETER EnableErrorDebug
+        Switch. Enables detailed error debugging output.
+
+    .PARAMETER AuthorName
+        The name of the author to include in the diagram footer signature.
+
+    .PARAMETER CompanyName
+        The company name to include in the diagram footer signature.
+
+    .PARAMETER Logo
+        Path to a custom logo image to replace the default Veeam logo.
+        Recommended size: 400px x 100px or smaller.
+
+    .PARAMETER SignatureLogo
+        Path to a custom signature logo image for the diagram footer.
+        Recommended size: 120px x 130px or smaller.
+
+    .PARAMETER Signature
+        Switch. Adds a footer signature to the diagram. Requires AuthorName and CompanyName.
+
+    .PARAMETER WatermarkText
+        Text to be used as a watermark on the output image (not supported for SVG format).
+
+    .PARAMETER WatermarkColor
+        The color of the watermark text.
+        Default: 'Green'
+
+    .PARAMETER ColumnSize
+        Sets the number of columns in the node table layout.
+        Default: 4
+
+    .PARAMETER NewIcons
+        Switch. Enables the use of new icons for the diagram (default: false).
 ```
 
 For a full list of common parameters and examples you can view the `New-VeeamDiagram` cmdlet help with the following command;
