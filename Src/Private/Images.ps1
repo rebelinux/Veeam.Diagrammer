@@ -42,7 +42,7 @@ if ($NewIcons) {
         "VBR_AGENT_MC" = "New_Tasks.png"
         "VBR_AGENT_IC" = "New_Workstation.png"
         "VBR_AGENT_CSV" = "CSV_Computers.png"
-        "VBR_AGENT_AD_Logo" = "New_Microsoft Active Directory.png"
+        "VBR_AGENT_AD_Logo" = "New_Microsoft_Active_Directory.png"
         "VBR_AGENT_CSV_Logo" = "New_File.png"
         "VBR_AGENT_Server" = "New_Veeam_Agent.png"
         "VBR_vSphere" = "New_VMware_vSphere.png"
