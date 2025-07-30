@@ -28,7 +28,7 @@
 </p>
 
 > [!WARNING]
-> I have recently been contacted to ask about the status of this project. Maintaining this report and all the tools that make this project work is time and resource consuming. If you want to keep this project alive, support its development by donating through ko-fi.
+> I was recently contacted regarding the status of this project. Maintaining this report and the associated tools requires significant time and resources. If you would like to help keep this project active, please consider supporting its development by donating through Ko-fi.
 
 # Veeam VBR Diagrammer
 
