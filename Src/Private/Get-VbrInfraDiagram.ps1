@@ -32,9 +32,6 @@ function Get-VbrInfraDiagram {
             #                     Graphviz: https://graphviz.org/doc/info/shapes.html                       #
             #-----------------------------------------------------------------------------------------------#
 
-            # Blank Node used as filler
-            $BlankFiller = Add-DiaNodeFiller -IconDebug $IconDebug
-
             # EntraID Graphviz Cluster
             if ($EntraID = Get-VbrBackupEntraIDInfo) {
                 try {
@@ -311,7 +308,6 @@ function Get-VbrInfraDiagram {
                     }
                     $SOBRNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SOBR.Name -Align "Center" -iconType "VBR_SOBR_Repo" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBR.AditionalInfo -Subgraph -SubgraphLabel "Scale-Out Backup Repositories"  -SubgraphLabelFontsize 22 -fontSize 18 -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_SOBR"
                     $OnpremStorageArray += $SOBRNode
-                    # $OnpremStorageArray += $BlankFiller
                 } catch {
                     Write-Verbose "Error: Unable to create SOBR Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -328,7 +324,6 @@ function Get-VbrInfraDiagram {
                     }
                     $SANNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $SAN.Name -Align "Center" -iconType $SAN.IconType -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SAN.AditionalInfo -SubgraphLabelFontsize 22 -fontSize 18 -Subgraph -SubgraphLabel "Storage Infrastructure" -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -fontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_SAN"
                     $OnpremStorageArray += $SANNode
-                    # $OnpremStorageArray += $BlankFiller
                 } catch {
                     Write-Verbose "Error: Unable to create SAN Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -448,7 +443,6 @@ function Get-VbrInfraDiagram {
                     $TapeServerNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeServerInfo.Name -Align "Center" -iconType "VBR_Tape_Server" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeServerInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Server" -SubgraphLabel "Tape Servers" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
 
                     $TapeInfraArray += $TapeServerNode
-                    # $TapeInfraArray += $BlankFiller
                 } catch {
                     Write-Verbose "Error: Unable to create TapeServers Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -463,7 +457,6 @@ function Get-VbrInfraDiagram {
                         $TapeLibraryNode = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject $TapeLibraryInfo.Name -Align "Center" -iconType "VBR_Tape_Library" -columnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $TapeLibraryInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Tape_Library" -SubgraphLabel "Tape Libraries" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontsize 22 -fontSize 18
 
                         $TapeInfraArray += $TapeLibraryNode
-                        # $TapeInfraArray += $BlankFiller
                     } catch {
                         Write-Verbose "Error: Unable to create TapeLibrary Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"

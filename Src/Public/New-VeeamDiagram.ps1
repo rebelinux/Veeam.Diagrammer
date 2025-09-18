@@ -357,7 +357,7 @@ function New-VeeamDiagram {
             Mandatory = $false,
             HelpMessage = 'Allow to use Veeam new icons instead of the old ones (default: false, use NewIcons = $true to enable it)'
         )]
-        [switch] $NewIcons = $false
+        [bool] $NewIcons = $false
     )
 
     begin {
@@ -535,7 +535,6 @@ function New-VeeamDiagram {
         $MainGraphAttributes = @{
             pad = 1.0
             rankdir = $Dir
-            overlap = 'false'
             splines = $EdgeType
             penwidth = 1.5
             fontname = "Segoe Ui Black"
