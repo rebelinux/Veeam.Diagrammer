@@ -535,7 +535,6 @@ function New-VeeamDiagram {
         $MainGraphAttributes = @{
             pad = 1.0
             rankdir = $Dir
-            overlap = 'false'
             splines = $EdgeType
             penwidth = 1.5
             fontname = "Segoe Ui Black"
