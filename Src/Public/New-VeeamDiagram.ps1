@@ -357,7 +357,7 @@ function New-VeeamDiagram {
             Mandatory = $false,
             HelpMessage = 'Allow to use Veeam new icons instead of the old ones (default: false, use NewIcons = $true to enable it)'
         )]
-        [bool] $NewIcons = $false
+        [switch] $NewIcons = $false
     )
 
     begin {
