@@ -5,7 +5,7 @@ function Get-VbrBackupvSphereInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.30
+        Version:        0.6.35
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -15,7 +15,7 @@ function Get-VbrBackupvSphereInfo {
     [CmdletBinding()]
     [OutputType([System.Object[]])]
 
-    Param
+    param
     (
 
     )
@@ -37,18 +37,18 @@ function Get-VbrBackupvSphereInfo {
 
                         $TempHyObjsInfo = [PSCustomObject]@{
                             Name = $HyObj.Name
-                            Label = Add-DiaNodeIcon -Name $HyObj.Name -IconType "VBR_vCenter_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
+                            Label = Add-DiaNodeIcon -Name $HyObj.Name -IconType "VBR_vCenter_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                             AditionalInfo = $Rows
                             Childs = & {
                                 $VIClusters = try {
-                                (Find-VBRViEntity -Server $HyObj | Where-Object { ($_.type -eq "cluster") })
+                                    (Find-VBRViEntity -Server $HyObj | Where-Object { ($_.type -eq "cluster") })
                                 } catch {
                                     Write-Verbose -Message $_.Exception.Message
                                 }
                                 foreach ($Cluster in $VIClusters) {
                                     [PSCustomObject]@{
                                         Name = $Cluster.Name
-                                        Label = Add-DiaNodeIcon -Name $Cluster.Name -IconType "VBR_vSphere_Cluster" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
+                                        Label = Add-DiaNodeIcon -Name $Cluster.Name -IconType "VBR_vSphere_Cluster" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                                         EsxiHost = foreach ($Esxi in $ESXis | Where-Object { $_.path -match $Cluster.Name }) {
                                             $Rows = @{
                                                 IP = Get-NodeIP -Hostname $Esxi.Info.DnsName
@@ -56,7 +56,7 @@ function Get-VbrBackupvSphereInfo {
                                             }
                                             [PSCustomObject]@{
                                                 Name = $Esxi.Name
-                                                Label = Add-DiaNodeIcon -Name $Esxi.Name -IconType "VBR_ESXi_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
+                                                Label = Add-DiaNodeIcon -Name $Esxi.Name -IconType "VBR_ESXi_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                                                 AditionalInfo = $Rows
                                             }
                                         }

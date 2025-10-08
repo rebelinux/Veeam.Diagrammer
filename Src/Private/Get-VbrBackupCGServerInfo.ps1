@@ -5,7 +5,7 @@ function Get-VbrBackupCGServerInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.30
+        Version:        0.6.35
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -15,7 +15,7 @@ function Get-VbrBackupCGServerInfo {
     [CmdletBinding()]
     [OutputType([System.Object[]])]
 
-    Param (
+    param (
     )
 
     process {
@@ -24,7 +24,7 @@ function Get-VbrBackupCGServerInfo {
 
             $BackupCGServersInfo = @()
             if ($CloudObjects = Get-VBRCloudGateway | Sort-Object -Property Name) {
-                $CloudGatewayPoolServers = (Get-VBRCloudGatewayPool).CloudGateways.Name
+                # $CloudGatewayPoolServers = (Get-VBRCloudGatewayPool).CloudGateways.Name
                 foreach ($CloudObject in $CloudObjects) {
 
                     $AditionalInfo = [PSCustomObject] [ordered] @{
@@ -32,7 +32,7 @@ function Get-VbrBackupCGServerInfo {
                         'Network Mode' = $CloudObject.NetworkMode
                         'Incoming Port' = $CloudObject.IncomingPort
                         'NAT Port' = $CloudObject.NATPort
-                        State = Switch ($CloudObject.Enabled) {
+                        State = switch ($CloudObject.Enabled) {
                             'True' { 'Enabled' }
                             'False' { 'Disabled' }
                         }

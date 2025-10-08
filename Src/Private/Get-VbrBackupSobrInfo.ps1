@@ -5,7 +5,7 @@ function Get-VbrBackupSobrInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.30
+        Version:        0.6.35
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -15,7 +15,7 @@ function Get-VbrBackupSobrInfo {
     [CmdletBinding()]
     [OutputType([System.Object[]])]
 
-    Param
+    param
     (
 
     )
@@ -65,8 +65,8 @@ function Get-VbrBackupSobrInfo {
                             Type = $CapacityExtent.Repository.Type
                             Folder = "/$($CapacityFolder)"
                             Gateway = & {
-                                if (-Not $CapacityExtent.Repository.UseGatewayServer) {
-                                    Switch ($CapacityExtent.Repository.ConnectionType) {
+                                if (-not $CapacityExtent.Repository.UseGatewayServer) {
+                                    switch ($CapacityExtent.Repository.ConnectionType) {
                                         'Gateway' {
                                             switch (($CapacityExtent.Repository.GatewayServer | Measure-Object).count) {
                                                 0 { "Disable" }
@@ -101,8 +101,8 @@ function Get-VbrBackupSobrInfo {
                     $ArchiveRows = [ordered]@{
                         Type = $Sobr.ArchiveExtent.Repository.ArchiveType
                         Gateway = & {
-                            if (-Not $Sobr.ArchiveExtent.Repository.UseGatewayServer) {
-                                Switch ($Sobr.ArchiveExtent.Repository.GatewayMode) {
+                            if (-not $Sobr.ArchiveExtent.Repository.UseGatewayServer) {
+                                switch ($Sobr.ArchiveExtent.Repository.GatewayMode) {
                                     'Gateway' {
                                         switch (($Sobr.ArchiveExtent.Repository.GatewayServer | Measure-Object).count) {
                                             0 { "Disable" }

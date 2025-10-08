@@ -14,7 +14,7 @@ function Get-VbrRequiredModule {
     #>
     [CmdletBinding()]
 
-    Param
+    param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
         [ValidateNotNullOrEmpty()]

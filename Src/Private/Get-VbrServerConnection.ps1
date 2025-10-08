@@ -13,7 +13,7 @@ function Get-VbrServerConnection {
         The TCP Port of the target Veeam Backup Server.
 
     .NOTES
-        Version:        0.6.19
+        Version:        0.6.35
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         GitHub:         rebelinux
@@ -61,14 +61,14 @@ function Get-VbrServerConnection {
                 Connect-VBRServer -Server $System -Credential $Credential -Port $Port
             } catch {
                 Write-Verbose -Message $_.Exception.Message
-                Throw "Failed to connect to Veeam Backup Server Host $($System):$($Port) with username $($Credential.USERNAME)"
+                throw "Failed to connect to Veeam Backup Server Host $($System):$($Port) with username $($Credential.USERNAME)"
             }
         }
 
         Write-Verbose -Message "Validating connection to $System."
         $NewConnection = (Get-VBRServerSession).Server
         if ($null -eq $NewConnection) {
-            Throw "Failed to connect to Veeam Backup Server Host $($System):$($Port) with username $($Credential.USERNAME)"
+            throw "Failed to connect to Veeam Backup Server Host $($System):$($Port) with username $($Credential.USERNAME)"
         } else {
             Write-Verbose -Message "Successfully connected to $($System):$($Port) Backup Server."
         }

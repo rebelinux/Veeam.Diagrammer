@@ -5,7 +5,7 @@ function Get-DiagBackupServer {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.30
+        Version:        0.6.35
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -14,14 +14,14 @@ function Get-DiagBackupServer {
     #>
     [CmdletBinding()]
 
-    Param()
+    param()
 
     process {
         try {
 
             $BackupServerInfoArray = @()
 
-            if (( -Not $DatabaseServerInfo.Name ) -and ( -Not $EMServerInfo.Name ) -and ($BackupServerInfo.Name)) {
+            if (( -not $DatabaseServerInfo.Name ) -and ( -not $EMServerInfo.Name ) -and ($BackupServerInfo.Name)) {
                 Write-Verbose -Message "Collecting Backup Server Information."
 
                 $BackupServerInfoArray += $BackupServerInfo.Label
@@ -33,7 +33,7 @@ function Get-DiagBackupServer {
                 $BackupServerInfoArray += $BackupServerInfo.Label
                 $BackupServerInfoArray += $BackupServerInfo.Spacer
                 $BackupServerInfoArray += $DatabaseServerInfo.Label
-            } elseif (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and (-Not $EMServerInfo)) {
+            } elseif (($DatabaseServerInfo.Name -ne $BackupServerInfo.Name) -and (-not $EMServerInfo)) {
                 Write-Verbose -Message "Not Enterprise Manager Found: Collecting Backup Server and Database server Information."
 
                 $BackupServerInfoArray += $BackupServerInfo.Label
@@ -65,9 +65,9 @@ function Get-DiagBackupServer {
 
                 $columnSize = $BackupServerInfoArray.Count
 
-                $BackupServerInfoSubGraph = (Add-DiaHTMLSubGraph -CellSpacing 4 -ImagesObj $Images -TableArray $BackupServerInfoArray -Align 'Center' -IconDebug $IconDebug -Label 'Backup Server' -LabelPos "top" -fontColor $BackupServerFontColor -fontSize 26 -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "0" -columnSize $columnSize)
+                $BackupServerInfoSubGraph = (Add-DiaHTMLSubGraph -CellSpacing 4 -ImagesObj $Images -TableArray $BackupServerInfoArray -Align 'Center' -IconDebug $IconDebug -Label 'Backup Server' -LabelPos "top" -fontColor $BackupServerFontColor -fontSize 26 -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "0" -TableBackgroundColor $BackupServerBGColor -columnSize $columnSize)
 
-                Node -Name BackupServers -Attributes @{Label = (Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $BackupServerInfoSubGraph -Align 'Right' -IconDebug $IconDebug -Label 'Management' -LabelPos "down" -fontColor $Fontcolor -fontSize 14 -TableStyle "rounded" -TableBorderColor $Edgecolor -TableBorder "2" -columnSize 1); style = 'filled,rounded'; shape = 'plain'; fillColor = $BackupServerBGColor; fontsize = 14; fontname = "Segoe Ui" }
+                Node -Name BackupServers -Attributes @{Label = (Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $BackupServerInfoSubGraph -Align 'Right' -IconDebug $IconDebug -Label 'Management' -LabelPos "down" -fontColor $Fontcolor -fontSize 14 -TableStyle "rounded" -TableBorderColor $Edgecolor -TableBorder "2" -TableBackgroundColor $BackupServerBGColor -columnSize 1); style = 'filled,rounded'; shape = 'plain'; fillColor = $BackupServerBGColor; fontsize = 14; fontname = "Segoe Ui" }
 
             } else {
                 throw "No Backup Server Information Found."

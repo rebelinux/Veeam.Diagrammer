@@ -32,7 +32,7 @@ function Get-VbrProxyInfo {
         if ($Proxies) {
             $ProxiesInfo = $Proxies | ForEach-Object {
                 $inobj = [ordered] @{
-                    'Type' = Switch ($_.Type) {
+                    'Type' = switch ($_.Type) {
                         'Vi' { 'vSphere' }
                         'HvOffhost' { 'Off host' }
                         'HvOnhost' { 'On host' }
@@ -282,7 +282,7 @@ function Get-VbrObjectRepoInfo {
                     } elseif ($_.AzureBlobFolder) {
                         $_.AzureBlobFolder
                     } else { 'Unknown' }
-                    'Gateway' = if (-Not $_.UseGatewayServer) {
+                    'Gateway' = if (-not $_.UseGatewayServer) {
                         switch ($_.ConnectionType) {
                             'Gateway' {
                                 switch (($_.GatewayServer | Measure-Object).Count) {
@@ -349,7 +349,7 @@ function Get-VbrArchObjectRepoInfo {
             $ArchObjRepositoriesInfo = $ArchObjStorages | ForEach-Object {
                 $inobj = [ordered] @{
                     'Type' = $_.ArchiveType
-                    'Gateway' = if (-Not $_.UseGatewayServer) {
+                    'Gateway' = if (-not $_.UseGatewayServer) {
                         switch ($_.GatewayMode) {
                             'Gateway' {
                                 switch (($_.GatewayServer | Measure-Object).Count) {
@@ -535,7 +535,7 @@ function Get-VbrTapeServersInfo {
         if ($TapeServers) {
             $TapeServersInfo = $TapeServers | ForEach-Object {
                 $inobj = [ordered] @{
-                    'Is Available' = if ($_.IsAvailable) { "Yes" } elseif (-Not $_.IsAvailable) { "No" } else { "--" }
+                    'Is Available' = if ($_.IsAvailable) { "Yes" } elseif (-not $_.IsAvailable) { "No" } else { "--" }
                 }
 
                 [PSCustomObject] @{
@@ -751,7 +751,7 @@ function Get-VbrVirtualLabInfo {
         if ($VirtualLab) {
             $VirtualLabInfo = $VirtualLab | ForEach-Object {
                 $inobj = [ordered] @{
-                    'Platform' = Switch ($_.Platform) {
+                    'Platform' = switch ($_.Platform) {
                         'HyperV' { 'Microsoft Hyper-V' }
                         'VMWare' { 'VMWare vSphere' }
                         default { $_.Platform }

@@ -5,7 +5,7 @@ function Get-DiagBackupToProtectedGroup {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.30
+        Version:        0.6.35
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -14,7 +14,7 @@ function Get-DiagBackupToProtectedGroup {
     #>
     [CmdletBinding()]
 
-    Param
+    param
     (
 
     )
@@ -62,7 +62,7 @@ function Get-DiagBackupToProtectedGroup {
 
                                 $Ous = @()
 
-                                $Status = Switch ($PGOBJ.Object.Enabled) {
+                                $Status = switch ($PGOBJ.Object.Enabled) {
                                     $true { 'Enabled' }
                                     $false { 'Disabled' }
                                     default { 'Unknown' }
@@ -107,7 +107,7 @@ function Get-DiagBackupToProtectedGroup {
                                 $PGHASHTABLE = @{}
                                 $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
 
-                                $Status = Switch ($PGOBJ.Enabled) {
+                                $Status = switch ($PGOBJ.Enabled) {
                                     $true { 'Enabled' }
                                     $false { 'Disabled' }
                                     default { 'Unknown' }
@@ -147,7 +147,7 @@ function Get-DiagBackupToProtectedGroup {
                                 $PGHASHTABLE = @{}
                                 $PGOBJ.psobject.properties | ForEach-Object { $PGHASHTABLE[$_.Name] = $_.Value }
 
-                                $Status = Switch ($PGOBJ.Enabled) {
+                                $Status = switch ($PGOBJ.Enabled) {
                                     $true { 'Enabled' }
                                     $false { 'Disabled' }
                                     default { 'Unknown' }

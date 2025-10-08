@@ -5,7 +5,7 @@ function Get-VbrBackupTapeServerInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.30
+        Version:        0.6.35
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -15,7 +15,7 @@ function Get-VbrBackupTapeServerInfo {
     [CmdletBinding()]
     [OutputType([System.Object[]])]
 
-    Param (
+    param (
     )
 
     process {
@@ -29,9 +29,9 @@ function Get-VbrBackupTapeServerInfo {
                 foreach ($TapeServer in $TapeServers) {
 
                     $Rows = @{
-                        IP = Get-NodeIP -HostName $TapeServer.Name
+                        IP = Get-NodeIP -Hostname $TapeServer.Name
                         Role = 'Tape Server'
-                        State = Switch ($TapeServer.IsAvailable) {
+                        State = switch ($TapeServer.IsAvailable) {
                             'True' { 'Available' }
                             'False' { 'Unavailable' }
                         }
@@ -40,7 +40,7 @@ function Get-VbrBackupTapeServerInfo {
 
                     $TempBackupTapeServersInfo = [PSCustomObject]@{
                         Name = $TapeServer.Name
-                        Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $TapeServer.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType 'VBR_Tape_Server' -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
+                        Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $TapeServer.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType 'VBR_Tape_Server' -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                         Id = $TapeServer.Id
                     }
 
