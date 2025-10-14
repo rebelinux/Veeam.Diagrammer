@@ -5,7 +5,7 @@ function Get-VbrBackupTapeLibraryInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.30
+        Version:        0.6.35
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -15,7 +15,7 @@ function Get-VbrBackupTapeLibraryInfo {
     [CmdletBinding()]
     [OutputType([System.Object[]])]
 
-    Param (
+    param (
         [string] $TapeServer
     )
 
@@ -25,7 +25,7 @@ function Get-VbrBackupTapeLibraryInfo {
 
             if ($TapeServer) {
                 $TapeLibraries = Get-VBRTapeLibrary -TapeServer $TapeServer
-            } Else { $TapeLibraries = Get-VBRTapeLibrary }
+            } else { $TapeLibraries = Get-VBRTapeLibrary }
 
             $BackupTapelibraryInfo = @()
             if ($TapeLibraries) {
@@ -40,7 +40,7 @@ function Get-VbrBackupTapeLibraryInfo {
 
                     $TempBackupTapelibraryInfo = [PSCustomObject]@{
                         Name = "$((Remove-SpecialChar -String $TapeLibrary.Name -SpecialChars '\').toUpper())_$(Get-Random)"
-                        Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $TapeLibrary.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType 'VBR_Tape_Library' -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
+                        Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $TapeLibrary.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType 'VBR_Tape_Library' -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                         TapeServerId = $TapeLibrary.TapeServerId
                         Id = $TapeLibrary.Id
                     }

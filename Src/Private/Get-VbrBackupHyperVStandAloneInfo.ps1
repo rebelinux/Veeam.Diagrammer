@@ -5,7 +5,7 @@ function Get-VbrBackupHyperVStandAloneInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.30
+        Version:        0.6.35
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -15,14 +15,14 @@ function Get-VbrBackupHyperVStandAloneInfo {
     [CmdletBinding()]
     [OutputType([System.Object[]])]
 
-    Param
+    param
     (
 
     )
     process {
         Write-Verbose -Message "Collecting HyperV HyperVisor information from $($VBRServer.Name)."
         try {
-            $HyObjs = Get-VBRServer | Where-Object { $_.Type -eq 'HvServer' -and $_.Parentid -eq '00000000-0000-0000-0000-000000000000'}
+            $HyObjs = Get-VBRServer | Where-Object { $_.Type -eq 'HvServer' -and $_.Parentid -eq '00000000-0000-0000-0000-000000000000' }
             $HyObjsInfo = @()
             if ($HyObjs) {
                 foreach ($HyObj in $HyObjs) {

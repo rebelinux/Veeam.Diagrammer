@@ -5,7 +5,7 @@ function Get-VbrBackupProxyInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.30
+        Version:        0.6.35
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -16,7 +16,7 @@ function Get-VbrBackupProxyInfo {
     [OutputType([System.Object[]])]
 
 
-    Param
+    param
     (
         # Backup Proxy Type
         [ValidateSet('vmware', 'hyperv', 'nas')]
@@ -39,27 +39,27 @@ function Get-VbrBackupProxyInfo {
 
                     # $Role = Get-RoleType -String $Type
 
-                    $Hostname = Switch ($Type) {
+                    $Hostname = switch ($Type) {
                         'vmware' { $BackupProxy.Host.Name }
                         'hyperv' { $BackupProxy.Host.Name }
                         'nas' { $BackupProxy.Server.Name }
                     }
 
-                    $Status = Switch ($Type) {
+                    $Status = switch ($Type) {
                         'vmware' {
-                            Switch ($BackupProxy.isDisabled) {
+                            switch ($BackupProxy.isDisabled) {
                                 $false { 'Enabled' }
                                 $true { 'Disabled' }
                             }
                         }
                         'hyperv' {
-                            Switch ($BackupProxy.isDisabled) {
+                            switch ($BackupProxy.isDisabled) {
                                 $false { 'Enabled' }
                                 $true { 'Disabled' }
                             }
                         }
                         'nas' {
-                            Switch ($BackupProxy.IsEnabled) {
+                            switch ($BackupProxy.IsEnabled) {
                                 $false { 'Disabled' }
                                 $true { 'Enabled' }
                             }
@@ -67,26 +67,26 @@ function Get-VbrBackupProxyInfo {
                     }
 
                     $BPRows = [ordered]@{
-                        IP = Get-NodeIP -HostName $Hostname
+                        IP = Get-NodeIP -Hostname $Hostname
                         Status = $Status
-                        Type = Switch ($Type) {
+                        Type = switch ($Type) {
                             'vmware' { $BackupProxy.Host.Type }
                             'hyperv' {
-                                Switch ($BackupProxy.Info.Type) {
+                                switch ($BackupProxy.Info.Type) {
                                     'HvOffhost' { "Off-Host Backup" }
                                     'HvOnhost' { "On-Host Backup" }
                                 }
                             }
                             'nas' { "File Backup" }
                         }
-                        Concurrent_Tasks = Switch ($Type) {
+                        Concurrent_Tasks = switch ($Type) {
                             'vmware' { $BackupProxy.MaxTasksCount }
                             'hyperv' { $BackupProxy.MaxTasksCount }
                             'nas' { $BackupProxy.ConcurrentTaskNumber }
                         }
                     }
 
-                    $IconType = Switch ($Type) {
+                    $IconType = switch ($Type) {
                         'vmware' { "VBR_Proxy_Server" }
                         'hyperv' { "VBR_Proxy_Server" }
                         'nas' { "VBR_AGENT_Server" }
@@ -94,7 +94,7 @@ function Get-VbrBackupProxyInfo {
 
                     $TempBackupProxyInfo = [PSCustomObject]@{
                         Name = "$($Hostname.toUpper().split(".")[0])"
-                        Label = Add-DiaNodeIcon -Name "$($Hostname.toUpper().split(".")[0])" -IconType $IconType -Align "Center" -Rows $BPRows -ImagesObj $Images -IconDebug $IconDebug -fontSize 18
+                        Label = Add-DiaNodeIcon -Name "$($Hostname.toUpper().split(".")[0])" -IconType $IconType -Align "Center" -Rows $BPRows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
                         AditionalInfo = $BPRows
                     }
 

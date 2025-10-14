@@ -52,7 +52,7 @@ function Get-IconType {
         [string]$String
     )
 
-    $IconType = Switch ($String) {
+    $IconType = switch ($String) {
         'LinuxLocal' { 'VBR_Linux_Repository' }
         'Hardened' { 'VBR_Linux_Repository' }
         'LinuxHardened' { 'VBR_Linux_Repository' }
@@ -150,7 +150,7 @@ function Get-RoleType {
         [string]$String
     )
 
-    $RoleType = Switch ($String) {
+    $RoleType = switch ($String) {
         'LinuxLocal' { 'Linux Local' }
         'LinuxHardened' { 'Linux Hardened' }
         'WinLocal' { 'Windows Local' }
@@ -213,7 +213,7 @@ function ConvertTo-TextYN {
         https://github.com/rebelinux/Veeam.Diagrammer
     #>
     [OutputType([String])]
-    Param (
+    param (
         [Parameter (
             Position = 0,
             Mandatory)]
@@ -244,7 +244,7 @@ function ConvertTo-FileSizeString {
     #>
     [CmdletBinding()]
     [OutputType([String])]
-    Param
+    param
     (
         [Parameter (
             Position = 0,
@@ -275,11 +275,11 @@ function ConvertTo-FileSizeString {
     if ($SourceSpaceUnit) {
         return "$([math]::Round(($Size * $("1" + $SourceSpaceUnit) / $("1" + $TargetSpaceUnit)), $RoundUnits)) $TargetSpaceUnit"
     } else {
-        $Unit = Switch ($Size) {
-            { $Size -gt 1PB } { 'PB' ; Break }
-            { $Size -gt 1TB } { 'TB' ; Break }
-            { $Size -gt 1GB } { 'GB' ; Break }
-            { $Size -gt 1Mb } { 'MB' ; Break }
+        $Unit = switch ($Size) {
+            { $Size -gt 1PB } { 'PB' ; break }
+            { $Size -gt 1TB } { 'TB' ; break }
+            { $Size -gt 1GB } { 'GB' ; break }
+            { $Size -gt 1Mb } { 'MB' ; break }
             Default { 'KB' }
         }
         return "$([math]::Round(($Size / $("1" + $Unit)), $RoundUnits)) $Unit"
