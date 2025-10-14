@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.6.35] - vNext
+## [0.6.35] - 2025-10-13
 
 ### Changed
 
@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add missing parameters in function calls to maintain functionality.
 - Improve error handling by changing 'Throw' to 'throw' for consistency.
 - Ensure consistent use of 'FontSize' casing in icon label functions.
+- Upgrade the `Diagrammer.Core` module dependency to version 0.2.31
 
 ### Fixed
 
