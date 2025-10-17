@@ -5,7 +5,7 @@ function Get-DiagBackupToHvProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.35
+        Version:        0.6.36
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -58,7 +58,7 @@ function Get-DiagBackupToHvProxy {
                             $HyperVBackupProxyColumnSize = $vCenter.Childs.Name.Count
                         }
 
-                        $ViClustersChildsNodes = Add-DiaHTMLTable -ImagesObj $Images -Rows $vCenter.Childs.Name -Align 'Center' -ColumnSize $HyperVBackupProxyColumnSize -IconDebug $IconDebug -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18
+                        $ViClustersChildsNodes = Add-DiaHTMLTable -ImagesObj $Images -Rows $vCenter.Childs.Name -Align 'Center' -ColumnSize $HyperVBackupProxyColumnSize -IconDebug $IconDebug -fontColor '#000000' -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18
 
                     } catch {
                         Write-Verbose "Error: Unable to create Hyper-V Hosts table Objects. Disabling the section"
