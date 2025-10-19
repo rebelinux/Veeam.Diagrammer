@@ -145,7 +145,7 @@ function Get-DiagBackupToSobr {
                             $SOBRCSubGraphColumnSize = $SOBRArray.Count
                         }
                         try {
-                            $SOBRSubgraph = Node -Name SOBRRepo -Attributes @{Label = (Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $SOBRArray  -Align 'Center' -IconDebug $IconDebug -Label 'SOBR Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $SOBRCSubGraphColumnSize -fontSize 22); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                            $SOBRSubgraph = Node -Name SOBRRepo -Attributes @{Label = (Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $SOBRArray -Align 'Center' -IconDebug $IconDebug -Label 'SOBR Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $SOBRCSubGraphColumnSize -fontSize 22); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                         } catch {
                             Write-Verbose "Error: Unable to create SubGraph Objects. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
