@@ -5,7 +5,7 @@ function Get-VbrBackupHyperVStandAloneInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.35
+        Version:        0.6.36
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -38,7 +38,7 @@ function Get-VbrBackupHyperVStandAloneInfo {
 
                         $TempHyObjsInfo = [PSCustomObject]@{
                             Name = $HyObj.Name
-                            Label = Add-DiaNodeIcon -Name $HyObj.Name -IconType "VBR_HyperV_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                            Label = Add-DiaNodeIcon -Name $HyObj.Name -IconType "VBR_HyperV_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontBold
                             AditionalInfo = $Rows
                         }
                         $HyObjsInfo += $TempHyObjsInfo

@@ -5,7 +5,7 @@ function Get-VbrBackupCCPerTenantInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.35
+        Version:        0.6.36
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -54,7 +54,7 @@ function Get-VbrBackupCCPerTenantInfo {
 
                 $TempBackupCCTenantInfo = [PSCustomObject]@{
                     Name = $CloudObject.Name
-                    Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $CloudObject.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType 'VBR_Cloud_Connect_Gateway' -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
+                    Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $CloudObject.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType 'VBR_Cloud_Connect_Gateway' -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -FontBold
                     Id = $CloudObject.Id
                     CloudGatewaySelectionType = $CloudObject.GatewaySelectionType
                     CloudGatewayPools = Get-VbrBackupCGPoolInfo | Where-Object { $_.Name -eq $CloudObject.GatewayPool }
@@ -74,7 +74,7 @@ function Get-VbrBackupCCPerTenantInfo {
                                 }
                                 [PSCustomObject]@{
                                     Name = $_.RepositoryFriendlyName
-                                    Label = Add-DiaNodeIcon -Name "$($_.RepositoryFriendlyName)" -IconType "VBR_Cloud_Repository" -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
+                                    Label = Add-DiaNodeIcon -Name "$($_.RepositoryFriendlyName)" -IconType "VBR_Cloud_Repository" -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -FontBold
                                     Id = $_.Id
                                     WanAccelerationEnabled = $_.WanAccelerationEnabled
                                     WanAccelerator = & {
@@ -106,7 +106,7 @@ function Get-VbrBackupCCPerTenantInfo {
                                             }
                                             [PSCustomObject]@{
                                                 Name = $_.Name
-                                                Label = Add-DiaNodeIcon -Name "$($_.Name)" -IconType "VBR_Cloud_Sub_Tenant" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -AditionalInfo $AditionalInfo
+                                                Label = Add-DiaNodeIcon -Name "$($_.Name)" -IconType "VBR_Cloud_Sub_Tenant" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -AditionalInfo $AditionalInfo -FontBold
                                                 Id = $_.Id
                                                 IconType = 'VBR_Cloud_Sub_Tenant'
                                                 AditionalInfo = $AditionalInfo
@@ -181,7 +181,7 @@ function Get-VbrBackupCCPerTenantInfo {
                                                                 }
                                                                 [PSCustomObject]@{
                                                                     Name = $_.Name
-                                                                    Label = Add-DiaNodeIcon -Name "$($_.Name)" -IconType "VBR_Cloud_Network_Extension" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug -AditionalInfo $AditionalInfo -FontSize 18
+                                                                    Label = Add-DiaNodeIcon -Name "$($_.Name)" -IconType "VBR_Cloud_Network_Extension" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug -AditionalInfo $AditionalInfo -FontSize 18 -FontBold
                                                                     AditionalInfo = $AditionalInfo
                                                                     IconType = 'VBR_Cloud_Network_Extension'
                                                                 }
@@ -256,7 +256,7 @@ function Get-VbrBackupCCPerTenantInfo {
                                                                 }
                                                                 [PSCustomObject]@{
                                                                     Name = $_.Name
-                                                                    Label = Add-DiaNodeIcon -Name "$($_.Name)" -IconType "VBR_Cloud_Network_Extension" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug -AditionalInfo $AditionalInfo -FontSize 18
+                                                                    Label = Add-DiaNodeIcon -Name "$($_.Name)" -IconType "VBR_Cloud_Network_Extension" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug -AditionalInfo $AditionalInfo -FontSize 18 -FontBold
                                                                     IconType = 'VBR_Cloud_Network_Extension'
                                                                     AditionalInfo = $AditionalInfo
                                                                 }
