@@ -5,7 +5,7 @@ function Get-VbrBackupCCvCDReplicaResourcesInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.30
+        Version:        0.6.36
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -53,7 +53,7 @@ function Get-VbrBackupCCvCDReplicaResourcesInfo {
 
                     $TempBackupCCvCDReplicaResourcesInfo = [PSCustomObject]@{
                         Name = $CloudObject.OrganizationvDCName
-                        Label = Add-DiaNodeIcon -Name $CloudObject.OrganizationvDCName  -IconType "VBR_Cloud_Connect_vCD" -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
+                        Label = Add-DiaNodeIcon -Name $CloudObject.OrganizationvDCName  -IconType "VBR_Cloud_Connect_vCD" -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -FontBold
                         Id = $CloudObject.OrganizationvDCID
                         AditionalInfo = $AditionalInfo
                         WanAcceleration = & {

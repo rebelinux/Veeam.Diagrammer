@@ -5,7 +5,7 @@ function Get-DiagBackupToRepo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.35
+        Version:        0.6.36
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -46,14 +46,14 @@ function Get-DiagBackupToRepo {
                         }
                         try {
 
-                            $LocalBackupRepoArray = (Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($LocalBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Repository" -columnSize $LocalBackupRepoColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($LocalBackupRepo.AditionalInfo ) -fontSize 18)
+                            $LocalBackupRepoArray = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($LocalBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Repository" -columnSize $LocalBackupRepoColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($LocalBackupRepo.AditionalInfo ) -fontSize 18 -SubgraphFontBold
                         } catch {
                             Write-Verbose "Error: Unable to create Local Backup Repositories table Objects. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
                         }
                         try {
 
-                            $LocalBackupRepoSubgraph = (Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $LocalBackupRepoArray -Align 'Center' -IconDebug $IconDebug -Label 'Local Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $LocalBackupRepoColumnSize -fontSize 24)
+                            $LocalBackupRepoSubgraph = Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $LocalBackupRepoArray -Align 'Center' -IconDebug $IconDebug -Label 'Local Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $LocalBackupRepoColumnSize -fontSize 24 -FontBold
                         } catch {
                             Write-Verbose "Error: Unable to create Local Backup Repositories Subgraph. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
@@ -73,14 +73,14 @@ function Get-DiagBackupToRepo {
                         }
                         try {
 
-                            $NASBackupRepoArray = (Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($NASBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_NAS" -columnSize $NASBackupRepoColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($NASBackupRepo.AditionalInfo ) -fontSize 18)
+                            $NASBackupRepoArray = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($NASBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_NAS" -columnSize $NASBackupRepoColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($NASBackupRepo.AditionalInfo ) -fontSize 18 -SubgraphFontBold
                         } catch {
                             Write-Verbose "Error: Unable to create NAS Backup Repositories table Objects. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
                         }
 
                         try {
-                            $NASBackupRepoSubgraph = (Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $NASBackupRepoArray -Align 'Center' -IconDebug $IconDebug -Label 'NAS Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $NASBackupRepoColumnSize -fontSize 24)
+                            $NASBackupRepoSubgraph = Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $NASBackupRepoArray -Align 'Center' -IconDebug $IconDebug -Label 'NAS Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $NASBackupRepoColumnSize -fontSize 24 -FontBold
                         } catch {
                             Write-Verbose "Error: Unable to create NAS Backup Repositories Subgraph. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
@@ -100,14 +100,14 @@ function Get-DiagBackupToRepo {
                         }
                         try {
 
-                            $DedupBackupRepoArray = (Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($DedupBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Deduplicating_Storage" -columnSize $DedupBackupRepoColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($DedupBackupRepo.AditionalInfo ) -fontSize 18)
+                            $DedupBackupRepoArray = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($DedupBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Deduplicating_Storage" -columnSize $DedupBackupRepoColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($DedupBackupRepo.AditionalInfo ) -fontSize 18  -SubgraphFontBold
                         } catch {
                             Write-Verbose "Error: Unable to create Dedup Backup Repositories table Objects. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
                         }
 
                         try {
-                            $DedupBackupRepoSubgraph = (Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $DedupBackupRepoArray -Align 'Center' -IconDebug $IconDebug -Label 'Deduplicating Storage Appliances' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $DedupBackupRepoColumnSize -fontSize 24)
+                            $DedupBackupRepoSubgraph = Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $DedupBackupRepoArray -Align 'Center' -IconDebug $IconDebug -Label 'Deduplicating Storage Appliances' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $DedupBackupRepoColumnSize -fontSize 24 -FontBold
                         } catch {
                             Write-Verbose "Error: Unable to create Dedup Backup Repositories Subgraph. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
@@ -126,14 +126,14 @@ function Get-DiagBackupToRepo {
                             $ObjStorageColumnSize = $ObjStorage.Name.Count
                         }
                         try {
-                            $ObjStorageArray = (Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($ObjStorage | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize $ObjStorageColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($ObjStorage.AditionalInfo ) -fontSize 18)
+                            $ObjStorageArray = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($ObjStorage | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize $ObjStorageColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($ObjStorage.AditionalInfo ) -fontSize 18 -SubgraphFontBold
                         } catch {
                             Write-Verbose "Error: Unable to create Object Repositories table Objects. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
                         }
 
                         try {
-                            $ObjStorageSubgraph = (Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ObjStorageArray -Align 'Center' -IconDebug $IconDebug -Label 'Object Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $ObjStorageColumnSize -fontSize 24)
+                            $ObjStorageSubgraph = Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ObjStorageArray -Align 'Center' -IconDebug $IconDebug -Label 'Object Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $ObjStorageColumnSize -fontSize 24 -FontBold
                         } catch {
                             Write-Verbose "Error: Unable to create Object Repositories Subgraph. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
@@ -152,14 +152,14 @@ function Get-DiagBackupToRepo {
                             $ArchiveObjStorageColumnSize = $ArchiveObjStorage.Name.Count
                         }
                         try {
-                            $ArchiveObjStorageArray = (Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($ArchiveObjStorage | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize $ArchiveObjStorageColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($ArchiveObjStorage.AditionalInfo ) -fontSize 18)
+                            $ArchiveObjStorageArray = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($ArchiveObjStorage | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize $ArchiveObjStorageColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($ArchiveObjStorage.AditionalInfo ) -fontSize 18 -SubgraphFontBold
                         } catch {
                             Write-Verbose "Error: Unable to create Archive Object Repositories table Objects. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
                         }
                         try {
 
-                            $ArchiveObjStorageSubgraph = (Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ArchiveObjStorageArray -Align 'Center' -IconDebug $IconDebug -Label 'Archive Object Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $ArchiveObjStorageColumnSize -fontSize 24)
+                            $ArchiveObjStorageSubgraph = Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $ArchiveObjStorageArray -Align 'Center' -IconDebug $IconDebug -Label 'Archive Object Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $ArchiveObjStorageColumnSize -fontSize 24 -FontBold
                         } catch {
                             Write-Verbose "Error: Unable to create Archive Object Repositories Subgraph. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
@@ -180,14 +180,14 @@ function Get-DiagBackupToRepo {
                         }
                         try {
 
-                            $CloudBackupRepoArray = (Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($CloudBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize $CloudBackupRepoColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($CloudBackupRepo.AditionalInfo ) -fontSize 18)
+                            $CloudBackupRepoArray = Add-DiaHTMLNodeTable -ImagesObj $Images -inputObject ($CloudBackupRepo | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Cloud_Repository" -columnSize $CloudBackupRepoColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($CloudBackupRepo.AditionalInfo ) -fontSize 18 -SubgraphFontBold
                         } catch {
                             Write-Verbose "Error: Unable to create Cloud Backup Repositories table Objects. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
                         }
                         try {
 
-                            $CloudBackupRepoSubgraph = (Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CloudBackupRepoArray -Align 'Center' -IconDebug $IconDebug -Label 'Cloud Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $CloudBackupRepoColumnSize -fontSize 24)
+                            $CloudBackupRepoSubgraph = Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $CloudBackupRepoArray -Align 'Center' -IconDebug $IconDebug -Label 'Cloud Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $CloudBackupRepoColumnSize -fontSize 24 -FontBold
                         } catch {
                             Write-Verbose "Error: Unable to create Cloud Backup Repositories Subgraph. Disabling the section"
                             Write-Debug "Error Message: $($_.Exception.Message)"
@@ -206,7 +206,7 @@ function Get-DiagBackupToRepo {
                         } else {
                             $RepoSubgraphArrayColumnSize = $RepoSubgraphArray.Count
                         }
-                        Node -Name MainSubGraph -Attributes @{Label = (Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $RepoSubgraphArray -Align 'Center' -IconDebug $IconDebug -Label 'Backup Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $RepoSubgraphArrayColumnSize -fontSize 26); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                        Node -Name MainSubGraph -Attributes @{Label = (Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $RepoSubgraphArray -Align 'Center' -IconDebug $IconDebug -Label 'Backup Repositories' -LabelPos "top" -fontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -columnSize $RepoSubgraphArrayColumnSize -fontSize 26 -FontBold); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                     }
 
                     Edge -From BackupServers -To MainSubGraph @{minlen = 3 }

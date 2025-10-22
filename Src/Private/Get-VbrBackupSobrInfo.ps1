@@ -5,7 +5,7 @@ function Get-VbrBackupSobrInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.35
+        Version:        0.6.36
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -130,7 +130,7 @@ function Get-VbrBackupSobrInfo {
 
                     $TempSobrInfo = [PSCustomObject]@{
                         Name = "$($Sobr.Name.toUpper())"
-                        Label = Add-DiaNodeIcon -Name "$($Sobr.Name)" -IconType "VBR_SOBR_Repo" -Align "Center" -Rows $SobrRows -ImagesObj $Images -IconDebug $IconDebug -FontSize 16
+                        Label = Add-DiaNodeIcon -Name "$($Sobr.Name)" -IconType "VBR_SOBR_Repo" -Align "Center" -Rows $SobrRows -ImagesObj $Images -IconDebug $IconDebug -FontSize 16 -FontBold
 
                         Capacity = $SobrsCapacityExtents
 

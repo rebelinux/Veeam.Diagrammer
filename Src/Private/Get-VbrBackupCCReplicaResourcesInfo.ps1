@@ -5,7 +5,7 @@ function Get-VbrBackupCCReplicaResourcesInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.30
+        Version:        0.6.36
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -45,7 +45,7 @@ function Get-VbrBackupCCReplicaResourcesInfo {
 
                     $TempBackupCCReplicaResourcesInfo = [PSCustomObject]@{
                         Name = $CloudObject.Name
-                        Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $CloudObject.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType "VBR_Hardware_Resources" -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
+                        Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $CloudObject.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType "VBR_Hardware_Resources" -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -FontBold
                         Id = $CloudObject.Id
                         AditionalInfo = $AditionalInfo
                         Host = & {
@@ -73,7 +73,7 @@ function Get-VbrBackupCCReplicaResourcesInfo {
                                 Path = $CloudObject.Host.Path
                                 IconType = $IconType
                                 AditionalInfo = $AditionalInfo
-                                Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $CloudObject.Host.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType "VBR_Hardware_Resources" -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
+                                Label = Add-DiaNodeIcon -Name "$((Remove-SpecialChar -String $CloudObject.Host.Name.split(".")[0] -SpecialChars '\').toUpper())" -IconType "VBR_Hardware_Resources" -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -FontBold
                             }
                         }
                         Storage = & {
@@ -98,7 +98,7 @@ function Get-VbrBackupCCReplicaResourcesInfo {
                                     Platform = $_.Platform
                                     Datastore = $_.Datastore.Name
                                     AditionalInfo = $AditionalInfo
-                                    Label = Add-DiaNodeIcon -Name $_.FriendlyName -IconType "VBR_Cloud_Storage" -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18
+                                    Label = Add-DiaNodeIcon -Name $_.FriendlyName -IconType "VBR_Cloud_Storage" -Align "Center" -AditionalInfo $AditionalInfo -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -FontBold
 
                                 }
                             }

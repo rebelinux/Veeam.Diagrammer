@@ -38,7 +38,7 @@ function Get-VbrBackupvSphereStandAloneInfo {
 
                         $TempViObjsInfo = [PSCustomObject]@{
                             Name = $ViObj.Name
-                            Label = Add-DiaNodeIcon -Name $ViObj.Name -IconType "VBR_ESXi_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug
+                            Label = Add-DiaNodeIcon -Name $ViObj.Name -IconType "VBR_ESXi_Server" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontBold
                             AditionalInfo = $Rows
                         }
                         $ViObjsInfo += $TempViObjsInfo
