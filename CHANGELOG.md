@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Upgrade the `Diagrammer.Core` module dependency to version 0.2.33
+- Upgrade the `Diagrammer.Core` module dependency to version 0.2.35
 
 ## [0.6.36] - 2025-10-21
 
