@@ -141,8 +141,6 @@ function New-VeeamDiagram {
         DefaultParameterSetName = 'Credential'
     )]
 
-    #Requires -Version 5.1
-    #Requires -PSEdition Desktop
     #Requires -RunAsAdministrator
 
     param (
