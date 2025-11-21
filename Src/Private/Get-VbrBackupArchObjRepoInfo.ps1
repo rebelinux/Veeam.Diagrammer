@@ -20,7 +20,7 @@ function Get-VbrBackupArchObjRepoInfo {
 
     )
     process {
-        Write-Verbose -Message "Collecting Archive Object Storage Repository information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Archive Object Storage Repository information from $($VBRServer)."
         try {
             $ArchObjStorages = Get-VBRArchiveObjectStorageRepository
             $ArchObjStorageInfo = @()

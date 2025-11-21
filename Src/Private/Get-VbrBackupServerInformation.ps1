@@ -20,11 +20,11 @@ function Get-VbrBackupServerInformation {
     )
     process {
         try {
-            $PssSession = try { New-PSSession $VBRServer.Name -Credential $Credential -Authentication Negotiate -ErrorAction Stop -Name 'PSSBackupServerDiagram' } catch {
-                Write-Error "Veeam.Diagrammer: New-PSSession: Unable to connect to $($VBRServer.Name), WinRM disabled or not configured."
+            $PssSession = try { New-PSSession $VBRServer -Credential $Credential -Authentication Negotiate -ErrorAction Stop -Name 'PSSBackupServerDiagram' } catch {
+                Write-Error "Veeam.Diagrammer: New-PSSession: Unable to connect to $($VBRServer), WinRM disabled or not configured."
                 Write-Error -Message $_.Exception.Message
             }
-            Write-Verbose -Message "Collecting Backup Server information from $($VBRServer.Name)."
+            Write-Verbose -Message "Collecting Backup Server information from $($VBRServer)."
 
             if ($PssSession) {
                 $VeeamInfo = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock {
@@ -49,19 +49,19 @@ function Get-VbrBackupServerInformation {
                 $VeeamInfo.DBInfo12.SqlServerName
             } elseif ($VeeamInfo.DBInfo12.SqlHostName) {
                 switch ($VeeamInfo.DBInfo12.SqlHostName) {
-                    'localhost' { $VBRServer.Name }
+                    'localhost' { $VBRServer }
                     default { $VeeamInfo.DBInfo12.SqlHostName }
                 }
             } else {
-                $VBRServer.Name
+                $VBRServer
             }
 
             if ($VBRServer) {
-                $Roles = if ($VeeamDBInfo -eq $VBRServer.Name) { 'Backup and Database' } else { 'Backup Server' }
+                $Roles = if ($VeeamDBInfo -eq $VBRServer) { 'Backup and Database' } else { 'Backup Server' }
                 $DBType = $VeeamInfo.DBFlavor.SqlActiveConfiguration
 
                 $Rows = [ordered] @{
-                    IP = Get-NodeIP -Hostname $VBRServer.Name
+                    IP = Get-NodeIP -Hostname $VBRServer
                     Role = $Roles
                 }
 
@@ -80,8 +80,8 @@ function Get-VbrBackupServerInformation {
                 $Rows = [PSCustomObject]$Rows
 
                 $script:BackupServerInfo = [PSCustomObject]@{
-                    Name = $VBRServer.Name.split(".")[0]
-                    Label = Add-DiaNodeIcon -Name "$($VBRServer.Name.split(".")[0])" -IconType "VBR_Server" -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -FontBold
+                    Name = $VBRServer.split(".")[0]
+                    Label = Add-DiaNodeIcon -Name "$($VBRServer.split(".")[0])" -IconType "VBR_Server" -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -FontBold
                     Spacer = Add-DiaNodeIcon -Name " " -IconType "VBR_Bid_Arrow" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug
                 }
             }

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.37] - Unreleased
 
+### Added
+
+- Add initial support for Veeam Backup & Replication v13 on Windows
+
 ### Changed
 
 - Upgrade the `Diagrammer.Core` module dependency to version 0.2.35

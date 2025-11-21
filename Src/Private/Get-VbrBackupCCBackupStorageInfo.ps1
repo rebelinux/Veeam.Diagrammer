@@ -19,7 +19,7 @@ function Get-VbrBackupCCBackupStorageInfo {
     )
 
     process {
-        Write-Verbose -Message "Collecting Cloud Connect Backup Storage information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Cloud Connect Backup Storage information from $($VBRServer)."
         try {
 
             $BackupCCBKStorageInfo = @()

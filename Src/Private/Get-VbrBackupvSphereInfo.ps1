@@ -20,7 +20,7 @@ function Get-VbrBackupvSphereInfo {
 
     )
     process {
-        Write-Verbose -Message "Collecting vSphere HyperVisor information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting vSphere HyperVisor information from $($VBRServer)."
         try {
             $HyObjs = Get-VBRServer | Where-Object { $_.Type -eq 'VC' }
             $HyObjsInfo = @()

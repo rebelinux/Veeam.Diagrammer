@@ -280,7 +280,7 @@ function ConvertTo-FileSizeString {
             { $Size -gt 1TB } { 'TB' ; break }
             { $Size -gt 1GB } { 'GB' ; break }
             { $Size -gt 1Mb } { 'MB' ; break }
-            Default { 'KB' }
+            default { 'KB' }
         }
         return "$([math]::Round(($Size / $("1" + $Unit)), $RoundUnits)) $Unit"
     }

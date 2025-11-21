@@ -19,7 +19,7 @@ function Get-VbrBackupProtectedGroupInfo {
     )
 
     process {
-        Write-Verbose -Message "Collecting Protected Group information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Protected Group information from $($VBRServer)."
         try {
             [Array]$ProtectedGroups = Get-VBRProtectionGroup
 

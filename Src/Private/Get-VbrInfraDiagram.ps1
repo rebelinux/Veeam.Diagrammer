@@ -18,7 +18,7 @@ function Get-VbrInfraDiagram {
     #>
 
     begin {
-        Write-Verbose -Message "Collecting Backup Infrastructure information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Backup Infrastructure information from $($VBRServer)."
     }
 
     process {

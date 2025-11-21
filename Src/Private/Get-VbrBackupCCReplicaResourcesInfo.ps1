@@ -19,7 +19,7 @@ function Get-VbrBackupCCReplicaResourcesInfo {
     )
 
     process {
-        Write-Verbose -Message "Collecting Cloud Connect Replica Resources information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Cloud Connect Replica Resources information from $($VBRServer)."
         try {
 
             $BackupCCReplicaResourcesInfo = @()
