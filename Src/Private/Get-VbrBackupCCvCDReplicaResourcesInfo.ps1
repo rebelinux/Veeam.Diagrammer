@@ -5,7 +5,7 @@ function Get-VbrBackupCCvCDReplicaResourcesInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.36
+        Version:        0.6.37
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -73,6 +73,7 @@ function Get-VbrBackupCCvCDReplicaResourcesInfo {
             return $BackupCCvCDReplicaResourcesInfo
         } catch {
             Write-Verbose -Message $_.Exception.Message
+            return $BackupCCvCDReplicaResourcesInfo
         }
     }
     end {}

@@ -5,7 +5,7 @@ function Get-VbrBackupCCBackupStorageInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.36
+        Version:        0.6.37
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -24,7 +24,7 @@ function Get-VbrBackupCCBackupStorageInfo {
 
             $BackupCCBKStorageInfo = @()
 
-            if ($CloudObjects = (Get-VBRCloudTenant).Resources | Sort-Object -Property Name) {
+            if ($CloudObjects = (Get-VBRCloudTenant).Resources | Sort-Object -Property RepositoryFriendlyName) {
                 foreach ($CloudObject in ($CloudObjects.Repository | Sort-Object -Property Name -Unique)) {
 
                     $Type = Get-IconType -String $CloudObject.Type
@@ -55,6 +55,7 @@ function Get-VbrBackupCCBackupStorageInfo {
             return $BackupCCBKStorageInfo
         } catch {
             Write-Verbose -Message $_.Exception.Message
+            return $BackupCCBKStorageInfo
         }
     }
     end {}

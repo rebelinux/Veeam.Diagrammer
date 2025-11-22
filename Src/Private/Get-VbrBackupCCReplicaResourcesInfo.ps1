@@ -5,7 +5,7 @@ function Get-VbrBackupCCReplicaResourcesInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.36
+        Version:        0.6.37
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -53,7 +53,8 @@ function Get-VbrBackupCCReplicaResourcesInfo {
                                 Type = $CloudObject.Host.Type
                             }
                             if ($CloudObject.Host.Type -eq 'ESXi') {
-                                $AditionalInfo | Add-Member -MemberType NoteProperty -Name 'Version' -Value $CloudObject.Host.Info.ViVersion.ToString()
+                                $ViVersionString = if ($CloudObject.Host.Info.ViVersion) {$CloudObject.Host.Info.ViVersion.ToString()} else {'Unknown'}
+                                $AditionalInfo | Add-Member -MemberType NoteProperty -Name 'Version' -Value $ViVersionString
                             } elseif ($CloudObject.Host.Type -eq 'Cluster') {
                                 $AditionalInfo | Add-Member -MemberType NoteProperty -Name 'DataCenter' -Value $CloudObject.Host.Path.Split('\')[1]
                             } elseif ($CloudObject.Host.Type -eq 'HvServer') {
@@ -112,6 +113,7 @@ function Get-VbrBackupCCReplicaResourcesInfo {
             return $BackupCCReplicaResourcesInfo
         } catch {
             Write-Verbose -Message $_.Exception.Message
+            return $BackupCCReplicaResourcesInfo
         }
     }
     end {}

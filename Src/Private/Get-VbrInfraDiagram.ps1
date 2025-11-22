@@ -5,7 +5,7 @@ function Get-VbrInfraDiagram {
     .DESCRIPTION
         This script creates a visual representation of the Veeam Backup & Replication infrastructure configuration. The output can be generated in PDF, SVG, DOT, or PNG formats. It leverages the PSGraph module for PowerShell and Graphviz for rendering the diagrams.
     .NOTES
-        Version:        0.6.36
+        Version:        0.6.37
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         GitHub:         rebelinux
@@ -109,7 +109,8 @@ function Get-VbrInfraDiagram {
             }
 
             # vSphere Graphviz Cluster
-            if ($vSphereObj = Get-VbrBackupvSphereInfo | Sort-Object) {
+            $vSphereObj = Get-VbrBackupvSphereInfo | Sort-Object
+            if ($vSphereObj) {
                 $VivCenterNodes = @()
                 foreach ($vCenter in $vSphereObj) {
                     $vCenterNodeArray = @()
