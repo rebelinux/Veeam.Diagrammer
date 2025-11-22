@@ -34,7 +34,7 @@ function Get-VbrBackupvSphereInfo {
                             IP = Get-NodeIP -Hostname $HyObj.Info.DnsName
                             Version = switch ([string]::IsNullOrEmpty($HyObj.Info.ViVersion)) {
                                 $true { 'Unknown' }
-                                Default {$HyObj.Info.ViVersion}
+                                default { $HyObj.Info.ViVersion }
                             }
                         }
 
@@ -55,7 +55,10 @@ function Get-VbrBackupvSphereInfo {
                                         EsxiHost = foreach ($Esxi in $ESXis | Where-Object { $_.path -match $Cluster.Name }) {
                                             $Rows = @{
                                                 IP = Get-NodeIP -Hostname $Esxi.Info.DnsName
-                                                Version = $Esxi.Info.ViVersion
+                                                Version = switch ([string]::IsNullOrEmpty($Esxi.Info.ViVersion)) {
+                                                    $true { 'Unknown' }
+                                                    default { $Esxi.Info.ViVersion }
+                                                }
                                             }
                                             [PSCustomObject]@{
                                                 Name = $Esxi.Name
