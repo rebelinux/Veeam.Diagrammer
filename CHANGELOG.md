@@ -10,11 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add initial support for Veeam Backup & Replication v13 on Windows
+- add Invoke-FindVBRViEntityWithTimeout function for enhanced vSphere inventory retrieval with timeout options
 
 ### Changed
 
 - Upgrade the `Diagrammer.Core` module dependency to version 0.2.35
 - Improve error handling in Get-VbrBackupCCReplicaResourcesInfo and Get-VbrBackupvSphereInfo functions
+- Update session handling in Get-VbrBackupServerInformation and Get-VbrBackupvSphereInfo functions
 
 ## [0.6.36] - 2025-10-21
 

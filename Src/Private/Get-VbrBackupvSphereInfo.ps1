@@ -27,7 +27,7 @@ function Get-VbrBackupvSphereInfo {
                 foreach ($HyObj in $HyObjs) {
                     Write-Verbose -Message "Collecting vSphere HyperVisor information from $($HyObj.Name)."
                     try {
-                        $ESXis = try { Find-VBRViEntity -Server $HyObj -HostsAndClusters | Where-Object { ($_.type -eq "esx") } } catch {
+                        $ESXis = try { Invoke-FindVBRViEntityWithTimeout -TimeoutSeconds 60 -Server $HyObj -HostsAndClusters | Where-Object { ($_.type -eq "esx") } } catch {
                             Write-Verbose -Message $_.Exception.Message
                         }
                         $Rows = @{
@@ -44,7 +44,7 @@ function Get-VbrBackupvSphereInfo {
                             AditionalInfo = $Rows
                             Childs = & {
                                 $VIClusters = try {
-                                    (Find-VBRViEntity -Server $HyObj -HostsAndClusters | Where-Object { ($_.type -eq "cluster") })
+                                    (Invoke-FindVBRViEntityWithTimeout -TimeoutSeconds 60 -Server $HyObj -HostsAndClusters | Where-Object { ($_.type -eq "cluster") })
                                 } catch {
                                     Write-Verbose -Message $_.Exception.Message
                                 }
