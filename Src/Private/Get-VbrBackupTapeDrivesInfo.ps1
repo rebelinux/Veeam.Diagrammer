@@ -20,7 +20,7 @@ function Get-VbrBackupTapeDrivesInfo {
     )
 
     process {
-        Write-Verbose -Message "Collecting Tape Drives information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Tape Drives information from $($VBRServer)."
         try {
 
             if ($TapeLibrary) {

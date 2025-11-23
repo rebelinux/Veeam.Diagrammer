@@ -20,7 +20,7 @@ function Get-VbrBackupObjectRepoInfo {
 
     )
     process {
-        Write-Verbose -Message "Collecting Object Storage Repository information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Object Storage Repository information from $($VBRServer)."
         try {
             $ObjStorages = Get-VBRObjectStorageRepository
             $ObjStorageInfo = @()

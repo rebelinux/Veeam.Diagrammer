@@ -65,9 +65,9 @@ function Get-DiagBackupServer {
 
                 $columnSize = $BackupServerInfoArray.Count
 
-                $BackupServerInfoSubGraph = Add-DiaHTMLSubGraph -CellSpacing 4 -ImagesObj $Images -TableArray $BackupServerInfoArray -Align 'Center' -IconDebug $IconDebug -Label 'Backup Server' -LabelPos "top" -fontColor $BackupServerFontColor -fontSize 26 -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "0" -TableBackgroundColor $BackupServerBGColor -columnSize $columnSize -FontBold
+                $BackupServerInfoSubGraph = Add-DiaHtmlSubGraph -CellSpacing 4 -ImagesObj $Images -TableArray $BackupServerInfoArray -Align 'Center' -IconDebug $IconDebug -Label 'Backup Server' -LabelPos "top" -FontColor $BackupServerFontColor -FontSize 26 -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "0" -TableBackgroundColor $BackupServerBGColor -ColumnSize $columnSize -FontBold
 
-                Node -Name BackupServers -Attributes @{Label = (Add-DiaHTMLSubGraph -ImagesObj $Images -TableArray $BackupServerInfoSubGraph -Align 'Right' -IconDebug $IconDebug -Label 'Management' -LabelPos "down" -fontColor $Fontcolor -fontSize 14 -TableStyle "rounded" -TableBorderColor $Edgecolor -TableBorder "2" -TableBackgroundColor $BackupServerBGColor -columnSize 1 -FontBold); style = 'filled,rounded'; shape = 'plain'; fillColor = $BackupServerBGColor; fontsize = 14; fontname = "Segoe Ui" }
+                Node -Name BackupServers -Attributes @{Label = (Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $BackupServerInfoSubGraph -Align 'Right' -IconDebug $IconDebug -Label 'Management' -LabelPos "down" -FontColor $Fontcolor -FontSize 14 -TableStyle "rounded" -TableBorderColor $Edgecolor -TableBorder "2" -TableBackgroundColor $BackupServerBGColor -ColumnSize 1 -FontBold); style = 'filled,rounded'; shape = 'plain'; fillColor = $BackupServerBGColor; fontsize = 14; fontname = "Segoe Ui" }
 
             } else {
                 throw "No Backup Server Information Found."

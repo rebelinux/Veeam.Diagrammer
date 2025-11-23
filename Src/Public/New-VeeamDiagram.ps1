@@ -141,8 +141,6 @@ function New-VeeamDiagram {
         DefaultParameterSetName = 'Credential'
     )]
 
-    #Requires -Version 5.1
-    #Requires -PSEdition Desktop
     #Requires -RunAsAdministrator
 
     param (
@@ -562,7 +560,7 @@ function New-VeeamDiagram {
 
             try {
 
-                $script:VBRServer = Get-VBRServer -Type Local
+                $script:VBRServer = (Get-VBRServerSession).Server
 
             } catch { throw "Unable to get Veeam Backup & Replication Server information: $System" }
 
@@ -610,7 +608,7 @@ function New-VeeamDiagram {
                 }
 
                 SubGraph OUTERDRAWBOARD1 -Attributes @{Label = $Signature; fontsize = 24; penwidth = 1.5; labelloc = 'b'; labeljust = "r"; style = $SubGraphDebug.style; color = $SubGraphDebug.color } {
-                    SubGraph MainGraph -Attributes @{Label = (Add-DiaHTMLLabel -ImagesObj $Images -Label $MainGraphLabel -IconType $CustomLogo -IconDebug $IconDebug -IconWidth 300 -IconHeight 90 -fontName "Segoe Ui Black" -fontColor $Fontcolor -Fontsize 28); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
+                    SubGraph MainGraph -Attributes @{Label = (Add-DiaHtmlLabel -ImagesObj $Images -Label $MainGraphLabel -IconType $CustomLogo -IconDebug $IconDebug -IconWidth 300 -IconHeight 90 -FontName "Segoe Ui Black" -FontColor $Fontcolor -Fontsize 28); fontsize = 24; penwidth = 0; labelloc = 't'; labeljust = "c" } {
 
                         if ($DiagramType -eq 'Backup-to-HyperV-Proxy') {
                             Get-DiagBackupServer

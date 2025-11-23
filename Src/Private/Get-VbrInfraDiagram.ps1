@@ -5,7 +5,7 @@ function Get-VbrInfraDiagram {
     .DESCRIPTION
         This script creates a visual representation of the Veeam Backup & Replication infrastructure configuration. The output can be generated in PDF, SVG, DOT, or PNG formats. It leverages the PSGraph module for PowerShell and Graphviz for rendering the diagrams.
     .NOTES
-        Version:        0.6.36
+        Version:        0.6.37
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         GitHub:         rebelinux
@@ -18,7 +18,7 @@ function Get-VbrInfraDiagram {
     #>
 
     begin {
-        Write-Verbose -Message "Collecting Backup Infrastructure information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Backup Infrastructure information from $($VBRServer)."
     }
 
     process {
@@ -109,7 +109,8 @@ function Get-VbrInfraDiagram {
             }
 
             # vSphere Graphviz Cluster
-            if ($vSphereObj = Get-VbrBackupvSphereInfo | Sort-Object) {
+            $vSphereObj = Get-VbrBackupvSphereInfo | Sort-Object
+            if ($vSphereObj) {
                 $VivCenterNodes = @()
                 foreach ($vCenter in $vSphereObj) {
                     $vCenterNodeArray = @()
@@ -152,8 +153,15 @@ function Get-VbrInfraDiagram {
                 }
 
                 if ($VivCenterNodes) {
+                    $columnSize = & {
+                        if (($VivCenterNodes | Measure-Object).count -le 1 ) {
+                            return 1
+                        } else {
+                            return 4
+                        }
+                    }
                     try {
-                        $ViClustersSubgraphNode = Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $VivCenterNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_vSphere' -Label 'VMware vSphere Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 3 -FontSize 18 -FontBold
+                        $ViClustersSubgraphNode = Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $VivCenterNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_vSphere' -Label 'VMware vSphere Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize $columnSize -FontSize 18 -FontBold
                     } catch {
                         Write-Verbose "Error: Unable to create ViCluster Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"

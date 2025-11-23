@@ -19,7 +19,7 @@ function Get-VbrBackupCGPoolInfo {
     )
 
     process {
-        Write-Verbose -Message "Collecting Cloud Gateway Pool information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Cloud Gateway Pool information from $($VBRServer)."
         try {
 
             $BackupCGPoolsInfo = @()
