@@ -153,8 +153,15 @@ function Get-VbrInfraDiagram {
                 }
 
                 if ($VivCenterNodes) {
+                    $columnSize = & {
+                        if (($VivCenterNodes | Measure-Object).count -le 1 ) {
+                            return 1
+                        } else {
+                            return 4
+                        }
+                    }
                     try {
-                        $ViClustersSubgraphNode = Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $VivCenterNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_vSphere' -Label 'VMware vSphere Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 3 -FontSize 18 -FontBold
+                        $ViClustersSubgraphNode = Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $VivCenterNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_vSphere' -Label 'VMware vSphere Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize $columnSize -FontSize 18 -FontBold
                     } catch {
                         Write-Verbose "Error: Unable to create ViCluster Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
