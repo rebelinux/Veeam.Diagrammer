@@ -15,7 +15,7 @@ function Get-VbrBackupProtectedGroupInfo {
     [CmdletBinding()]
     [OutputType([System.Object[]])]
 
-    Param (
+    param (
     )
 
     process {
@@ -29,7 +29,7 @@ function Get-VbrBackupProtectedGroupInfo {
 
                     $Rows = @{
                         'Type' = $ProtectedGroup.Type
-                        'Status' = Switch ($ProtectedGroup.Enabled) {
+                        'Status' = switch ($ProtectedGroup.Enabled) {
                             $true { 'Enabled' }
                             $false { 'Disabled' }
                             default { 'Unknown' }

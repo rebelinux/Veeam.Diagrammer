@@ -45,7 +45,7 @@ function Get-VbrBackupArchObjRepoInfo {
                                         switch (($ArchObjStorage.GatewayServer | Measure-Object).count) {
                                             0 { "Disable" }
                                             1 { $ArchObjStorage.GatewayServer.Name.Split('.')[0] }
-                                            Default { 'Automatic' }
+                                            default { 'Automatic' }
                                         }
                                     }
                                     'Direct' { 'Direct' }
@@ -55,7 +55,7 @@ function Get-VbrBackupArchObjRepoInfo {
                                 switch (($ArchObjStorage.GatewayServer | Measure-Object).count) {
                                     0 { "Disable" }
                                     1 { $ArchObjStorage.GatewayServer.Name.Split('.')[0] }
-                                    Default { 'Automatic' }
+                                    default { 'Automatic' }
                                 }
                             }
                         }

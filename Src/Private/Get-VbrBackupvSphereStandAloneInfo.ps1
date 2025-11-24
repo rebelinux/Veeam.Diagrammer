@@ -32,7 +32,7 @@ function Get-VbrBackupvSphereStandAloneInfo {
                             Version = switch ([string]::IsNullOrEmpty($ViObj.Info.ViVersion)) {
                                 $true { 'Unknown' }
                                 $false { $ViObj.Info.ViVersion }
-                                Default { 'Unknown' }
+                                default { 'Unknown' }
                             }
                         }
 

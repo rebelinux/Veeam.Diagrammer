@@ -53,7 +53,7 @@ function Get-VbrBackupCCReplicaResourcesInfo {
                                 Type = $CloudObject.Host.Type
                             }
                             if ($CloudObject.Host.Type -eq 'ESXi') {
-                                $ViVersionString = if ($CloudObject.Host.Info.ViVersion) {$CloudObject.Host.Info.ViVersion.ToString()} else {'Unknown'}
+                                $ViVersionString = if ($CloudObject.Host.Info.ViVersion) { $CloudObject.Host.Info.ViVersion.ToString() } else { 'Unknown' }
                                 $AditionalInfo | Add-Member -MemberType NoteProperty -Name 'Version' -Value $ViVersionString
                             } elseif ($CloudObject.Host.Type -eq 'Cluster') {
                                 $AditionalInfo | Add-Member -MemberType NoteProperty -Name 'DataCenter' -Value $CloudObject.Host.Path.Split('\')[1]
