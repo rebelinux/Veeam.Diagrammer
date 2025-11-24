@@ -19,7 +19,7 @@ function Get-VbrBackupTapeServerInfo {
     )
 
     process {
-        Write-Verbose -Message "Collecting Tape Servers information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Tape Servers information from $($VBRServer)."
         try {
 
             $TapeServers = Get-VBRTapeServer

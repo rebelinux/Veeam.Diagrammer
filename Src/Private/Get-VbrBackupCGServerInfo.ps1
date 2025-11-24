@@ -19,7 +19,7 @@ function Get-VbrBackupCGServerInfo {
     )
 
     process {
-        Write-Verbose -Message "Collecting Cloud Gateway Servers information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Cloud Gateway Servers information from $($VBRServer)."
         try {
 
             $BackupCGServersInfo = @()

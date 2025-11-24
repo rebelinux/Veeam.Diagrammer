@@ -5,7 +5,7 @@ function Get-DiagBackupToViProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.36
+        Version:        0.6.37
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -42,7 +42,8 @@ function Get-DiagBackupToViProxy {
                 }
 
                 # vSphere Graphviz Cluster
-                if ($vSphereObj = Get-VbrBackupvSphereInfo | Sort-Object) {
+                $vSphereObj = Get-VbrBackupvSphereInfo | Sort-Object
+                if ($vSphereObj) {
                     $VivCenterNodes = @()
                     $VivCenterNodesAll = @()
                     foreach ($vCenter in $vSphereObj) {

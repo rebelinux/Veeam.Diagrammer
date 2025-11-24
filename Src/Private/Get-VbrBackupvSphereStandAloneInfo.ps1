@@ -20,7 +20,7 @@ function Get-VbrBackupvSphereStandAloneInfo {
 
     )
     process {
-        Write-Verbose -Message "Collecting vSphere HyperVisor information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting vSphere HyperVisor information from $($VBRServer)."
         try {
             $ViObjs = Get-VBRServer | Where-Object { $_.Type -eq 'ESXi' -and $_.Parentid -eq '00000000-0000-0000-0000-000000000000' }
             $ViObjsInfo = @()
@@ -32,7 +32,7 @@ function Get-VbrBackupvSphereStandAloneInfo {
                             Version = switch ([string]::IsNullOrEmpty($ViObj.Info.ViVersion)) {
                                 $true { 'Unknown' }
                                 $false { $ViObj.Info.ViVersion }
-                                Default { 'Unknown' }
+                                default { 'Unknown' }
                             }
                         }
 

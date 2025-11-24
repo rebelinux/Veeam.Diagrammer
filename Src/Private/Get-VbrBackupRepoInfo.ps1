@@ -19,7 +19,7 @@ function Get-VbrBackupRepoInfo {
     )
 
     process {
-        Write-Verbose -Message "Collecting Backup Repository information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Backup Repository information from $($VBRServer)."
         try {
             [Array]$BackupRepos = Get-VBRBackupRepository
             [Array]$ScaleOuts = Get-VBRBackupRepository -ScaleOut

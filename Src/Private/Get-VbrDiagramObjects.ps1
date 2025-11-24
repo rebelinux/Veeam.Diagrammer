@@ -26,7 +26,7 @@ function Get-VbrProxyInfo {
     #>
     param ()
     try {
-        Write-Verbose "Collecting proxy information from $($VBRServer.Name)."
+        Write-Verbose "Collecting proxy information from $($VBRServer)."
         $Proxies = @(Get-VBRViProxy) + @(Get-VBRHvProxy)
 
         if ($Proxies) {
@@ -92,7 +92,7 @@ function Get-VbrNASProxyInfo {
     #>
     param ()
     try {
-        Write-Verbose "Collecting NAS Proxy information from $($VBRServer.Name)."
+        Write-Verbose "Collecting NAS Proxy information from $($VBRServer)."
         $Proxies = Get-VBRNASProxyServer
 
         if ($Proxies) {
@@ -149,7 +149,7 @@ function Get-VbrWanAccelInfo {
     #>
     param ()
     try {
-        Write-Verbose "Collecting Wan Accel information from $($VBRServer.Name)."
+        Write-Verbose "Collecting Wan Accel information from $($VBRServer)."
         $WanAccels = Get-VBRWANAccelerator
 
         if ($WanAccels) {
@@ -201,7 +201,7 @@ function Get-VbrRepositoryInfo {
     #>
     param ()
     try {
-        Write-Verbose "Collecting Repository information from $($VBRServer.Name)."
+        Write-Verbose "Collecting Repository information from $($VBRServer)."
         $Repositories = Get-VBRBackupRepository | Where-Object { $_.Type -notin @("SanSnapshotOnly", "AmazonS3Compatible", "WasabiS3", "SmartObjectS3") } | Sort-Object -Property Name
         $ScaleOuts = Get-VBRBackupRepository -ScaleOut | Sort-Object -Property Name
 
@@ -271,7 +271,7 @@ function Get-VbrObjectRepoInfo {
 
     param ()
     try {
-        Write-Verbose "Collecting Object Repository information from $($VBRServer.Name)."
+        Write-Verbose "Collecting Object Repository information from $($VBRServer)."
         $ObjectRepositories = Get-VBRObjectStorageRepository
         if ($ObjectRepositories) {
             $ObjectRepositoriesInfo = $ObjectRepositories | ForEach-Object {
@@ -343,7 +343,7 @@ function Get-VbrArchObjectRepoInfo {
     #>
     param ()
     try {
-        Write-Verbose "Collecting Archive Object Repository information from $($VBRServer.Name)."
+        Write-Verbose "Collecting Archive Object Repository information from $($VBRServer)."
         $ArchObjStorages = Get-VBRArchiveObjectStorageRepository | Sort-Object -Property Name
         if ($ArchObjStorages) {
             $ArchObjRepositoriesInfo = $ArchObjStorages | ForEach-Object {
@@ -414,7 +414,7 @@ function Get-VbrSOBRInfo {
     #>
     param ()
     try {
-        Write-Verbose "Collecting Scale-Out Backup Repository information from $($VBRServer.Name)."
+        Write-Verbose "Collecting Scale-Out Backup Repository information from $($VBRServer)."
         $SOBR = Get-VBRBackupRepository -ScaleOut | Sort-Object -Property Name
 
         if ($SOBR) {
@@ -463,7 +463,7 @@ function Get-VbrSANInfo {
     #>
     param ()
     try {
-        Write-Verbose "Collecting Storage Infrastructure information from $($VBRServer.Name)."
+        Write-Verbose "Collecting Storage Infrastructure information from $($VBRServer)."
         $SANHost = @(
             Get-NetAppHost | Select-Object -Property Name, @{ Name = 'Type'; Expression = { 'Netapp' } }
             Get-VBRIsilonHost | Select-Object -Property Name, @{ Name = 'Type'; Expression = { 'Dell' } }
@@ -529,7 +529,7 @@ function Get-VbrTapeServersInfo {
     #>
     param ()
     try {
-        Write-Verbose "Collecting Tape Servers information from $($VBRServer.Name)."
+        Write-Verbose "Collecting Tape Servers information from $($VBRServer)."
         $TapeServers = Get-VBRTapeServer | Sort-Object -Property Name
 
         if ($TapeServers) {
@@ -581,7 +581,7 @@ function Get-VbrTapeLibraryInfo {
     #>
     param ()
     try {
-        Write-Verbose "Collecting Tape Library information from $($VBRServer.Name)."
+        Write-Verbose "Collecting Tape Library information from $($VBRServer)."
         $TapeLibraries = Get-VBRTapeLibrary | Sort-Object -Property Name
 
         if ($TapeLibraries) {
@@ -633,7 +633,7 @@ function Get-VbrTapeVaultInfo {
     #>
     param ()
     try {
-        Write-Verbose "Collecting Tape Vault information from $($VBRServer.Name)."
+        Write-Verbose "Collecting Tape Vault information from $($VBRServer)."
         $TapeVaults = Get-VBRTapeVault | Sort-Object -Property Name
 
         if ($TapeVaults) {
@@ -682,7 +682,7 @@ function Get-VbrServiceProviderInfo {
     #>
     param ()
     try {
-        Write-Verbose "Collecting Service Provider information from $($VBRServer.Name)."
+        Write-Verbose "Collecting Service Provider information from $($VBRServer)."
         $ServiceProviders = Get-VBRCloudProvider | Sort-Object -Property 'DNSName'
 
         if ($ServiceProviders) {
@@ -745,7 +745,7 @@ function Get-VbrVirtualLabInfo {
     #>
     param ()
     try {
-        Write-Verbose "Collecting VirtualLab information from $($VBRServer.Name)."
+        Write-Verbose "Collecting VirtualLab information from $($VBRServer)."
         $VirtualLab = Get-VBRVirtualLab
 
         if ($VirtualLab) {
@@ -811,7 +811,7 @@ function Get-VbrApplicationGroupsInfo {
     #>
     param ()
     try {
-        Write-Verbose "Collecting Application Groups information from $($VBRServer.Name)."
+        Write-Verbose "Collecting Application Groups information from $($VBRServer)."
         $ApplicationGroups = Get-VBRApplicationGroup
 
         if ($ApplicationGroups) {

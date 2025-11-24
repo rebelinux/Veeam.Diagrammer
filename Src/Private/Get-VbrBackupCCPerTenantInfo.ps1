@@ -21,7 +21,7 @@ function Get-VbrBackupCCPerTenantInfo {
     )
 
     process {
-        Write-Verbose -Message "Collecting Cloud Connect per Tenant information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Cloud Connect per Tenant information from $($VBRServer)."
         try {
 
             $BackupCCTenantInfo = @()

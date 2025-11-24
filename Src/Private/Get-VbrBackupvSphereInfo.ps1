@@ -5,7 +5,7 @@ function Get-VbrBackupvSphereInfo {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.35
+        Version:        0.6.37
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -20,19 +20,22 @@ function Get-VbrBackupvSphereInfo {
 
     )
     process {
-        Write-Verbose -Message "Collecting vSphere HyperVisor information from $($VBRServer.Name)."
         try {
             $HyObjs = Get-VBRServer | Where-Object { $_.Type -eq 'VC' }
             $HyObjsInfo = @()
             if ($HyObjs) {
                 foreach ($HyObj in $HyObjs) {
+                    Write-Verbose -Message "Collecting vSphere HyperVisor information from $($HyObj.Name)."
                     try {
-                        $ESXis = try { Find-VBRViEntity -Server $HyObj | Where-Object { ($_.type -eq "esx") } } catch {
+                        $ESXis = try { Invoke-FindVBRViEntityWithTimeout -TimeoutSeconds 60 -Server $HyObj -HostsAndClusters | Where-Object { ($_.type -eq "esx") } } catch {
                             Write-Verbose -Message $_.Exception.Message
                         }
                         $Rows = @{
                             IP = Get-NodeIP -Hostname $HyObj.Info.DnsName
-                            Version = $HyObj.Info.ViVersion
+                            Version = switch ([string]::IsNullOrEmpty($HyObj.Info.ViVersion)) {
+                                $true { 'Unknown' }
+                                default { $HyObj.Info.ViVersion }
+                            }
                         }
 
                         $TempHyObjsInfo = [PSCustomObject]@{
@@ -41,7 +44,7 @@ function Get-VbrBackupvSphereInfo {
                             AditionalInfo = $Rows
                             Childs = & {
                                 $VIClusters = try {
-                                    (Find-VBRViEntity -Server $HyObj | Where-Object { ($_.type -eq "cluster") })
+                                    (Invoke-FindVBRViEntityWithTimeout -TimeoutSeconds 60 -Server $HyObj -HostsAndClusters | Where-Object { ($_.type -eq "cluster") })
                                 } catch {
                                     Write-Verbose -Message $_.Exception.Message
                                 }
@@ -52,7 +55,10 @@ function Get-VbrBackupvSphereInfo {
                                         EsxiHost = foreach ($Esxi in $ESXis | Where-Object { $_.path -match $Cluster.Name }) {
                                             $Rows = @{
                                                 IP = Get-NodeIP -Hostname $Esxi.Info.DnsName
-                                                Version = $Esxi.Info.ViVersion
+                                                Version = switch ([string]::IsNullOrEmpty($Esxi.Info.ViVersion)) {
+                                                    $true { 'Unknown' }
+                                                    default { $Esxi.Info.ViVersion }
+                                                }
                                             }
                                             [PSCustomObject]@{
                                                 Name = $Esxi.Name

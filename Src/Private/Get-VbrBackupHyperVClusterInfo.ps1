@@ -20,7 +20,7 @@ function Get-VbrBackupHyperVClusterInfo {
 
     )
     process {
-        Write-Verbose -Message "Collecting HyperV HyperVisor information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting HyperV HyperVisor information from $($VBRServer)."
         try {
             $HyObjs = Get-VBRServer | Where-Object { $_.Type -eq 'HvCluster' }
             $HyObjsInfo = @()

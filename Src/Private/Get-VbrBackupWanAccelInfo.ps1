@@ -20,7 +20,7 @@ function Get-VbrBackupWanAccelInfo {
 
     )
     process {
-        Write-Verbose -Message "Collecting Wan Accelerator information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Wan Accelerator information from $($VBRServer)."
         try {
             $WANACCELS = Get-VBRWANAccelerator
             $WANACCELInfo = @()

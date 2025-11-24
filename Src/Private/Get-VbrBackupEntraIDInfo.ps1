@@ -20,7 +20,7 @@ function Get-VbrBackupEntraIDInfo {
 
     )
     process {
-        Write-Verbose -Message "Collecting Entra ID information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Entra ID information from $($VBRServer)."
         try {
             $EntraIDs = Get-VBREntraIDTenant
             $EntraIDInfo = @()

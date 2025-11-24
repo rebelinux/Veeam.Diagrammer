@@ -49,7 +49,7 @@ function Get-VbrRequiredModule {
 
         $Module = Get-Module -Name Veeam.Backup.PowerShell
         if ($Module) {
-            $VbrVersion = $Module.Version.ToString()
+            $script:VbrVersion = $Module.Version.ToString()
             Write-Verbose -Message "Using Veeam Powershell module version $($VbrVersion)."
         } else {
             $VbrVersion = (Get-PSSnapin VeeamPSSnapin -ErrorAction SilentlyContinue).PSVersion.ToString()

@@ -15,11 +15,11 @@ function Get-VbrBackupProtectedGroupInfo {
     [CmdletBinding()]
     [OutputType([System.Object[]])]
 
-    Param (
+    param (
     )
 
     process {
-        Write-Verbose -Message "Collecting Protected Group information from $($VBRServer.Name)."
+        Write-Verbose -Message "Collecting Protected Group information from $($VBRServer)."
         try {
             [Array]$ProtectedGroups = Get-VBRProtectionGroup
 
@@ -29,7 +29,7 @@ function Get-VbrBackupProtectedGroupInfo {
 
                     $Rows = @{
                         'Type' = $ProtectedGroup.Type
-                        'Status' = Switch ($ProtectedGroup.Enabled) {
+                        'Status' = switch ($ProtectedGroup.Enabled) {
                             $true { 'Enabled' }
                             $false { 'Disabled' }
                             default { 'Unknown' }

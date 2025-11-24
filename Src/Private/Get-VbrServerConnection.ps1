@@ -42,6 +42,11 @@ function Get-VbrServerConnection {
 
     begin {
         Write-Verbose -Message "Establishing initial connection to Backup Server."
+
+        $Port = switch ($VbrVersion) {
+            { $_ -ge 13 } { 443 }
+            default { $Port }
+        }
     }
 
     process {
@@ -58,7 +63,14 @@ function Get-VbrServerConnection {
 
             Write-Verbose -Message "Connecting to $System with provided credentials."
             try {
-                Connect-VBRServer -Server $System -Credential $Credential -Port $Port
+                switch ($VbrVersion) {
+                    { $_ -ge 13 } {
+                        Connect-VBRServer -Server $System -Credential $Credential -Port $Port
+                    }
+                    default {
+                        Connect-VBRServer -Server $System -Credential $Credential -Port $Port
+                    }
+                }
             } catch {
                 Write-Verbose -Message $_.Exception.Message
                 throw "Failed to connect to Veeam Backup Server Host $($System):$($Port) with username $($Credential.USERNAME)"
