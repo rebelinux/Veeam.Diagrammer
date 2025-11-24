@@ -43,7 +43,7 @@ function Get-VbrBackupObjectRepoInfo {
                                         switch (($ObjStorage.GatewayServer | Measure-Object).count) {
                                             0 { "Disable" }
                                             1 { $ObjStorage.GatewayServer.Name.Split('.')[0] }
-                                            Default { 'Automatic' }
+                                            default { 'Automatic' }
                                         }
                                     }
                                     'Direct' { 'Direct' }
@@ -53,7 +53,7 @@ function Get-VbrBackupObjectRepoInfo {
                                 switch (($ObjStorage.GatewayServer | Measure-Object).count) {
                                     0 { "Disable" }
                                     1 { $ObjStorage.GatewayServer.Name.Split('.')[0] }
-                                    Default { 'Automatic' }
+                                    default { 'Automatic' }
                                 }
                             }
                         }

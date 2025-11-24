@@ -32,7 +32,7 @@ function Get-VbrBackupHyperVStandAloneInfo {
                             Version = switch ([string]::IsNullOrEmpty($HyObj.Info.Info)) {
                                 $true { 'Unknown' }
                                 $false { $HyObj.Info.Info.Split('()')[1].split('build:')[0] }
-                                Default { 'Unknown' }
+                                default { 'Unknown' }
                             }
                         }
 

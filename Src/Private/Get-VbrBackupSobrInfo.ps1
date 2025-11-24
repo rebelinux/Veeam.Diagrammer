@@ -71,7 +71,7 @@ function Get-VbrBackupSobrInfo {
                                             switch (($CapacityExtent.Repository.GatewayServer | Measure-Object).count) {
                                                 0 { "Disable" }
                                                 1 { $CapacityExtent.Repository.GatewayServer.Name.Split('.')[0] }
-                                                Default { 'Automatic' }
+                                                default { 'Automatic' }
                                             }
                                         }
                                         'Direct' { 'Direct' }
@@ -81,7 +81,7 @@ function Get-VbrBackupSobrInfo {
                                     switch (($CapacityExtent.Repository.GatewayServer | Measure-Object).count) {
                                         0 { "Disable" }
                                         1 { $CapacityExtent.Repository.GatewayServer.Name.Split('.')[0] }
-                                        Default { 'Automatic' }
+                                        default { 'Automatic' }
                                     }
                                 }
                             }
@@ -107,7 +107,7 @@ function Get-VbrBackupSobrInfo {
                                         switch (($Sobr.ArchiveExtent.Repository.GatewayServer | Measure-Object).count) {
                                             0 { "Disable" }
                                             1 { $Sobr.ArchiveExtent.Repository.GatewayServer.Name.Split('.')[0] }
-                                            Default { 'Automatic' }
+                                            default { 'Automatic' }
                                         }
                                     }
                                     'Direct' { 'Direct' }
@@ -117,7 +117,7 @@ function Get-VbrBackupSobrInfo {
                                 switch (($Sobr.ArchiveExtent.Repository.GatewayServer | Measure-Object).count) {
                                     0 { "Disable" }
                                     1 { $Sobr.ArchiveExtent.Repository.GatewayServer.Name.Split('.')[0] }
-                                    Default { 'Automatic' }
+                                    default { 'Automatic' }
                                 }
                             }
                         }
