@@ -24,7 +24,7 @@
 </p>
 
 > [!WARNING]
-> I was recently contacted regarding the status of this project. Maintaining this report and the associated tools requires significant time and resources. If you would like to help keep this project active, please consider supporting its development by donating through Ko-fi.
+> I was recently contacted regarding the status of this project. Maintaining this report and the associated tools requires significant time and resources. At this time, I am unable to dedicate the necessary effort to continue its development and support. Therefore, I have made the decision to discontinue further updates and enhancements to this project. I want to express my sincere gratitude to everyone who has contributed to and supported this project over the years. Your enthusiasm and collaboration have been invaluable. While this chapter is closing, I remain hopeful that others in the community may choose to pick up where I left off and continue to build upon the foundation that has been laid. Thank you once again for your understanding and support.
 
 # Veeam VBR Diagrammer
 
