@@ -371,7 +371,7 @@ function New-VeeamDiagram {
             Mandatory = $false,
             HelpMessage = 'Specify if the local machine is the backup server'
         )]
-        [switch] $UpdateCheck
+        [bool] $UpdateCheck = $true
     )
 
     begin {

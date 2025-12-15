@@ -27,29 +27,41 @@ function Get-VbrBackupServerInformation {
                             Write-Error "Veeam.Diagrammer: New-PSSession: Unable to connect to $($VBRServer), WinRM disabled or not configured."
                             Write-Error -Message $_.Exception.Message
                         }
+                    } else {
+                        Write-Error "Veeam.Diagrammer: Test-WSMan: Unable to connect to $($VBRServer), WinRM disabled or not configured."
                     }
                 }
             }
             Write-Verbose -Message "Collecting Backup Server information from $($VBRServer)."
 
-            $VeeamInfoScript = {
-                $VeeamVersion = Get-ChildItem -Recurse HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -match 'Veeam Backup & Replication Server' } | Select-Object -Property DisplayVersion
-                $VeeamDBFlavor = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations'
-                $VeeamDBInfo12 = Get-ItemProperty -Path "HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations\$($VeeamDBFlavor.SqlActiveConfiguration)"
-                $VeeamDBInfo11 = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication'
-                return [PSCustomObject]@{
-                    Version = $VeeamVersion.DisplayVersion
-                    DBFlavor = $VeeamDBFlavor
-                    DBInfo12 = $VeeamDBInfo12
-                    DBInfo11 = $VeeamDBInfo11
+            if ($IsLocalServer) {
+                $VeeamInfo = & {
+                    $VeeamVersion = Get-ChildItem -Recurse HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -match 'Veeam Backup & Replication Server' } | Select-Object -Property DisplayVersion
+                    $VeeamDBFlavor = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations'
+                    $VeeamDBInfo12 = Get-ItemProperty -Path "HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations\$($VeeamDBFlavor.SqlActiveConfiguration)"
+                    $VeeamDBInfo11 = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication'
+                    return [PSCustomObject]@{
+                        Version = $VeeamVersion.DisplayVersion
+                        DBFlavor = $VeeamDBFlavor
+                        DBInfo12 = $VeeamDBInfo12
+                        DBInfo11 = $VeeamDBInfo11
+                    }
                 }
-            }
-            if ($LocalServer) {
-                $VeeamInfo = & $VeeamInfoScript
                 $VeeamBuild = Get-VBRBackupServerInfo
             } else {
                 if ($PssSession) {
-                    $VeeamInfo = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { $using:VeeamInfoScript }
+                    $VeeamInfo = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock {
+                        $VeeamVersion = Get-ChildItem -Recurse HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -match 'Veeam Backup & Replication Server' } | Select-Object -Property DisplayVersion
+                        $VeeamDBFlavor = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations'
+                        $VeeamDBInfo12 = Get-ItemProperty -Path "HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations\$($VeeamDBFlavor.SqlActiveConfiguration)"
+                        $VeeamDBInfo11 = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication'
+                        return [PSCustomObject]@{
+                            Version = $VeeamVersion.DisplayVersion
+                            DBFlavor = $VeeamDBFlavor
+                            DBInfo12 = $VeeamDBInfo12
+                            DBInfo11 = $VeeamDBInfo11
+                        }
+                    }
                 } else {
                     $VeeamBuild = Get-VBRBackupServerInfo
                 }
