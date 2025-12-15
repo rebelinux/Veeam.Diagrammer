@@ -1,16 +1,18 @@
 function Get-VbrRequiredModule {
     <#
     .SYNOPSIS
-        Function to check if the required version of Veeam.Backup.PowerShell is installed
+    Function to check if the required version of Veeam.Backup.PowerShell is installed
     .DESCRIPTION
-        Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
+        Documents the configuration of Veeam VBR in Word/HTML/Text formats using PScribo.
     .NOTES
-        Version:        0.6.24
+        Version:        0.6.38
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
+        Credits:        Iain Brighton (@iainbrighton) - PScribo module
+
     .LINK
-        https://github.com/rebelinux/Veeam.Diagrammer
+        https://github.com/AsBuiltReport/AsBuiltReport.Veeam.VBR
     #>
     [CmdletBinding()]
 
@@ -27,44 +29,80 @@ function Get-VbrRequiredModule {
         $Version
     )
     process {
-        #region: Start Load VEEAM Snapin / Module
-        # Loading Module or PSSnapin
-        # Make sure PSModulePath includes Veeam Console
-        $MyModulePath = "C:\Program Files\Veeam\Backup and Replication\Console\"
-        if (-not (Get-Module -ListAvailable -Name Veeam.Backup.PowerShell)) {
-            $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$MyModulePath"
+        switch ($PSVersionTable.PSEdition) {
+            'Core' {
+                switch ($PSVersionTable.Platform) {
+                    'Unix' {
+                        $script:ClientOSVersion = 'Unix'
+                        if (Test-Path "/opt/veeam/powershell/Veeam.Backup.PowerShell/Veeam.Backup.PowerShell.psd1" ) {
+                            $MyModulePath = "/opt/veeam/powershell/Veeam.Backup.PowerShell/"
+                            $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$MyModulePath"
+                        }
+                    }
+                    'Win32NT' {
+                        $script:ClientOSVersion = 'Win32NT'
+                        if (Test-Path "C:\Program Files\Veeam\Backup and Replication\Console\" ) {
+                            $MyModulePath = "C:\Program Files\Veeam\Backup and Replication\Console\"
+                            $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$MyModulePath"
+                        } elseif (Test-Path "D:\Program Files\Veeam\Backup and Replication\Console\" ) {
+                            $MyModulePath = "D:\Program Files\Veeam\Backup and Replication\Console\"
+                            $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$MyModulePath"
+                        } elseif (Test-Path "E:\Program Files\Veeam\Backup and Replication\Console\" ) {
+                            $MyModulePath = "E:\Program Files\Veeam\Backup and Replication\Console\"
+                            $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$MyModulePath"
+                        }
+                    }
+                }
+            }
+            'Desktop' {
+                $script:ClientOSVersion = 'Win32NT'
+                if (Test-Path "C:\Program Files\Veeam\Backup and Replication\Console\" ) {
+                    $MyModulePath = "C:\Program Files\Veeam\Backup and Replication\Console\"
+                    $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$MyModulePath"
+                } elseif (Test-Path "D:\Program Files\Veeam\Backup and Replication\Console\" ) {
+                    $MyModulePath = "D:\Program Files\Veeam\Backup and Replication\Console\"
+                    $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$MyModulePath"
+                } elseif (Test-Path "E:\Program Files\Veeam\Backup and Replication\Console\" ) {
+                    $MyModulePath = "E:\Program Files\Veeam\Backup and Replication\Console\"
+                    $env:PSModulePath = $env:PSModulePath + "$([System.IO.Path]::PathSeparator)$MyModulePath"
+                }
+            }
         }
-
-        try {
-            Write-Verbose -Message "Trying to import Veeam B&R modules."
-            Import-Module -Name Veeam.Backup.PowerShell -ErrorAction Stop -WarningAction SilentlyContinue -Verbose:$false
-        } catch {
-            Write-Verbose -Message "Failed to load Veeam Modules, trying SnapIn."
+        if ($Modules = Get-Module -ListAvailable -Name Veeam.Backup.PowerShell) {
             try {
-                Add-PSSnapin -Name VeeamPSSnapIn -ErrorAction Stop | Out-Null
+                Write-PScriboMessage "Trying to import Veeam B&R modules."
+                $Modules | Import-Module -DisableNameChecking -Global -WarningAction SilentlyContinue
             } catch {
-                throw "Failed to load VeeamPSSnapIn and no Modules found"
+                Write-PScriboMessage -IsWarning "Failed to load Veeam Modules"
             }
         }
 
-        $Module = Get-Module -Name Veeam.Backup.PowerShell
-        if ($Module) {
-            $script:VbrVersion = $Module.Version.ToString()
-            Write-Verbose -Message "Using Veeam Powershell module version $($VbrVersion)."
-        } else {
-            $VbrVersion = (Get-PSSnapin VeeamPSSnapin -ErrorAction SilentlyContinue).PSVersion.ToString()
-            Write-Verbose -Message "Using Veeam SnapIn version $($VbrVersion)."
+        Write-PScriboMessage "Identifying Veeam Powershell module version."
+        if ($Module = Get-Module -ListAvailable -Name Veeam.Backup.PowerShell) {
+            try {
+                $script:VbrVersion = $Module.Version.ToString()
+                Write-PScriboMessage "Using Veeam Powershell module version $($VbrVersion)."
+            } catch {
+                Write-PScriboMessage -IsWarning "Failed to get Version from Module"
+            }
+        }
+        # Check if the required version of VMware PowerCLI is installed
+        $RequiredModule = Get-Module -ListAvailable -Name $Name
+        $ModuleVersion = "{0}.{1}" -f $RequiredModule.Version.Major, $RequiredModule.Version.Minor
+        if ($ModuleVersion -eq ".") {
+            if ($ClientOSVersion -eq "Unix") {
+                throw "$Name $Version or higher is required to run the Veeam.Diagrammer. Install the Veeam PowerShell module for linux that provide the required modules (https://helpcenter.veeam.com/docs/vbr/powershell/running_ps_sessions_linux.html?ver=13)."
+            } else {
+                throw "$Name $Version or higher is required to run the Veeam.Diagrammer. Install the Veeam Backup & Replication console that provide the required modules."
+            }
         }
 
-        # Check if the required version of the specified module is installed
-        $RequiredModule = Get-Module -ListAvailable -Name $Name | Sort-Object -Property Version -Descending | Select-Object -First 1
-        if (-not $RequiredModule) {
-            throw "$Name $Version or higher is required to run the Veeam VBR As Built Report. Install the Veeam Backup & Replication console that provides the required modules."
-        }
-
-        $ModuleVersion = [version]$RequiredModule.Version
-        if ([version]$ModuleVersion -lt [version]$Version) {
-            throw "$Name $Version or higher is required to run the Veeam.Diagrammer. Update the Veeam Backup & Replication console that provides the required modules."
+        if ($ModuleVersion -lt $Version) {
+            if ($ClientOSVersion -eq "Unix") {
+                throw "$Name $Version or higher is required to run the Veeam.Diagrammer. Update the Veeam PowerShell module for linux that provide the required modules (https://helpcenter.veeam.com/docs/vbr/powershell/running_ps_sessions_linux.html?ver=13)."
+            } else {
+                throw "$Name $Version or higher is required to run the Veeam.Diagrammer. Update the Veeam Backup & Replication console that provide the required modules."
+            }
         }
     }
     end {}

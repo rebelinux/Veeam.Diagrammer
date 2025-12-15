@@ -5,7 +5,7 @@ function Get-VbrBackupServerInformation {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.36
+        Version:        0.6.38
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -20,29 +20,39 @@ function Get-VbrBackupServerInformation {
     )
     process {
         try {
-            if (($VbrVersion -gt 13) -and (-not (Get-VBRServer | Where-Object { $_.Description -eq 'Backup server' -and $_.Type -eq 'Linux' }))) {
-                $PssSession = try { New-PSSession $VBRServer -Credential $Credential -Authentication Negotiate -ErrorAction Stop -Name 'PSSBackupServerDiagram' } catch {
-                    Write-Error "Veeam.Diagrammer: New-PSSession: Unable to connect to $($VBRServer), WinRM disabled or not configured."
-                    Write-Error -Message $_.Exception.Message
+            if (($VbrVersion -gt 13) -and (-not (Get-VBRServer | Where-Object { $_.Description -eq 'Backup server' -and $_.Type -eq 'Linux' })) -and $ClientOSVersion -eq 'Win32NT') {
+                if (-not $IsLocalServer) {
+                    if (Test-WSMan -Credential $Credential -Authentication Negotiate -ComputerName $VBRServer -ErrorAction SilentlyContinue) {
+                        $PssSession = try { New-PSSession $VBRServer -Credential $Credential -Authentication Negotiate -ErrorAction Stop -Name 'PSSBackupServerDiagram' } catch {
+                            Write-Error "Veeam.Diagrammer: New-PSSession: Unable to connect to $($VBRServer), WinRM disabled or not configured."
+                            Write-Error -Message $_.Exception.Message
+                        }
+                    }
                 }
             }
             Write-Verbose -Message "Collecting Backup Server information from $($VBRServer)."
 
-            if ($PssSession) {
-                $VeeamInfo = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock {
-                    $VeeamVersion = Get-ChildItem -Recurse HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -match 'Veeam Backup & Replication Server' } | Select-Object -Property DisplayVersion
-                    $VeeamDBFlavor = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations'
-                    $VeeamDBInfo12 = Get-ItemProperty -Path "HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations\$($VeeamDBFlavor.SqlActiveConfiguration)"
-                    $VeeamDBInfo11 = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication'
-                    return [PSCustomObject]@{
-                        Version = $VeeamVersion.DisplayVersion
-                        DBFlavor = $VeeamDBFlavor
-                        DBInfo12 = $VeeamDBInfo12
-                        DBInfo11 = $VeeamDBInfo11
-                    }
+            $VeeamInfoScript = {
+                $VeeamVersion = Get-ChildItem -Recurse HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -match 'Veeam Backup & Replication Server' } | Select-Object -Property DisplayVersion
+                $VeeamDBFlavor = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations'
+                $VeeamDBInfo12 = Get-ItemProperty -Path "HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication\DatabaseConfigurations\$($VeeamDBFlavor.SqlActiveConfiguration)"
+                $VeeamDBInfo11 = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication'
+                return [PSCustomObject]@{
+                    Version = $VeeamVersion.DisplayVersion
+                    DBFlavor = $VeeamDBFlavor
+                    DBInfo12 = $VeeamDBInfo12
+                    DBInfo11 = $VeeamDBInfo11
                 }
-            } else {
+            }
+            if ($LocalServer) {
+                $VeeamInfo = & $VeeamInfoScript
                 $VeeamBuild = Get-VBRBackupServerInfo
+            } else {
+                if ($PssSession) {
+                    $VeeamInfo = Invoke-Command -Session $PssSession -ErrorAction SilentlyContinue -ScriptBlock { $using:VeeamInfoScript }
+                } else {
+                    $VeeamBuild = Get-VBRBackupServerInfo
+                }
             }
 
             $VeeamDBInfo = if ($VeeamInfo.DBInfo11.SqlServerName) {
@@ -83,8 +93,8 @@ function Get-VbrBackupServerInformation {
 
                 $script:BackupServerInfo = [PSCustomObject]@{
                     Name = $VBRServer.split(".")[0]
-                    Label = Add-DiaNodeIcon -Name "$($VBRServer.split(".")[0])" -IconType "VBR_Server" -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -FontBold
-                    Spacer = Add-DiaNodeIcon -Name " " -IconType "VBR_Bid_Arrow" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug
+                    Label = Add-DiaNodeIcon -Name "$($VBRServer.split(".")[0])" -IconType "VBR_Server" -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -FontBold -TableBackgroundColor $BackupServerBGColor -CellBackgroundColor $BackupServerBGColor
+                    Spacer = Add-DiaNodeIcon -Name " " -IconType "VBR_Bid_Arrow" -Align "Center" -ImagesObj $Images -IconDebug $IconDebug -TableBackgroundColor $BackupServerBGColor -CellBackgroundColor $BackupServerBGColor
                 }
             }
 
@@ -115,7 +125,7 @@ function Get-VbrBackupServerInformation {
 
                 $script:DatabaseServerInfo = [PSCustomObject]@{
                     Name = $DatabaseServer.split(".")[0]
-                    Label = Add-DiaNodeIcon -Name "$($DatabaseServer.split(".")[0])" -IconType $DBIconType -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -FontBold
+                    Label = Add-DiaNodeIcon -Name "$($DatabaseServer.split(".")[0])" -IconType $DBIconType -Align "Center" -RowsOrdered $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -FontBold -TableBackgroundColor $BackupServerBGColor -CellBackgroundColor $BackupServerBGColor
                     DBPort = $DBPort
                 }
             }
@@ -131,7 +141,7 @@ function Get-VbrBackupServerInformation {
 
                 $script:EMServerInfo = [PSCustomObject]@{
                     Name = $EMServer.ServerName.split(".")[0]
-                    Label = Add-DiaNodeIcon -Name "$($EMServer.ServerName.split(".")[0])" -IconType "VBR_Server_EM" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -FontBold
+                    Label = Add-DiaNodeIcon -Name "$($EMServer.ServerName.split(".")[0])" -IconType "VBR_Server_EM" -Align "Center" -Rows $Rows -ImagesObj $Images -IconDebug $IconDebug -FontSize 18 -FontBold -TableBackgroundColor $BackupServerBGColor -CellBackgroundColor $BackupServerBGColor
                 }
             }
         } catch {

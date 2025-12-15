@@ -110,6 +110,12 @@ function New-VeeamDiagram {
     .PARAMETER NewIcons
         Switch. Enables the use of new icons for the diagram (default: false).
 
+    .PARAMETER IsLocalServer
+        Switch. Indicates if the local machine is the backup server (default: false).
+
+    .PARAMETER UpdateCheck
+        Switch. Enables checking for updates to the Veeam.Diagrammer and Diagrammer.Core modules.
+
     .EXAMPLE
         New-VeeamDiagram -DiagramType 'Backup-Infrastructure' -Target 'vbr01.contoso.com' -Format 'PDF,PNG' -Theme 'Neon' -OutputFolderPath 'C:\Diagrams'
 
@@ -118,7 +124,7 @@ function New-VeeamDiagram {
         For best results, ensure all image assets meet the recommended size guidelines.
 
     .NOTES
-        Version:        0.6.31
+        Version:        0.6.38
         Author(s):      Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -355,7 +361,17 @@ function New-VeeamDiagram {
             Mandatory = $false,
             HelpMessage = 'Allow to use Veeam new icons instead of the old ones (default: false, use NewIcons = $true to enable it)'
         )]
-        [switch] $NewIcons = $false
+        [switch] $NewIcons = $false,
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Specify if the local machine is the backup server'
+        )]
+        [switch] $IsLocalServer = $false,
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Specify if the local machine is the backup server'
+        )]
+        [switch] $UpdateCheck
     )
 
     begin {
@@ -427,22 +443,24 @@ function New-VeeamDiagram {
 
 
             # Check the version of the dependency modules
-            $ModuleArray = @('Veeam.Diagrammer', 'Diagrammer.Core')
+            if ($UpdateCheck) {
+                $ModuleArray = @('Veeam.Diagrammer', 'Diagrammer.Core')
 
-            foreach ($Module in $ModuleArray) {
-                try {
-                    $InstalledVersion = Get-Module -ListAvailable -Name $Module -ErrorAction SilentlyContinue | Sort-Object -Property Version -Descending | Select-Object -First 1 -ExpandProperty Version
+                foreach ($Module in $ModuleArray) {
+                    try {
+                        $InstalledVersion = Get-Module -ListAvailable -Name $Module -ErrorAction SilentlyContinue | Sort-Object -Property Version -Descending | Select-Object -First 1 -ExpandProperty Version
 
-                    if ($InstalledVersion) {
-                        Write-ColorOutput -Color 'White' -String " - $Module module v$($InstalledVersion.ToString()) is currently installed."
-                        $LatestVersion = Find-Module -Name $Module -Repository PSGallery -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Version
-                        if ($InstalledVersion -lt $LatestVersion) {
-                            Write-ColorOutput -Color 'White' -String "  - $Module module v$($LatestVersion.ToString()) is available." -Color Red
-                            Write-ColorOutput -Color 'White' -String "  - Run 'Update-Module -Name $Module -Force' to install the latest version." -Color Red
+                        if ($InstalledVersion) {
+                            Write-ColorOutput -Color 'White' -String " - $Module module v$($InstalledVersion.ToString()) is currently installed."
+                            $LatestVersion = Find-Module -Name $Module -Repository PSGallery -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Version
+                            if ($InstalledVersion -lt $LatestVersion) {
+                                Write-ColorOutput -Color 'White' -String "  - $Module module v$($LatestVersion.ToString()) is available." -Color Red
+                                Write-ColorOutput -Color 'White' -String "  - Run 'Update-Module -Name $Module -Force' to install the latest version." -Color Red
+                            }
                         }
+                    } catch {
+                        Write-PScriboMessage -IsWarning $_.Exception.Message
                     }
-                } catch {
-                    Write-PScriboMessage -IsWarning $_.Exception.Message
                 }
             }
         }
@@ -504,7 +522,7 @@ function New-VeeamDiagram {
         $IconPath = Join-Path $RootPath 'icons'
         $ImagePath = Join-Path $RootPath 'src\private\Images.ps1'
 
-        . $ImagePath
+        # . $ImagePath
 
         if ($DiagramType -eq 'Backup-Infrastructure') {
 

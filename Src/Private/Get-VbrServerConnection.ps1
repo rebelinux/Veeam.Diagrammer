@@ -13,7 +13,7 @@ function Get-VbrServerConnection {
         The TCP Port of the target Veeam Backup Server.
 
     .NOTES
-        Version:        0.6.35
+        Version:        0.6.38
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         GitHub:         rebelinux
@@ -65,7 +65,7 @@ function Get-VbrServerConnection {
             try {
                 switch ($VbrVersion) {
                     { $_ -ge 13 } {
-                        Connect-VBRServer -Server $System -Credential $Credential -Port $Port
+                        Connect-VBRServer -Server $System -User $Credential.UserName -Password (ConvertFrom-SecureString -SecureString  $Credential.Password -AsPlainText) -Port $Port -ForceAcceptTlsCertificate
                     }
                     default {
                         Connect-VBRServer -Server $System -Credential $Credential -Port $Port
