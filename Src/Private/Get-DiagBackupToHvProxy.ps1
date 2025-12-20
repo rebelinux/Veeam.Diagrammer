@@ -5,7 +5,7 @@ function Get-DiagBackupToHvProxy {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.36
+        Version:        0.6.38
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -35,7 +35,7 @@ function Get-DiagBackupToHvProxy {
                     $HyperVBackupProxyColumnSize = $HyperVBackupProxy.Name.Count
                 }
 
-                Node HvProxies @{Label = (Add-DiaHtmlNodeTable -ImagesObj $Images -inputObject ($HyperVBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -ColumnSize $HyperVBackupProxyColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $HyperVBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_HyperV" -SubgraphLabel "Hyper-V Backup Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -FontSize 18 -SubgraphLabelFontSize 22 -SubgraphFontBold); shape = 'plain'; fontsize = 18; fontname = "Segoe Ui" }
+                Node HvProxies @{Label = (Add-DiaHtmlNodeTable -Name "HvProxies" -ImagesObj $Images -inputObject ($HyperVBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -ColumnSize $HyperVBackupProxyColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $HyperVBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_HyperV" -SubgraphLabel "Hyper-V Backup Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -FontSize 18 -SubgraphLabelFontSize 22 -SubgraphFontBold); shape = 'plain'; fontsize = 18; fontname = "Segoe Ui" }
 
                 Edge BackupServers -To HvProxies @{minlen = 3 }
             }
@@ -58,7 +58,7 @@ function Get-DiagBackupToHvProxy {
                             $HyperVBackupProxyColumnSize = $vCenter.Childs.Name.Count
                         }
 
-                        $ViClustersChildsNodes = Add-DiaHtmlTable -ImagesObj $Images -Rows $vCenter.Childs.Name -Align 'Center' -ColumnSize $HyperVBackupProxyColumnSize -IconDebug $IconDebug -FontColor '#000000' -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18 -SubgraphFontBold
+                        $ViClustersChildsNodes = Add-DiaHtmlTable -Name "ViClustersChildsNodes" -ImagesObj $Images -Rows $vCenter.Childs.Name -Align 'Center' -ColumnSize $HyperVBackupProxyColumnSize -IconDebug $IconDebug -FontColor '#000000' -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder 0 -NoFontBold -FontSize 18 -SubgraphFontBold
 
                     } catch {
                         Write-Verbose "Error: Unable to create Hyper-V Hosts table Objects. Disabling the section"
@@ -73,7 +73,7 @@ function Get-DiagBackupToHvProxy {
                             } else {
                                 $ViClustersNodesColumnSize = $ViClustersChildsNodes.Count
                             }
-                            $ViClustersNodes += Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $ViClustersChildsNodes -Align 'Center' -IconDebug $IconDebug -Label 'Hosts' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize $ViClustersNodesColumnSize -FontSize 18 -SubgraphFontBold
+                            $ViClustersNodes += Add-DiaHtmlSubGraph -Name "ViClustersNodes" -ImagesObj $Images -TableArray $ViClustersChildsNodes -Align 'Center' -IconDebug $IconDebug -Label 'Hosts' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize $ViClustersNodesColumnSize -FontSize 18 -FontBold
                             $vCenterNodeArray += $ViClustersNodes
                         }
                     } catch {
@@ -82,7 +82,7 @@ function Get-DiagBackupToHvProxy {
                     }
                     try {
                         if ($vCenterNodeArray) {
-                            $VivCenterNodes += Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $vCenterNodeArray -Align 'Center' -IconDebug $IconDebug -Label 'Cluster Servers' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 20 -FontBold
+                            $VivCenterNodes += Add-DiaHtmlSubGraph -Name "VivCenterNodes" -ImagesObj $Images -TableArray $vCenterNodeArray -Align 'Center' -IconDebug $IconDebug -Label 'Cluster Servers' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 20 -FontBold
                         }
                     } catch {
                         Write-Verbose "Error: Unable to create Hyper-V Cluster Objects. Disabling the section"
@@ -99,7 +99,7 @@ function Get-DiagBackupToHvProxy {
                         } else {
                             $VivCenterNodesAllColumnSize = $VivCenterNodes.Count
                         }
-                        $VivCenterNodesAll += Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $VivCenterNodes -Align 'Center' -IconDebug $IconDebug -Label 'Hyper-V Clusters' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize $VivCenterNodesAllColumnSize -FontSize 22 -FontBold
+                        $VivCenterNodesAll += Add-DiaHtmlSubGraph -Name "VivCenterNodesAll" -ImagesObj $Images -TableArray $VivCenterNodes -Align 'Center' -IconDebug $IconDebug -Label 'Hyper-V Clusters' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize $VivCenterNodesAllColumnSize -FontSize 22 -FontBold
                     }
                 } catch {
                     Write-Verbose "Error: Unable to create Hyper-V Cluster Objects. Disabling the section"
@@ -119,7 +119,7 @@ function Get-DiagBackupToHvProxy {
 
                 try {
 
-                    $ViStandAloneNodes = Add-DiaHtmlNodeTable -ImagesObj $Images -inputObject ($HyperVServerObj | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_HyperV_Server" -ColumnSize $HyperVServerObjColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $HyperVServerObj.AditionalInfo -Subgraph -SubgraphLabel " " -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphFontBold
+                    $ViStandAloneNodes = Add-DiaHtmlNodeTable -Name "ViStandAloneNodes" -ImagesObj $Images -inputObject ($HyperVServerObj | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_HyperV_Server" -ColumnSize $HyperVServerObjColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $HyperVServerObj.AditionalInfo -Subgraph -SubgraphLabel " " -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -FontBold
                 } catch {
                     Write-Verbose "Error: Unable to create Hyper-V StandAlone Hosts Table. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -127,7 +127,7 @@ function Get-DiagBackupToHvProxy {
 
                 if ($ViStandAloneNodes) {
                     try {
-                        $VivCenterNodesAll += Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $ViStandAloneNodes -Align 'Center' -IconDebug $IconDebug -Label 'Hyper-V StandAlone Hosts' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 22 -FontBold
+                        $VivCenterNodesAll += Add-DiaHtmlSubGraph -Name "ViStandAloneNodes" -ImagesObj $Images -TableArray $ViStandAloneNodes -Align 'Center' -IconDebug $IconDebug -Label 'Hyper-V StandAlone Hosts' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 22 -FontBold
                     } catch {
                         Write-Verbose "Error: Unable to create Hyper-V StandAlone Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
@@ -139,14 +139,14 @@ function Get-DiagBackupToHvProxy {
 
                 if ($Dir -eq 'LR') {
                     try {
-                        $ViClustersSubgraphNode = Node -Name "HvCluster" -Attributes @{Label = (Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $VivCenterNodesAll -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_HyperV' -Label 'Microsoft Hyper-V Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 24 -FontBold); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                        $ViClustersSubgraphNode = Node -Name "HvCluster" -Attributes @{Label = (Add-DiaHtmlSubGraph -Name "HvCluster" -ImagesObj $Images -TableArray $VivCenterNodesAll -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_HyperV' -Label 'Microsoft Hyper-V Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 24 -FontBold); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                     } catch {
                         Write-Verbose "Error: Unable to create HvCluster Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
                     }
                 } else {
                     try {
-                        $ViClustersSubgraphNode = Node -Name "HvCluster" -Attributes @{Label = (Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $VivCenterNodesAll -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_HyperV' -Label 'Microsoft Hyper-V Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 24 -FontBold); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                        $ViClustersSubgraphNode = Node -Name "HvCluster" -Attributes @{Label = (Add-DiaHtmlSubGraph -Name "HvCluster" -ImagesObj $Images -TableArray $VivCenterNodesAll -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_HyperV' -Label 'Microsoft Hyper-V Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 24 -FontBold); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                     } catch {
                         Write-Verbose "Error: Unable to create HvCluster Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"

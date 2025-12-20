@@ -5,7 +5,7 @@ function Get-DiagBackupServer {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.36
+        Version:        0.6.38
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -65,9 +65,9 @@ function Get-DiagBackupServer {
 
                 $columnSize = $BackupServerInfoArray.Count
 
-                $BackupServerInfoSubGraph = Add-DiaHtmlSubGraph -CellSpacing 4 -ImagesObj $Images -TableArray $BackupServerInfoArray -Align 'Center' -IconDebug $IconDebug -Label 'Backup Server' -LabelPos "top" -FontColor $BackupServerFontColor -FontSize 26 -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "0" -TableBackgroundColor $BackupServerBGColor -ColumnSize $columnSize -FontBold
+                $BackupServerInfoSubGraph = Add-DiaHtmlSubGraph -Name "BackupServerInfoSubGraph" -CellSpacing 4 -ImagesObj $Images -TableArray $BackupServerInfoArray -Align 'Center' -IconDebug $IconDebug -Label 'Backup Server' -LabelPos "top" -FontColor $BackupServerFontColor -FontSize 26 -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "0" -TableBackgroundColor $BackupServerBGColor -ColumnSize $columnSize -FontBold
 
-                Node -Name BackupServers -Attributes @{Label = (Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $BackupServerInfoSubGraph -Align 'Right' -IconDebug $IconDebug -Label 'Management' -LabelPos "down" -FontColor $Fontcolor -FontSize 14 -TableStyle "rounded" -TableBorderColor $Edgecolor -TableBorder "2" -TableBackgroundColor $BackupServerBGColor -ColumnSize 1 -FontBold); style = 'filled,rounded'; shape = 'plain'; fillColor = $BackupServerBGColor; fontsize = 14; fontname = "Segoe Ui" }
+                Add-DiaHtmlSubGraph -Name BackupServers -ImagesObj $Images -TableArray $BackupServerInfoSubGraph -Align 'Right' -IconDebug $IconDebug -Label 'Management' -LabelPos "down" -FontColor $Fontcolor -FontSize 14 -TableStyle "rounded" -TableBorderColor $Edgecolor -TableBorder "2" -TableBackgroundColor $BackupServerBGColor -ColumnSize 1 -FontBold -GraphvizAttributes @{style = 'filled,rounded'; shape = 'plain'; fillColor = $BackupServerBGColor; fontsize = 14; fontname = "Segoe Ui" } -NodeObject
 
             } else {
                 throw "No Backup Server Information Found."

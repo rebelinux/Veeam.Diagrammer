@@ -5,7 +5,7 @@ function Get-DiagBackupToWanAccel {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.35
+        Version:        0.6.38
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -36,7 +36,7 @@ function Get-DiagBackupToWanAccel {
                         $WanAccelColumnSize = $WanAccel.Name.Count
                     }
 
-                    Node WanAccelServer @{Label = (Add-DiaHtmlNodeTable -ImagesObj $Images -inputObject ($WanAccel | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Wan_Accel" -ColumnSize $WanAccelColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($WanAccel.AditionalInfo ) -Subgraph -SubgraphIconType "VBR_Wan_Accel" -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -FontSize 18 -SubgraphLabelFontSize 22 -SubgraphFontBold -FontBold); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+                    Node WanAccelServer @{Label = (Add-DiaHtmlNodeTable -Name "WanAccelServer" -ImagesObj $Images -inputObject ($WanAccel | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Wan_Accel" -ColumnSize $WanAccelColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo ($WanAccel.AditionalInfo ) -Subgraph -SubgraphIconType "VBR_Wan_Accel" -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -FontSize 18 -SubgraphLabelFontSize 22 -SubgraphFontBold -FontBold); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
                     Edge BackupServers -To WanAccelServer @{minlen = 3 }
 

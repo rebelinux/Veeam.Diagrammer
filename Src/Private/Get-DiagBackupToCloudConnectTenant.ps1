@@ -5,7 +5,7 @@ function Get-DiagBackupToCloudConnectTenant {
     .DESCRIPTION
         Build a diagram of the configuration of Veeam VBR in PDF/PNG/SVG formats using Psgraph.
     .NOTES
-        Version:        0.6.37
+        Version:        0.6.38
         Author:         Jonathan Colon
         Twitter:        @jcolonfzenpr
         Github:         rebelinux
@@ -103,9 +103,9 @@ function Get-DiagBackupToCloudConnectTenant {
                             } else {
                                 $CGPoolInfocolumnSize = 5
                             }
-                            Add-DiaHtmlTable -ImagesObj $Images -Rows $CGPool.CloudGateways.Name.split(".")[0] -Align 'Center' -ColumnSize $CGPoolInfocolumnSize -IconDebug $IconDebug -Subgraph -SubgraphIconType 'VBR_Cloud_Connect_Gateway' -SubgraphLabel $CGPool.Name -SubgraphLabelPos "top" -FontColor $Fontcolor -TableStyle 'dashed,rounded' -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18  -SubgraphFontBold
+                            Add-DiaHtmlTable -ImagesObj $Images -Rows $CGPool.CloudGateways.Name.split(".")[0] -ALIGN 'Center' -ColumnSize $CGPoolInfocolumnSize -IconDebug $IconDebug -Subgraph -SubgraphIconType 'VBR_Cloud_Connect_Gateway' -SubgraphLabel $CGPool.Name -SubgraphLabelPos "top" -FontColor $Fontcolor -TableStyle 'dashed,rounded' -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18  -SubgraphFontBold
                         } else {
-                            Add-DiaHtmlTable -ImagesObj $Images -Rows 'No Cloud Gateway Server' -Align 'Center' -ColumnSize 1 -IconDebug $IconDebug -Subgraph -SubgraphIconType 'VBR_Cloud_Connect_Gateway' -SubgraphLabel $CGPool.Name -SubgraphLabelPos "top" -FontColor $Fontcolor -TableStyle 'dashed,rounded' -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18 -SubgraphFontBold
+                            Add-DiaHtmlTable -ImagesObj $Images -Rows 'No Cloud Gateway Server' -ALIGN 'Center' -ColumnSize 1 -IconDebug $IconDebug -Subgraph -SubgraphIconType 'VBR_Cloud_Connect_Gateway' -SubgraphLabel $CGPool.Name -SubgraphLabelPos "top" -FontColor $Fontcolor -TableStyle 'dashed,rounded' -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18 -SubgraphFontBold
                         }
                     }
                 } catch {
@@ -121,7 +121,7 @@ function Get-DiagBackupToCloudConnectTenant {
                         } else {
                             $CGPoolNodecolumnSize = 5
                         }
-                        $CGPoolNodesSubGraph += Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $CGPoolNode -Align 'Center' -IconDebug $IconDebug -Label 'Gateway Pools' -LabelPos 'top' -FontColor $Fontcolor -TableStyle 'dashed,rounded' -TableBorderColor $Edgecolor -TableBorder '1' -ColumnSize $CGPoolNodecolumnSize -FontSize 22 -IconType 'VBR_Cloud_Connect_Gateway_Pools' -FontBold
+                        $CGPoolNodesSubGraph += Add-DiaHtmlSubGraph -Name "CGPoolNodesSubGraph" -ImagesObj $Images -TableArray $CGPoolNode -Align 'Center' -IconDebug $IconDebug -Label 'Gateway Pools' -LabelPos 'top' -FontColor $Fontcolor -TableStyle 'dashed,rounded' -TableBorderColor $Edgecolor -TableBorder '1' -ColumnSize $CGPoolNodecolumnSize -FontSize 22 -IconType 'VBR_Cloud_Connect_Gateway_Pools' -FontBold
 
                         if ($CGPoolNodesSubGraph) {
                             Node 'TenantGateway' -Attributes @{
@@ -170,7 +170,7 @@ function Get-DiagBackupToCloudConnectTenant {
                         $BackupRepositorycolumnSize = 5
                     }
                     try {
-                        $CCBackupRepositoryNode = Add-DiaHtmlNodeTable -ImagesObj $Images -inputObject $CCBackupStorageInfo.Repositories.Name -Align "Center" -iconType $CCBackupStorageInfo.Repositories.IconType -ColumnSize $BackupRepositorycolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCBackupStorageInfo.Repositories.AditionalInfo -Subgraph -SubgraphIconType "VBR_Repository" -SubgraphLabel "Backup Repositories" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                        $CCBackupRepositoryNode = Add-DiaHtmlNodeTable -Name "CCBackupRepositoryNode" -ImagesObj $Images -inputObject $CCBackupStorageInfo.Repositories.Name -Align "Center" -iconType $CCBackupStorageInfo.Repositories.IconType -ColumnSize $BackupRepositorycolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCBackupStorageInfo.Repositories.AditionalInfo -Subgraph -SubgraphIconType "VBR_Repository" -SubgraphLabel "Backup Repositories" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
 
                         if ($CCBackupRepositoryNode) {
                             $CloudConnectTenantBSArray += $CCBackupRepositoryNode
@@ -188,7 +188,7 @@ function Get-DiagBackupToCloudConnectTenant {
                             $CCBSWancolumnSize = 5
                         }
                         try {
-                            $CCCloudWanAcceleratorNode = Add-DiaHtmlNodeTable -ImagesObj $Images -inputObject $CCBackupStorageInfo.WanAccelerator.Name -Align "Center" -iconType $CCBackupStorageInfo.WanAccelerator.IconType -ColumnSize $CCBSWancolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCBackupStorageInfo.WanAccelerator.AditionalInfo -Subgraph -SubgraphIconType "VBR_Wan_Accel" -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                            $CCCloudWanAcceleratorNode = Add-DiaHtmlNodeTable -Name "CCCloudWanAcceleratorNode" -ImagesObj $Images -inputObject $CCBackupStorageInfo.WanAccelerator.Name -Align "Center" -iconType $CCBackupStorageInfo.WanAccelerator.IconType -ColumnSize $CCBSWancolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCBackupStorageInfo.WanAccelerator.AditionalInfo -Subgraph -SubgraphIconType "VBR_Wan_Accel" -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
 
                             if ($CCCloudWanAcceleratorNode) {
                                 $CloudConnectTenantBSArray += $CCCloudWanAcceleratorNode
@@ -208,7 +208,7 @@ function Get-DiagBackupToCloudConnectTenant {
                             } else {
                                 $CloudConnectTenantBSArraycolumnSize = 5
                             }
-                            $CloudConnectTenantBSSubGraph = Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantBSArray -Align 'Center' -IconDebug $IconDebug -Label "Resources" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize $CloudConnectTenantBSArraycolumnSize -FontSize 22 -FontBold
+                            $CloudConnectTenantBSSubGraph = Add-DiaHtmlSubGraph -Name "CloudConnectTenantBSSubGraph" -ImagesObj $Images -TableArray $CloudConnectTenantBSArray -Align 'Center' -IconDebug $IconDebug -Label "Resources" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize $CloudConnectTenantBSArraycolumnSize -FontSize 22 -FontBold
 
                             if ($CloudConnectTenantBSSubGraph) {
                                 $CloudConnectTenantBRArray += $CloudConnectTenantBSSubGraph
@@ -221,7 +221,7 @@ function Get-DiagBackupToCloudConnectTenant {
                     }
 
                     try {
-                        $CloudRepoSubgraphNode += Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantBRArray  -Align 'Center' -IconDebug $IconDebug -Label $CCBackupStorageInfo.Name -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 20 -FontBold
+                        $CloudRepoSubgraphNode += Add-DiaHtmlSubGraph -Name "CloudRepoSubgraphNode" -ImagesObj $Images -TableArray $CloudConnectTenantBRArray  -Align 'Center' -IconDebug $IconDebug -Label $CCBackupStorageInfo.Name -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 20 -FontBold
                     } catch {
                         Write-Verbose "Error: Unable to create Cloud Resource SubGraph Nodes Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
@@ -248,7 +248,7 @@ function Get-DiagBackupToCloudConnectTenant {
                     }
                 }
                 try {
-                    $CloudRepoSubgraph = Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $CloudRepoSubgraphNode  -Align 'Center' -IconDebug $IconDebug -Label "Backup Resources" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 4 -FontSize 22 -IconType 'VBR_Cloud_Storage' -FontBold
+                    $CloudRepoSubgraph = Add-DiaHtmlSubGraph -Name "CloudRepoSubgraph" -ImagesObj $Images -TableArray $CloudRepoSubgraphNode  -Align 'Center' -IconDebug $IconDebug -Label "Backup Resources" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 4 -FontSize 22 -IconType 'VBR_Cloud_Storage' -FontBold
                 } catch {
                     Write-Verbose "Error: Unable to create Cloud Resource SubGraph Nodes Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -256,7 +256,7 @@ function Get-DiagBackupToCloudConnectTenant {
 
                 if ($CloudConnectTenantRRSubTenantArray) {
                     try {
-                        $CloudConnectTenantRRSubTenantSubgraphNode = Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantRRSubTenantArray  -Align 'Center' -IconDebug $IconDebug -Label "SubTenants" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 4 -FontSize 22 -IconType 'VBR_Cloud_Storage' -FontBold
+                        $CloudConnectTenantRRSubTenantSubgraphNode = Add-DiaHtmlSubGraph -Name "CloudConnectTenantRRSubTenantSubgraphNode" -ImagesObj $Images -TableArray $CloudConnectTenantRRSubTenantArray  -Align 'Center' -IconDebug $IconDebug -Label "SubTenants" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 4 -FontSize 22 -IconType 'VBR_Cloud_Storage' -FontBold
                     } catch {
                         Write-Verbose "Error: Unable to create SubTenants SubGraph Nodes Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
@@ -320,7 +320,7 @@ function Get-DiagBackupToCloudConnectTenant {
                             }
 
                             if ($CCReplicaResourcesInfo.Host) {
-                                $CCRRHostNode = Add-DiaHtmlNodeTable -ImagesObj $Images -inputObject $CCReplicaResourcesInfo.Host.Name -Align "Center" -iconType $CCReplicaResourcesInfo.Host.IconType -ColumnSize $CCReplicaResourcesInfocolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCReplicaResourcesInfo.Host.AditionalInfo -Subgraph -SubgraphIconType "VBR_Cloud_Connect_VM" -SubgraphLabel "Host or Cluster" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                                $CCRRHostNode = Add-DiaHtmlNodeTable -Name "CCRRHostNode" -ImagesObj $Images -inputObject $CCReplicaResourcesInfo.Host.Name -Align "Center" -iconType $CCReplicaResourcesInfo.Host.IconType -ColumnSize $CCReplicaResourcesInfocolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCReplicaResourcesInfo.Host.AditionalInfo -Subgraph -SubgraphIconType "VBR_Cloud_Connect_VM" -SubgraphLabel "Host or Cluster" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
 
                                 $CloudConnectTenantRRArray += $CCRRHostNode
                             }
@@ -339,7 +339,7 @@ function Get-DiagBackupToCloudConnectTenant {
                             }
 
                             if ($CCReplicaResourcesInfo.Storage) {
-                                $CCRRStorageNode = Add-DiaHtmlNodeTable -ImagesObj $Images -inputObject $CCReplicaResourcesInfo.Storage.Name -Align "Center" -iconType "VBR_Cloud_Repository" -ColumnSize $CCReplicaResourcesInfocolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCReplicaResourcesInfo.Storage.AditionalInfo -Subgraph -SubgraphIconType "VBR_Cloud_Repository" -SubgraphLabel "Storage" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                                $CCRRStorageNode = Add-DiaHtmlNodeTable -Name "CCRRStorageNode" -ImagesObj $Images -inputObject $CCReplicaResourcesInfo.Storage.Name -Align "Center" -iconType "VBR_Cloud_Repository" -ColumnSize $CCReplicaResourcesInfocolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCReplicaResourcesInfo.Storage.AditionalInfo -Subgraph -SubgraphIconType "VBR_Cloud_Repository" -SubgraphLabel "Storage" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
 
                                 $CloudConnectTenantRRArray += $CCRRStorageNode
                             }
@@ -357,7 +357,7 @@ function Get-DiagBackupToCloudConnectTenant {
                                 $CCRRWancolumnSize = 5
                             }
                             try {
-                                $CCCloudWanAcceleratorNode = Add-DiaHtmlNodeTable -ImagesObj $Images -inputObject $CCReplicaResourcesInfo.WanAcceleration.Name -Align "Center" -iconType $CCReplicaResourcesInfo.WanAcceleration.IconType -ColumnSize $CCRRWancolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCReplicaResourcesInfo.WanAcceleration.AditionalInfo -Subgraph -SubgraphIconType "VBR_Wan_Accel" -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                                $CCCloudWanAcceleratorNode = Add-DiaHtmlNodeTable -Name "CCCloudWanAcceleratorNode" -ImagesObj $Images -inputObject $CCReplicaResourcesInfo.WanAcceleration.Name -Align "Center" -iconType $CCReplicaResourcesInfo.WanAcceleration.IconType -ColumnSize $CCRRWancolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCReplicaResourcesInfo.WanAcceleration.AditionalInfo -Subgraph -SubgraphIconType "VBR_Wan_Accel" -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
 
                                 if ($CCCloudWanAcceleratorNode) {
                                     $CloudConnectTenantRRArray += $CCCloudWanAcceleratorNode
@@ -377,7 +377,7 @@ function Get-DiagBackupToCloudConnectTenant {
                                 } else {
                                     $CloudConnectTenantRRArraycolumnSize = 5
                                 }
-                                $CloudConnectTenantRRSubGraph = Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantRRArray -Align 'Center' -IconDebug $IconDebug -Label "Resources" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize $CloudConnectTenantRRArraycolumnSize -FontSize 22 -FontBold
+                                $CloudConnectTenantRRSubGraph = Add-DiaHtmlSubGraph -Name "CloudConnectTenantRRSubGraph" -ImagesObj $Images -TableArray $CloudConnectTenantRRArray -Align 'Center' -IconDebug $IconDebug -Label "Resources" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize $CloudConnectTenantRRArraycolumnSize -FontSize 22 -FontBold
 
                                 if ($CloudConnectTenantRRSubGraph) {
                                     $CloudConnectTenantReplicaResourceArray += $CloudConnectTenantRRSubGraph
@@ -391,7 +391,7 @@ function Get-DiagBackupToCloudConnectTenant {
 
                         try {
                             if ($CloudConnectTenantReplicaResourceArray) {
-                                $CloudConnectTenantRRArraySubgraph += Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantReplicaResourceArray  -Align 'Center' -IconDebug $IconDebug -Label $CCReplicaResourcesInfo.Name -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 22 -FontBold
+                                $CloudConnectTenantRRArraySubgraph += Add-DiaHtmlSubGraph -Name "CloudConnectTenantRRArraySubgraph" -ImagesObj $Images -TableArray $CloudConnectTenantReplicaResourceArray  -Align 'Center' -IconDebug $IconDebug -Label $CCReplicaResourcesInfo.Name -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 22 -FontBold
                             }
                         } catch {
                             Write-Verbose "Error: Unable to create CCRRNode Objects. Disabling the section"
@@ -407,7 +407,7 @@ function Get-DiagBackupToCloudConnectTenant {
                                 $CCRRNetExtcolumnSize = 5
                             }
                             try {
-                                $CCCloudNetworkExtensionsNode = Add-DiaHtmlNodeTable -ImagesObj $Images -inputObject $CCReplicaResourcesInfo.NetworkExtensions.Name -Align "Center" -iconType $CCReplicaResourcesInfo.NetworkExtensions.IconType -ColumnSize $CCRRNetExtcolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCReplicaResourcesInfo.NetworkExtensions.AditionalInfo -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                                $CCCloudNetworkExtensionsNode = Add-DiaHtmlNodeTable -Name "CCCloudNetworkExtensionsNode" -ImagesObj $Images -inputObject $CCReplicaResourcesInfo.NetworkExtensions.Name -Align "Center" -iconType $CCReplicaResourcesInfo.NetworkExtensions.IconType -ColumnSize $CCRRNetExtcolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCReplicaResourcesInfo.NetworkExtensions.AditionalInfo -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
 
                                 if ($CCCloudNetworkExtensionsNode) {
                                     $CloudConnectTenantRRNetworkExtensionArray += $CCCloudNetworkExtensionsNode
@@ -422,7 +422,7 @@ function Get-DiagBackupToCloudConnectTenant {
 
                 if ($CloudConnectTenantRRNetworkExtensionArray) {
                     try {
-                        $CloudConnectTenantRRNExtensionSubgraphNode = Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantRRNetworkExtensionArray  -Align 'Center' -IconDebug $IconDebug -Label "Network Extension Appliances" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 4 -FontSize 22 -IconType 'VBR_Hardware_Resources' -FontBold
+                        $CloudConnectTenantRRNExtensionSubgraphNode = Add-DiaHtmlSubGraph -Name "CloudConnectTenantRRNExtensionSubgraphNode" -ImagesObj $Images -TableArray $CloudConnectTenantRRNetworkExtensionArray  -Align 'Center' -IconDebug $IconDebug -Label "Network Extension Appliances" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 4 -FontSize 22 -IconType 'VBR_Hardware_Resources' -FontBold
                     } catch {
                         Write-Verbose "Error: Unable to create Cloud Resource SubGraph Nodes Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
@@ -430,7 +430,7 @@ function Get-DiagBackupToCloudConnectTenant {
                 }
 
                 try {
-                    $CloudResourcesSubgraphNode = Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantRRArraySubgraph  -Align 'Center' -IconDebug $IconDebug -Label "Replica Resources" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 4 -FontSize 22 -IconType 'VBR_Hardware_Resources' -FontBold
+                    $CloudResourcesSubgraphNode = Add-DiaHtmlSubGraph -Name "CloudResourcesSubgraphNode" -ImagesObj $Images -TableArray $CloudConnectTenantRRArraySubgraph  -Align 'Center' -IconDebug $IconDebug -Label "Replica Resources" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 4 -FontSize 22 -IconType 'VBR_Hardware_Resources' -FontBold
                 } catch {
                     Write-Verbose "Error: Unable to create Cloud Resource SubGraph Nodes Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -491,7 +491,7 @@ function Get-DiagBackupToCloudConnectTenant {
                             $CCvCDRRWancolumnSize = 5
                         }
                         try {
-                            $CCCloudvCDWanAcceleratorNode = Add-DiaHtmlNodeTable -ImagesObj $Images -inputObject $CCvCDReplicaResourcesInfo.WanAcceleration.Name -Align "Center" -iconType $CCvCDReplicaResourcesInfo.WanAcceleration.IconType -ColumnSize $CCvCDRRWancolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCvCDReplicaResourcesInfo.WanAcceleration.AditionalInfo -Subgraph -SubgraphIconType "VBR_Wan_Accel" -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                            $CCCloudvCDWanAcceleratorNode = Add-DiaHtmlNodeTable -Name "CCCloudvCDWanAcceleratorNode" -ImagesObj $Images -inputObject $CCvCDReplicaResourcesInfo.WanAcceleration.Name -Align "Center" -iconType $CCvCDReplicaResourcesInfo.WanAcceleration.IconType -ColumnSize $CCvCDRRWancolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCvCDReplicaResourcesInfo.WanAcceleration.AditionalInfo -Subgraph -SubgraphIconType "VBR_Wan_Accel" -SubgraphLabel "Wan Accelerators" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
 
                             if ($CCCloudvCDWanAcceleratorNode) {
                                 $CloudConnectTenantvCDRRArray += $CCCloudvCDWanAcceleratorNode
@@ -511,7 +511,7 @@ function Get-DiagBackupToCloudConnectTenant {
                             } else {
                                 $CloudConnectTenantvCDRRArraycolumnSize = 5
                             }
-                            $CloudConnectTenantvCDRRSubGraph = Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantvCDRRArray -Align 'Center' -IconDebug $IconDebug -Label "Resources" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize $CloudConnectTenantvCDRRArraycolumnSize -FontSize 22 -FontBold
+                            $CloudConnectTenantvCDRRSubGraph = Add-DiaHtmlSubGraph -Name "CloudConnectTenantvCDRRSubGraph" -ImagesObj $Images -TableArray $CloudConnectTenantvCDRRArray -Align 'Center' -IconDebug $IconDebug -Label "Resources" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize $CloudConnectTenantvCDRRArraycolumnSize -FontSize 22 -FontBold
 
                             if ($CloudConnectTenantvCDRRSubGraph) {
                                 $CloudConnectTenantvCDReplicaResourceArray += $CloudConnectTenantvCDRRSubGraph
@@ -525,7 +525,7 @@ function Get-DiagBackupToCloudConnectTenant {
 
                     try {
                         if ($CloudConnectTenantvCDReplicaResourceArray) {
-                            $CloudConnectTenantvCDRRArraySubgraph += Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantvCDReplicaResourceArray  -Align 'Center' -IconDebug $IconDebug -Label $CCvCDReplicaResourcesInfo.Name -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 22 -FontBold
+                            $CloudConnectTenantvCDRRArraySubgraph += Add-DiaHtmlSubGraph -Name "CloudConnectTenantvCDReplicaResourceArray" -ImagesObj $Images -TableArray $CloudConnectTenantvCDReplicaResourceArray  -Align 'Center' -IconDebug $IconDebug -Label $CCvCDReplicaResourcesInfo.Name -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 22 -FontBold
 
                         }
                     } catch {
@@ -542,7 +542,7 @@ function Get-DiagBackupToCloudConnectTenant {
                             $CCvCDRRNetExtcolumnSize = 5
                         }
                         try {
-                            $CCCloudvCDNetworkExtensionsNode = Add-DiaHtmlNodeTable -ImagesObj $Images -inputObject $CCvCDReplicaResourcesInfo.NetworkExtensions.Name -Align "Center" -iconType $CCvCDReplicaResourcesInfo.NetworkExtensions.IconType -ColumnSize $CCvCDRRNetExtcolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCvCDReplicaResourcesInfo.NetworkExtensions.AditionalInfo -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                            $CCCloudvCDNetworkExtensionsNode = Add-DiaHtmlNodeTable -Name "CCCloudvCDNetworkExtensionsNode" -ImagesObj $Images -inputObject $CCvCDReplicaResourcesInfo.NetworkExtensions.Name -Align "Center" -iconType $CCvCDReplicaResourcesInfo.NetworkExtensions.IconType -ColumnSize $CCvCDRRNetExtcolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCvCDReplicaResourcesInfo.NetworkExtensions.AditionalInfo -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
 
                             if ($CCCloudvCDNetworkExtensionsNode) {
                                 $CloudConnectTenantvCDRRNetworkExtensionArray += $CCCloudvCDNetworkExtensionsNode
@@ -556,7 +556,7 @@ function Get-DiagBackupToCloudConnectTenant {
 
                 if ($CloudConnectTenantvCDRRNetworkExtensionArray) {
                     try {
-                        $CloudConnectTenantvCDRRNExtensionSubgraphNode = Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantvCDRRNetworkExtensionArray  -Align 'Center' -IconDebug $IconDebug -Label "Network Extension Appliances" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 4 -FontSize 22 -IconType 'VBR_Hardware_Resources' -FontBold
+                        $CloudConnectTenantvCDRRNExtensionSubgraphNode = Add-DiaHtmlSubGraph -Name "CloudConnectTenantvCDRRNExtensionSubgraphNode" -ImagesObj $Images -TableArray $CloudConnectTenantvCDRRNetworkExtensionArray  -Align 'Center' -IconDebug $IconDebug -Label "Network Extension Appliances" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 4 -FontSize 22 -IconType 'VBR_Hardware_Resources' -FontBold
                     } catch {
                         Write-Verbose "Error: Unable to create CloudvCDRRNExtensionSubgraphNode Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
@@ -564,7 +564,7 @@ function Get-DiagBackupToCloudConnectTenant {
                 }
 
                 try {
-                    $CloudvCDResourcesSubgraphNode = Add-DiaHtmlSubGraph -ImagesObj $Images -TableArray $CloudConnectTenantvCDRRArraySubgraph  -Align 'Center' -IconDebug $IconDebug -Label "vDC Replica Resources" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 4 -FontSize 22 -IconType 'VBR_Hardware_Resources' -FontBold
+                    $CloudvCDResourcesSubgraphNode = Add-DiaHtmlSubGraph -Name "CloudvCDResourcesSubgraphNode" -ImagesObj $Images -TableArray $CloudConnectTenantvCDRRArraySubgraph  -Align 'Center' -IconDebug $IconDebug -Label "vDC Replica Resources" -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 4 -FontSize 22 -IconType 'VBR_Hardware_Resources' -FontBold
                 } catch {
                     Write-Verbose "Error: Unable to create CloudvCDResourcesSubgraphNode Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"

@@ -459,7 +459,7 @@ function New-VeeamDiagram {
                             }
                         }
                     } catch {
-                        Write-PScriboMessage -IsWarning $_.Exception.Message
+                        Write-Error $_.Exception.Message
                     }
                 }
             }

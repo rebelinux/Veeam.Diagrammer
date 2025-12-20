@@ -70,20 +70,20 @@ function Get-VbrRequiredModule {
         }
         if ($Modules = Get-Module -ListAvailable -Name Veeam.Backup.PowerShell) {
             try {
-                Write-PScriboMessage "Trying to import Veeam B&R modules."
+                Write-Verbose "Trying to import Veeam B&R modules."
                 $Modules | Import-Module -DisableNameChecking -Global -WarningAction SilentlyContinue
             } catch {
-                Write-PScriboMessage -IsWarning "Failed to load Veeam Modules"
+                Write-Error "Failed to load Veeam Modules"
             }
         }
 
-        Write-PScriboMessage "Identifying Veeam Powershell module version."
+        Write-Verbose "Identifying Veeam Powershell module version."
         if ($Module = Get-Module -ListAvailable -Name Veeam.Backup.PowerShell) {
             try {
                 $script:VbrVersion = $Module.Version.ToString()
-                Write-PScriboMessage "Using Veeam Powershell module version $($VbrVersion)."
+                Write-Verbose "Using Veeam Powershell module version $($VbrVersion)."
             } catch {
-                Write-PScriboMessage -IsWarning "Failed to get Version from Module"
+                Write-Error "Failed to get Version from Module"
             }
         }
         # Check if the required version of VMware PowerCLI is installed
