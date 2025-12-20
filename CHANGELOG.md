@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Upgrade the `Diagrammer.Core` module dependency to version `0.2.36`
 - Update the module version to `0.6.38`
+- This mark the last release of this tool. From now on all of the diagrams will be integrated to the ABuiltReport.Veeam.VBR report
 
 ## [0.6.37] - 2025-11-24
 
