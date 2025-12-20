@@ -36,7 +36,7 @@ function Get-DiagBackupToViProxy {
                         $VMwareBackupProxyColumnSize = $VMwareBackupProxy.Name.Count
                     }
 
-                    Node ViProxies @{Label = (Add-DiaHtmlNodeTable -Name "ViProxies" -ImagesObj $Images -inputObject ($VMwareBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -ColumnSize $VMwareBackupProxyColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $VMwareBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_Proxy" -SubgraphLabel "VMware Backup Proxies" -SubgraphLabelFontColor $Fontcolor -SubgraphLabelFontSize 26 -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -FontSize 18 -SubgraphFontBold); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+                    Node ViProxies @{Label = (Add-DiaHtmlNodeTable -Name "ViProxies" -ImagesObj $Images -inputObject ($VMwareBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -ColumnSize $VMwareBackupProxyColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $VMwareBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_Proxy" -SubgraphLabel "VMware Backup Proxies" -SubgraphLabelFontColor $Fontcolor -SubgraphLabelFontSize 26 -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor '#000000' -TableBorderColor $Edgecolor -TableBorder "1" -FontSize 18 -SubgraphFontBold); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
                     Edge BackupServers -To ViProxies @{minlen = 2 }
                 }

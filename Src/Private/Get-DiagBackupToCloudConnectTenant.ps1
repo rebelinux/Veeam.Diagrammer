@@ -65,7 +65,7 @@ function Get-DiagBackupToCloudConnectTenant {
                     $CGServerNodeColumnSize = $CGServerInfo.Name.Count
                 }
                 try {
-                    $CGServerNode = Add-DiaHtmlNodeTable -ImagesObj $Images -inputObject $CGServerInfo.Name -Align "Center" -iconType "VBR_Cloud_Connect_Gateway" -ColumnSize $CGServerNodeColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CGServerInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Service_Providers_Server" -SubgraphLabel "Gateway Servers" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                    $CGServerNode = Add-DiaHtmlNodeTable -Name "CGServerNode" -ImagesObj $Images -inputObject $CGServerInfo.Name -Align "Center" -iconType "VBR_Cloud_Connect_Gateway" -ColumnSize $CGServerNodeColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CGServerInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_Service_Providers_Server" -SubgraphLabel "Gateway Servers" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
 
                     if ($CGServerNode) {
                         Node 'TenantGateway' -Attributes @{
@@ -103,9 +103,9 @@ function Get-DiagBackupToCloudConnectTenant {
                             } else {
                                 $CGPoolInfocolumnSize = 5
                             }
-                            Add-DiaHtmlTable -ImagesObj $Images -Rows $CGPool.CloudGateways.Name.split(".")[0] -ALIGN 'Center' -ColumnSize $CGPoolInfocolumnSize -IconDebug $IconDebug -Subgraph -SubgraphIconType 'VBR_Cloud_Connect_Gateway' -SubgraphLabel $CGPool.Name -SubgraphLabelPos "top" -FontColor $Fontcolor -TableStyle 'dashed,rounded' -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18  -SubgraphFontBold
+                            Add-DiaHtmlTable -Name "CGPoolNode" -ImagesObj $Images -Rows $CGPool.CloudGateways.Name.split(".")[0] -ALIGN 'Center' -ColumnSize $CGPoolInfocolumnSize -IconDebug $IconDebug -Subgraph -SubgraphIconType 'VBR_Cloud_Connect_Gateway' -SubgraphLabel $CGPool.Name -SubgraphLabelPos "top" -FontColor $Fontcolor -TableStyle 'dashed,rounded' -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18  -SubgraphFontBold
                         } else {
-                            Add-DiaHtmlTable -ImagesObj $Images -Rows 'No Cloud Gateway Server' -ALIGN 'Center' -ColumnSize 1 -IconDebug $IconDebug -Subgraph -SubgraphIconType 'VBR_Cloud_Connect_Gateway' -SubgraphLabel $CGPool.Name -SubgraphLabelPos "top" -FontColor $Fontcolor -TableStyle 'dashed,rounded' -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18 -SubgraphFontBold
+                            Add-DiaHtmlTable -Name "CGPoolNode" -ImagesObj $Images -Rows 'No Cloud Gateway Server' -ALIGN 'Center' -ColumnSize 1 -IconDebug $IconDebug -Subgraph -SubgraphIconType 'VBR_Cloud_Connect_Gateway' -SubgraphLabel $CGPool.Name -SubgraphLabelPos "top" -FontColor $Fontcolor -TableStyle 'dashed,rounded' -TableBorderColor $Edgecolor -TableBorder "1" -NoFontBold -FontSize 18 -SubgraphFontBold
                         }
                     }
                 } catch {
@@ -236,7 +236,7 @@ function Get-DiagBackupToCloudConnectTenant {
                             $CCRRNetExtcolumnSize = 5
                         }
                         try {
-                            $CCCloudSubTenantNode = Add-DiaHtmlNodeTable -ImagesObj $Images -inputObject $CCBackupStorageInfo.SubTenant.Name -Align "Center" -iconType $CCBackupStorageInfo.SubTenant.IconType -ColumnSize $CCRRNetExtcolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCBackupStorageInfo.SubTenant.AditionalInfo -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                            $CCCloudSubTenantNode = Add-DiaHtmlNodeTable -Name "CCCloudSubTenantNode" -ImagesObj $Images -inputObject $CCBackupStorageInfo.SubTenant.Name -Align "Center" -iconType $CCBackupStorageInfo.SubTenant.IconType -ColumnSize $CCRRNetExtcolumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $CCBackupStorageInfo.SubTenant.AditionalInfo -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
 
                             if ($CCCloudSubTenantNode) {
                                 $CloudConnectTenantRRSubTenantArray += $CCCloudSubTenantNode

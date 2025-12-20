@@ -43,7 +43,7 @@ function Get-DiagBackupToProtectedGroup {
                                 $FileBackupProxyColumnSize = $FileBackupProxy.Name.Count
                             }
 
-                            Node FileProxies @{Label = (Add-DiaHtmlNodeTable -Name "FileProxies" -ImagesObj $Images -inputObject ($FileBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -ColumnSize $FileBackupProxyColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $FileBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_Proxy" -SubgraphLabel "File Backup Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontSize 24 -FontSize 18 -SubgraphFontBold); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
+                            Node FileProxies @{Label = (Add-DiaHtmlNodeTable -Name "FileProxies" -ImagesObj $Images -inputObject ($FileBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -ColumnSize $FileBackupProxyColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $FileBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_Proxy" -SubgraphLabel "File Backup Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor '#000000'-TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontSize 24 -FontSize 18 -SubgraphFontBold -SubgraphLabelFontColor $Fontcolor); shape = 'plain'; fontsize = 14; fontname = "Segoe Ui" }
 
                             Edge BackupServers -To FileProxies @{minlen = 3 }
 

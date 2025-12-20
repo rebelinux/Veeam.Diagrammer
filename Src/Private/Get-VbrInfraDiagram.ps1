@@ -35,7 +35,7 @@ function Get-VbrInfraDiagram {
             # EntraID Graphviz Cluster
             if ($EntraID = Get-VbrBackupEntraIDInfo) {
                 try {
-                    $EntraIDNode = Node EntraID @{Label = (Add-DiaHtmlNodeTable -Name "EntraIDNode" -ImagesObj $Images -inputObject $EntraID.Name -Align "Center" -iconType "VBR_Microsoft_Entra_ID" -ColumnSize 2 -IconDebug $IconDebug -MultiIcon -AditionalInfo $EntraID.AditionalInfo -Subgraph -SubgraphLabel "Entra ID Tenants" -SubgraphFontBold -SubgraphLabelPos "top" -SubgraphIconType "VBR_Microsoft_Entra_ID" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18); shape = 'plain'; fontname = "Segoe Ui" }
+                    $EntraIDNode = Node EntraID @{Label = (Add-DiaHtmlNodeTable -Name "EntraIDNode" -ImagesObj $Images -inputObject $EntraID.Name -Align "Center" -iconType "VBR_Microsoft_Entra_ID" -ColumnSize 2 -IconDebug $IconDebug -MultiIcon -AditionalInfo $EntraID.AditionalInfo -Subgraph -SubgraphLabel "Entra ID Tenants" -SubgraphFontBold -SubgraphLabelPos "top" -SubgraphIconType "VBR_Microsoft_Entra_ID" -SubgraphTableStyle "dashed,rounded" -TableBorderColor "#71797E" -TableBorder "1" -SubgraphLabelFontColor $FontColor -SubgraphLabelFontSize 22 -FontSize 18); shape = 'plain'; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create EntraID Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -50,7 +50,7 @@ function Get-VbrInfraDiagram {
 
                 try {
                     if (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "vSphere" }).Name) {
-                        $ProxiesVi = Add-DiaHtmlNodeTable -Name "ProxiesVi" -ImagesObj $Images -inputObject (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "vSphere" }) | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -ColumnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($Proxies.AditionalInfo | Where-Object { $_.Type -eq "vSphere" }) -Subgraph -SubgraphIconType "VBR_vSphere" -SubgraphLabel "VMware Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                        $ProxiesVi = Add-DiaHtmlNodeTable -Name "ProxiesVi" -ImagesObj $Images -inputObject (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "vSphere" }) | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -ColumnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($Proxies.AditionalInfo | Where-Object { $_.Type -eq "vSphere" }) -Subgraph -SubgraphIconType "VBR_vSphere" -SubgraphLabel "VMware Proxies" -SubgraphLabelPos "top" -FontColor '#000000' -SubgraphLabelFontColor $FontColor -SubgraphTableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
                     }
                 } catch {
                     Write-Verbose "Error: Unable to create ProxiesVSphere Objects. Disabling the section"
@@ -59,7 +59,7 @@ function Get-VbrInfraDiagram {
 
                 try {
                     if (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "Off host" -or $_.AditionalInfo.Type -eq "On host" }).Name) {
-                        $ProxiesHv = Add-DiaHtmlNodeTable -Name "ProxiesHv" -ImagesObj $Images -inputObject (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "Off host" -or $_.AditionalInfo.Type -eq "On host" }).Name | ForEach-Object { $_.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -ColumnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($Proxies.AditionalInfo | Where-Object { $_.Type -eq "Off host" -or $_.Type -eq "On host" }) -Subgraph -SubgraphIconType "VBR_HyperV" -SubgraphLabel "Hyper-V Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                        $ProxiesHv = Add-DiaHtmlNodeTable -Name "ProxiesHv" -ImagesObj $Images -inputObject (($Proxies | Where-Object { $_.AditionalInfo.Type -eq "Off host" -or $_.AditionalInfo.Type -eq "On host" }).Name | ForEach-Object { $_.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -ColumnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($Proxies.AditionalInfo | Where-Object { $_.Type -eq "Off host" -or $_.Type -eq "On host" }) -Subgraph -SubgraphIconType "VBR_HyperV" -SubgraphLabel "Hyper-V Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor '#000000' -SubgraphLabelFontColor $FontColor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
                     }
                 } catch {
                     Write-Verbose "Error: Unable to create ProxiesHyperV Objects. Disabling the section"
@@ -68,7 +68,7 @@ function Get-VbrInfraDiagram {
 
                 if ($NASProxies = Get-VbrNASProxyInfo) {
                     try {
-                        $ProxiesNas = Add-DiaHtmlNodeTable -Name "ProxiesNas" -ImagesObj $Images -inputObject (($NASProxies).Name | ForEach-Object { $_.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -ColumnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($NASProxies.AditionalInfo) -Subgraph -SubgraphIconType "VBR_NAS" -SubgraphLabel "NAS Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                        $ProxiesNas = Add-DiaHtmlNodeTable -Name "ProxiesNas" -ImagesObj $Images -inputObject (($NASProxies).Name | ForEach-Object { $_.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -ColumnSize 3 -IconDebug $IconDebug -MultiIcon -AditionalInfo ($NASProxies.AditionalInfo) -Subgraph -SubgraphIconType "VBR_NAS" -SubgraphLabel "NAS Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor '#000000' -SubgraphLabelFontColor $FontColor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
                     } catch {
                         Write-Verbose "Error: Unable to create ProxiesNas Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
@@ -119,9 +119,9 @@ function Get-VbrInfraDiagram {
                     try {
                         $ViClustersChildsNodes = foreach ($ViCluster in $vCenter.Childs) {
                             if ($ViCluster.EsxiHost.Name) {
-                                Add-DiaHtmlTable -Name "ViClustersChildsNodes" -ImagesObj $Images -Rows $ViCluster.EsxiHost.Name -ALIGN 'Center' -ColumnSize 3 -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_ESXi_Server" -SubgraphLabel $ViCluster.Name -SubgraphLabelPos "top" -FontColor '#000000' -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder 1 -FontSize 18 -SubgraphFontBold -NoFontBold -SubgraphTableStyle "dashed,rounded"
+                                Add-DiaHtmlTable -Name "ViClustersChildsNodes" -ImagesObj $Images -Rows $ViCluster.EsxiHost.Name -ALIGN 'Center' -ColumnSize 3 -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_ESXi_Server" -SubgraphLabel $ViCluster.Name -SubgraphLabelPos "top" -FontColor '#000000' -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder 1 -FontSize 22 -SubgraphFontBold -NoFontBold -SubgraphTableStyle "dashed,rounded"
                             } else {
-                                Add-DiaHtmlTable -Name "ViClustersChildsNodes" -ImagesObj $Images -Rows 'No Esxi Host' -ALIGN 'Center' -ColumnSize 3 -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_ESXi_Server" -SubgraphLabel $ViCluster.Name -SubgraphLabelPos "top" -FontColor '#000000' -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder 1 -FontSize 18 -NoFontBold  -SubgraphFontBold -SubgraphTableStyle "dashed,rounded"
+                                Add-DiaHtmlTable -Name "ViClustersChildsNodes" -ImagesObj $Images -Rows 'No Esxi Host' -ALIGN 'Center' -ColumnSize 3 -IconDebug $IconDebug -Subgraph -SubgraphIconType "VBR_ESXi_Server" -SubgraphLabel $ViCluster.Name -SubgraphLabelPos "top" -FontColor '#000000' -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder 1 -FontSize 22 -NoFontBold  -SubgraphFontBold -SubgraphTableStyle "dashed,rounded"
                             }
                         }
                     } catch {
@@ -161,7 +161,7 @@ function Get-VbrInfraDiagram {
                         }
                     }
                     try {
-                        $ViClustersSubgraphNode = Add-DiaHtmlSubGraph -Name "ViClustersSubgraphNode" -ImagesObj $Images -TableArray $VivCenterNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_vSphere' -Label 'VMware vSphere Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize $columnSize -FontSize 18 -FontBold
+                        $ViClustersSubgraphNode = Add-DiaHtmlSubGraph -Name "ViClustersSubgraphNode" -ImagesObj $Images -TableArray $VivCenterNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_vSphere' -Label 'VMware vSphere Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize $columnSize -FontSize 24 -FontBold
                     } catch {
                         Write-Verbose "Error: Unable to create ViCluster Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
@@ -179,7 +179,7 @@ function Get-VbrInfraDiagram {
                     }
 
                     try {
-                        [array]$ViStandAloneNodes = (Add-DiaHtmlNodeTable -Name "ViStandAloneNodes" -ImagesObj $Images -inputObject ($vSphereServerObj | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_ESXi_Server" -ColumnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $vSphereServerObj.AditionalInfo -Subgraph -SubgraphLabel " " -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -FontBold)
+                        [array]$ViStandAloneNodes = (Add-DiaHtmlNodeTable -Name "ViStandAloneNodes" -ImagesObj $Images -inputObject ($vSphereServerObj | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_ESXi_Server" -ColumnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $vSphereServerObj.AditionalInfo -Subgraph -SubgraphLabel " " -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -FontBold -FontColor '#000000' -SubgraphLabelFontColor $FontColor -FontSize 22)
                     } catch {
                         Write-Verbose "Error: Unable to create vSphere StandAlone Table. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
@@ -206,9 +206,9 @@ function Get-VbrInfraDiagram {
                     try {
                         $HvClustersChildsNodes = & {
                             if ($HyperV.Childs.Name) {
-                                Add-DiaHtmlTable -Name "HvClustersChildsNodes" -ImagesObj $Images -Rows $HyperV.Childs.Name -ALIGN 'Center' -ColumnSize 3 -IconDebug $IconDebug -FontColor '#000000' -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder 0 -NoFontBold -FontSize 18 -SubgraphFontBold
+                                Add-DiaHtmlTable -Name "HvClustersChildsNodes" -ImagesObj $Images -Rows $HyperV.Childs.Name -ALIGN 'Center' -ColumnSize 3 -IconDebug $IconDebug -FontColor '#000000' -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder 0 -NoFontBold -FontSize 22 -SubgraphFontBold
                             } else {
-                                Add-DiaHtmlTable -Name "HvClustersChildsNodes" -ImagesObj $Images -Rows 'No HyperV Host' -ALIGN 'Center' -ColumnSize $columnSize -IconDebug $IconDebug -FontColor '#000000' -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder 0 -NoFontBold -FontSize 18 -SubgraphFontBold
+                                Add-DiaHtmlTable -Name "HvClustersChildsNodes" -ImagesObj $Images -Rows 'No HyperV Host' -ALIGN 'Center' -ColumnSize $columnSize -IconDebug $IconDebug -FontColor '#000000' -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder 0 -NoFontBold -FontSize 22 -SubgraphFontBold
                             }
                         }
                     } catch {
@@ -236,7 +236,7 @@ function Get-VbrInfraDiagram {
 
                 if ($HvHyperVObjNodes) {
                     try {
-                        $HvClustersSubgraphNode = Add-DiaHtmlSubGraph -Name "HvClustersSubgraphNode" -ImagesObj $Images -TableArray $HvHyperVObjNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_HyperV' -Label 'Microsoft HyperV Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 3 -FontSize 18 -FontBold
+                        $HvClustersSubgraphNode = Add-DiaHtmlSubGraph -Name "HvClustersSubgraphNode" -ImagesObj $Images -TableArray $HvHyperVObjNodes -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_HyperV' -Label 'Microsoft HyperV Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 3 -FontSize 24 -FontBold
                     } catch {
                         Write-Verbose "Error: Unable to create HvCluster Objects. Disabling the section"
                         Write-Debug "Error Message: $($_.Exception.Message)"
@@ -291,7 +291,7 @@ function Get-VbrInfraDiagram {
                 }
 
                 try {
-                    $VirtualNodesArraySubgraphNode = Node -Name "VirtualInfra" -Attributes @{Label = (Add-DiaHtmlSubGraph -Name "VirtualInfra" -ImagesObj $Images -TableArray $VirtualNodesArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Proxy' -Label 'Virtual Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 24 -FontBold); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                    $VirtualNodesArraySubgraphNode = Node -Name "VirtualInfra" -Attributes @{Label = (Add-DiaHtmlSubGraph -Name "VirtualInfra" -ImagesObj $Images -TableArray $VirtualNodesArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Proxy' -Label 'Virtual Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 26 -FontBold); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create SureBackup SubGraph Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -314,7 +314,7 @@ function Get-VbrInfraDiagram {
                     } else {
                         $columnSize = 5
                     }
-                    $SOBRNode = Add-DiaHtmlNodeTable -Name "SOBRNode" -ImagesObj $Images -inputObject $SOBR.Name -Align "Center" -iconType "VBR_SOBR_Repo" -ColumnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBR.AditionalInfo -Subgraph -SubgraphLabel "Scale-Out Backup Repositories"  -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_SOBR" -SubgraphFontBold
+                    $SOBRNode = Add-DiaHtmlNodeTable -Name "SOBRNode" -ImagesObj $Images -inputObject $SOBR.Name -Align "Center" -iconType "VBR_SOBR_Repo" -ColumnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBR.AditionalInfo -Subgraph -SubgraphLabel "Scale-Out Backup Repositories"  -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -SubgraphLabelFontColor $Fontcolor -FontColor '#000000' -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_SOBR" -SubgraphFontBold
                     $OnpremStorageArray += $SOBRNode
                 } catch {
                     Write-Verbose "Error: Unable to create SOBR Objects. Disabling the section"
@@ -330,7 +330,7 @@ function Get-VbrInfraDiagram {
                     } else {
                         $columnSize = 5
                     }
-                    $SANNode = Add-DiaHtmlNodeTable -Name "SANNode" -ImagesObj $Images -inputObject $SAN.Name -Align "Center" -iconType $SAN.IconType -ColumnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SAN.AditionalInfo -SubgraphLabelFontSize 22 -FontSize 18 -Subgraph -SubgraphLabel "Storage Infrastructure" -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_SAN" -SubgraphFontBold
+                    $SANNode = Add-DiaHtmlNodeTable -Name "SANNode" -ImagesObj $Images -inputObject $SAN.Name -Align "Center" -iconType $SAN.IconType -ColumnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SAN.AditionalInfo -SubgraphLabelFontSize 22 -FontSize 18 -Subgraph -SubgraphLabel "Storage Infrastructure" -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -SubgraphLabelFontColor $Fontcolor -FontColor '#000000' -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_SAN" -SubgraphFontBold
                     $OnpremStorageArray += $SANNode
                 } catch {
                     Write-Verbose "Error: Unable to create SAN Objects. Disabling the section"
@@ -345,7 +345,7 @@ function Get-VbrInfraDiagram {
                     $columnSize = 5
                 }
                 try {
-                    $RepositoriesNode = Add-DiaHtmlNodeTable -Name "RepositoriesNode" -ImagesObj $Images -inputObject $RepositoriesInfo.Name -Align "Center" -iconType $RepositoriesInfo.IconType -ColumnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $RepositoriesInfo.AditionalInfo -Subgraph -SubgraphLabel "Backup Repositories" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_Repository" -SubgraphFontBold
+                    $RepositoriesNode = Add-DiaHtmlNodeTable -Name "RepositoriesNode" -ImagesObj $Images -inputObject $RepositoriesInfo.Name -Align "Center" -iconType $RepositoriesInfo.IconType -ColumnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $RepositoriesInfo.AditionalInfo -Subgraph -SubgraphLabel "Backup Repositories" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphLabelPos top -SubgraphTableStyle "dashed,rounded" -SubgraphLabelFontColor $FontColor -FontColor '#000000' -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphIconType "VBR_Repository" -SubgraphFontBold
                     $OnpremStorageArray += $RepositoriesNode
                 } catch {
                     Write-Verbose "Error: Unable to create Repositories Objects. Disabling the section"
@@ -355,7 +355,7 @@ function Get-VbrInfraDiagram {
 
             if ($OnpremStorageArray) {
                 try {
-                    $OnpremStorageSubgraphNode = Node -Name "Repositories" -Attributes @{Label = (Add-DiaHtmlSubGraph -Name "Repositories" -ImagesObj $Images -TableArray $OnpremStorageArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Proxy' -Label 'On-Premises Storage Infrastructure' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 24 -FontBold); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                    $OnpremStorageSubgraphNode = Node -Name "Repositories" -Attributes @{Label = (Add-DiaHtmlSubGraph -Name "Repositories" -ImagesObj $Images -TableArray $OnpremStorageArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Proxy' -Label 'On-Premises Storage Infrastructure' -LabelPos "top" -FontColor $FontColor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 26 -FontBold); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create OnPremStorage SubGraph Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -376,7 +376,7 @@ function Get-VbrInfraDiagram {
                     $columnSize = 5
                 }
                 try {
-                    $ObjectRepositoriesNode = Add-DiaHtmlNodeTable -Name "ObjectRepositoriesNode" -ImagesObj $Images -inputObject $ObjectRepositoriesInfo.Name -Align "Center" -iconType $ObjectRepositoriesInfo.Icontype -ColumnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $ObjectRepositoriesInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_vSphere" -SubgraphLabel "Object Repositories" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                    $ObjectRepositoriesNode = Add-DiaHtmlNodeTable -Name "ObjectRepositoriesNode" -ImagesObj $Images -inputObject $ObjectRepositoriesInfo.Name -Align "Center" -iconType $ObjectRepositoriesInfo.Icontype -ColumnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $ObjectRepositoriesInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_vSphere" -SubgraphLabel "Object Repositories" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -SubgraphLabelFontColor $FontColor -FontColor '#000000' -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
                 } catch {
                     Write-Verbose "Error: Unable to create ObjectRepositories Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -391,7 +391,7 @@ function Get-VbrInfraDiagram {
                     $columnSize = 5
                 }
                 try {
-                    $ArchObjRepositoriesNode = Add-DiaHtmlNodeTable -Name "ArchObjRepositoriesNode" -ImagesObj $Images -inputObject $ArchObjRepositoriesInfo.Name -Align "Center" -iconType $ArchObjRepositoriesInfo.Icontype -ColumnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $ArchObjRepositoriesInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_vSphere" -SubgraphLabel "Archives Object Repositories" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
+                    $ArchObjRepositoriesNode = Add-DiaHtmlNodeTable -Name "ArchObjRepositoriesNode" -ImagesObj $Images -inputObject $ArchObjRepositoriesInfo.Name -Align "Center" -iconType $ArchObjRepositoriesInfo.Icontype -ColumnSize $columnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $ArchObjRepositoriesInfo.AditionalInfo -Subgraph -SubgraphIconType "VBR_vSphere" -SubgraphLabel "Archives Object Repositories" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -SubgraphLabelFontColor $FontColor -FontColor '#000000' -TableBorderColor $Edgecolor -TableBorder "1" -SubgraphLabelFontSize 22 -FontSize 18 -SubgraphFontBold
                 } catch {
                     Write-Verbose "Error: Unable to create ArchiveObjectRepositories Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"
@@ -409,7 +409,7 @@ function Get-VbrInfraDiagram {
                 }
 
                 try {
-                    $ObjStorageSubgraphNode = Node -Name "ObjectRepos" -Attributes @{Label = (Add-DiaHtmlSubGraph -Name "ObjectRepos" -ImagesObj $Images -TableArray $ObjStorageNodeArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Object' -Label 'Object Storage' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 24 -FontBold); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
+                    $ObjStorageSubgraphNode = Node -Name "ObjectRepos" -Attributes @{Label = (Add-DiaHtmlSubGraph -Name "ObjectRepos" -ImagesObj $Images -TableArray $ObjStorageNodeArray -Align 'Center' -IconDebug $IconDebug -IconType 'VBR_Object' -Label 'Object Storage' -LabelPos "top" -FontColor $Fontcolor -TableStyle "dashed,rounded" -TableBorderColor $Edgecolor -TableBorder "1" -ColumnSize 1 -FontSize 26 -FontBold); shape = 'plain'; fillColor = 'transparent'; fontsize = 14; fontname = "Segoe Ui" }
                 } catch {
                     Write-Verbose "Error: Unable to create SureBackup SubGraph Objects. Disabling the section"
                     Write-Debug "Error Message: $($_.Exception.Message)"

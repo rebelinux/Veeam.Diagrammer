@@ -35,7 +35,7 @@ function Get-DiagBackupToHvProxy {
                     $HyperVBackupProxyColumnSize = $HyperVBackupProxy.Name.Count
                 }
 
-                Node HvProxies @{Label = (Add-DiaHtmlNodeTable -Name "HvProxies" -ImagesObj $Images -inputObject ($HyperVBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -ColumnSize $HyperVBackupProxyColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $HyperVBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_HyperV" -SubgraphLabel "Hyper-V Backup Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -FontSize 18 -SubgraphLabelFontSize 22 -SubgraphFontBold); shape = 'plain'; fontsize = 18; fontname = "Segoe Ui" }
+                Node HvProxies @{Label = (Add-DiaHtmlNodeTable -Name "HvProxies" -ImagesObj $Images -inputObject ($HyperVBackupProxy | ForEach-Object { $_.Name.split('.')[0] }) -Align "Center" -iconType "VBR_Proxy_Server" -ColumnSize $HyperVBackupProxyColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $HyperVBackupProxy.AditionalInfo -Subgraph -SubgraphIconType "VBR_HyperV" -SubgraphLabel "Hyper-V Backup Proxies" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor '#000000' -SubgraphLabelFontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -FontSize 18 -SubgraphLabelFontSize 22 -SubgraphFontBold); shape = 'plain'; fontsize = 18; fontname = "Segoe Ui" }
 
                 Edge BackupServers -To HvProxies @{minlen = 3 }
             }

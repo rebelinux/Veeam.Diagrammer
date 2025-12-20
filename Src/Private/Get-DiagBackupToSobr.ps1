@@ -49,7 +49,7 @@ function Get-DiagBackupToSobr {
                                 $SOBRPerfColumnSize = $SOBROBJ.Performance.Name.Count
                             }
                             try {
-                                $Performance = Add-DiaHtmlNodeTable -Name "PerformanceExtent" -ImagesObj $Images -inputObject $SOBROBJ.Performance.Name -Align "Center" -iconType $SOBROBJ.Performance.IconType -ColumnSize $SOBRPerfColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Performance.AditionalInfo -Subgraph -SubgraphLabel "Performance Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -FontSize 14 -SubgraphFontBold
+                                $Performance = Add-DiaHtmlNodeTable -Name "PerformanceExtent" -ImagesObj $Images -inputObject $SOBROBJ.Performance.Name -Align "Center" -iconType $SOBROBJ.Performance.IconType -ColumnSize $SOBRPerfColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Performance.AditionalInfo -Subgraph -SubgraphLabel "Performance Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor "#000000" -TableBorderColor $Edgecolor -TableBorder "1" -FontSize 14 -SubgraphFontBold -SubgraphLabelFontColor $Fontcolor
                             } catch {
                                 Write-Verbose "Error: Unable to create SOBR Performance Objects. Disabling the section"
                                 Write-Debug "Error Message: $($_.Exception.Message)"
@@ -68,7 +68,7 @@ function Get-DiagBackupToSobr {
                                 $SOBRCapColumnSize = $SOBROBJ.Capacity.Name.Count
                             }
                             try {
-                                $Capacity = Add-DiaHtmlNodeTable -Name "CapacityExtent" -ImagesObj $Images -inputObject $SOBROBJ.Capacity.Name -Align "Center" -iconType $SOBROBJ.Capacity.IconType -ColumnSize $SOBRCapColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Capacity.AditionalInfo -Subgraph -SubgraphLabel "Capacity Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -FontSize 14 -SubgraphFontBold
+                                $Capacity = Add-DiaHtmlNodeTable -Name "CapacityExtent" -ImagesObj $Images -inputObject $SOBROBJ.Capacity.Name -Align "Center" -iconType $SOBROBJ.Capacity.IconType -ColumnSize $SOBRCapColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Capacity.AditionalInfo -Subgraph -SubgraphLabel "Capacity Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor "#000000" -TableBorderColor $Edgecolor -TableBorder "1" -FontSize 14 -SubgraphFontBold -SubgraphLabelFontColor $Fontcolor
                             } catch {
                                 Write-Verbose "Error: Unable to create SOBR Capacity Objects. Disabling the section"
                                 Write-Debug "Error Message: $($_.Exception.Message)"
@@ -87,7 +87,7 @@ function Get-DiagBackupToSobr {
                                 $SOBRCArchColumnSize = $SOBROBJ.Archive.Name.Count
                             }
                             try {
-                                $Archive = Add-DiaHtmlNodeTable -Name "ArchiveExtent" -ImagesObj $Images -inputObject $SOBROBJ.Archive.Name -Align "Center" -iconType $SOBROBJ.Archive.IconType -ColumnSize $SOBRCArchColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Archive.AditionalInfo -Subgraph -SubgraphLabel "Archive Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor $Fontcolor -TableBorderColor $Edgecolor -TableBorder "1" -FontSize 14 -SubgraphFontBold
+                                $Archive = Add-DiaHtmlNodeTable -Name "ArchiveExtent" -ImagesObj $Images -inputObject $SOBROBJ.Archive.Name -Align "Center" -iconType $SOBROBJ.Archive.IconType -ColumnSize $SOBRCArchColumnSize -IconDebug $IconDebug -MultiIcon -AditionalInfo $SOBROBJ.Archive.AditionalInfo -Subgraph -SubgraphLabel "Archive Extent" -SubgraphLabelPos "top" -SubgraphTableStyle "dashed,rounded" -FontColor "#000000" -TableBorderColor $Edgecolor -TableBorder "1" -FontSize 14 -SubgraphFontBold -SubgraphLabelFontColor $Fontcolor
 
                             } catch {
                                 Write-Verbose "Error: Unable to create SOBR Archive Objects. Disabling the section"
